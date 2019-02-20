@@ -1,0 +1,9 @@
+DRC Rules Export File for PCB: E:\Users\Pal\DEVICES\UKU201\HARD\uku201.PcbDoc
+RuleKind=Clearance|RuleName=Poly|Scope=Board|Minimum=15,75
+RuleKind=Clearance|RuleName=Keep_Out|Scope=Board|Minimum=39,37
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=7,09
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=7,87
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4,00
+RuleKind=Clearance|RuleName=Holes|Scope=Board|Minimum=78,74
+RuleKind=Clearance|RuleName=Clearance_3|Scope=Board|Minimum=39,37
