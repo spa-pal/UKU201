@@ -390,6 +390,7 @@ L16=WWWWNWWNWWWNWWWNW
 L17=WNNNNNNNWNNNWWWWN
 [Annotate]
 SortOrder=3
+MatchParameter1=Comment
 [HighlightMethod]
 Zoom=1
 Select=0

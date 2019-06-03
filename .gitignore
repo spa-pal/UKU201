@@ -1,1 +1,13 @@
 /HARD/*.LOG
+/SOFT/1/*.o
+/SOFT/1/*.d
+/SOFT/1/*.crf
+/SOFT/1/*.lst
+/SOFT/1/1.fed
+/SOFT/1/*.htm
+/SOFT/1/*.map
+/SOFT/1/*.plg
+/SOFT/1/*.sct
+/SOFT/1/*.dep
+/SOFT/1/*.tra
+/SOFT/1/*.lnp
