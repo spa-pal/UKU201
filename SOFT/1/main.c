@@ -3,7 +3,10 @@
 #include "STM32_Init.h"               /* stm32 initialisation                */
 #include <stm32f10x_lib.h>
 #include "main.h"
+#include "uart1.h"
+#include "uart2.h"
 
+#define	putchar putchar2
 
 //***********************************************
 //Тайминги
@@ -12,8 +15,37 @@ bool b1000Hz, b100Hz, b50Hz, b1Hz, b10Hz, b5Hz, b2Hz;
 bool bFL, bFL2, bFL5;
 
 //***********************************************
+//Данные из EEPROM
+signed short ICA_MODBUS_ADDRESS;//Адрес ведомого для выравнивания токов по шине MODBUS-RTU
+signed short MODBUS_ADRESS=1;
+signed int MODBUS_BAUDRATE=115200;
+
+//***********************************************
+//***********************************************
+//***********************************************
+//***********************************************
 //Отладка
 char plazma;
+char plazma_tx_cnt;
+
+
+#include <stdio.h>
+
+int sendchar(int ch);
+struct __FILE {int handle;};
+FILE __stdout;
+
+
+int fputc(int ch, FILE *f) {
+return (sendchar(ch));
+}
+
+int sendchar(int ch)
+{
+//while(USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
+putchar2(ch);
+return 0;
+}
 
 
 //-----------------------------------------------
@@ -95,7 +127,8 @@ stm32_Init();
 //init_display ();
 //plazma1=SD_Reset();
 //i2c_init();
-
+//tx1_restart=1;
+plazma=1;
 
 
 while (1) 
@@ -111,22 +144,30 @@ while (1)
 	if (b100Hz) 
 		{
 		b100Hz=(bool)0;
-		GPIOB->ODR^=(1<<10);
+//		GPIOB->ODR^=(1<<10);
 		}
 	if (b10Hz) 
 		{
 		b10Hz=(bool)0; 
-		GPIOB->ODR^=(1<<11);
+//		GPIOB->ODR^=(1<<11);
 		}   
 	if (b5Hz) 
 		{
 		b5Hz=(bool)0; 
-		GPIOB->ODR^=(1<<12);
+//		
 		}
 	if (b1Hz) 
 		{
 		b1Hz=(bool)0;
-		GPIOC->ODR^=(1<<6);
+		plazma_tx_cnt++;
+		
+		//putchar1('a');
+		//uart_out1 (4,'a','b','c',plazma_tx_cnt,0,0);
+		//uart_out2 (4,'d','e','f',plazma_tx_cnt,0,0);
+		//printf("MAMA MILA RAMU");
+		//printf("plazma = %02d\r\n", plazma++);
+		printf("rx_wr_index1 = %d\r\n", rx_wr_index1);
+		//putchar2('a');
 		}
 	}
 }

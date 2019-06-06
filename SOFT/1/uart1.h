@@ -1,4 +1,7 @@
 
+#define RX_BUFFER_SIZE1 512
+#define TX_BUFFER_SIZE1 512
+
 //***********************************************
 //сюпр
 extern char bRXIN1;
@@ -13,3 +16,4 @@ extern char tx1_restart;
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 void putchar1(char c);
+void uart_out1 (char num,char data0,char data1,char data2,char data3,char data4,char data5);

@@ -2074,6 +2074,7 @@
 //          <56000=>   56000 Baud
 //          <57600=>   57600 Baud
 //          <115200=>  115200 Baud
+//          <256000=>  256000 Baud
 //     <o5.12> Data Bits 
 //          <0=>       8 Data Bits
 //          <1=>       9 Data Bits
@@ -2115,6 +2116,7 @@
 //          <56000=>   56000 Baud
 //          <57600=>   57600 Baud
 //          <115200=>  115200 Baud
+//          <256000=>  256000 Baud
 //     <o14.12> Data Bits 
 //          <0=>       8 Data Bits
 //          <1=>       9 Data Bits
@@ -2134,14 +2136,14 @@
 //          <0=>         CTS = PA0, RTS = PA1, TX = PA2, RX = PA3 
 //          <1=>         CTS = PD3, RTS = PD4, TX = PD5, RX = PD6 
 //     <e3.1> USART2 interrupts
-//       <o19.4> USART1_CR2.IDLEIE: IDLE Interrupt enable
-//       <o19.5> USART1_CR2.RXNEIE: RXNE Interrupt enable
-//       <o19.6> USART1_CR2.TCIE: Transmission Complete Interrupt enable
-//       <o19.7> USART1_CR2.TXEIE: TXE Interrupt enable
-//       <o19.8> USART1_CR2.PEIE: PE Interrupt enable
-//       <o20.6> USART1_CR2.LBDIE: LIN Break Detection Interrupt enable
-//       <o21.0> USART1_CR2.EIE: Error Interrupt enable
-//       <o21.10> USART1_CR2.CTSIE: CTS Interrupt enable
+//       <o19.4> USART2_CR2.IDLEIE: IDLE Interrupt enable
+//       <o19.5> USART2_CR2.RXNEIE: RXNE Interrupt enable
+//       <o19.6> USART2_CR2.TCIE: Transmission Complete Interrupt enable
+//       <o19.7> USART2_CR2.TXEIE: TXE Interrupt enable
+//       <o19.8> USART2_CR2.PEIE: PE Interrupt enable
+//       <o20.6> USART2_CR2.LBDIE: LIN Break Detection Interrupt enable
+//       <o21.0> USART2_CR2.EIE: Error Interrupt enable
+//       <o21.10> USART2_CR2.CTSIE: CTS Interrupt enable
 //     </e>
 //   </e>
 
@@ -2188,25 +2190,25 @@
 //   </e>
 // </e> End of USART Configuration
 #define __USART_SETUP             1                       //  0
-#define __USART_USED              0x01                    //  1
+#define __USART_USED              0x03                    //  1
 #define __USART_DETAILS           0x00					  //  2
-#define __USART_INTERRUPTS        0x00					  //  3
+#define __USART_INTERRUPTS        0x03					  //  3
 #define __USART1_BAUDRATE         115200				  //  4
 #define __USART1_DATABITS         0x00000000
 #define __USART1_STOPBITS         0x00000000
 #define __USART1_PARITY           0x00000000
 #define __USART1_FLOWCTRL         0x00000000
 #define __USART1_REMAP            0x00000000
-#define __USART1_CR1              0x000000A0
+#define __USART1_CR1              0x000000E0
 #define __USART1_CR2              0x00000000
 #define __USART1_CR3              0x00000000
-#define __USART2_BAUDRATE         115200                    // 13
+#define __USART2_BAUDRATE         256000                    // 13
 #define __USART2_DATABITS         0x00000000
 #define __USART2_STOPBITS         0x00000000
 #define __USART2_PARITY           0x00000000
 #define __USART2_FLOWCTRL         0x00000000
 #define __USART2_REMAP            0x00000000
-#define __USART2_CR1              0x00000000
+#define __USART2_CR1              0x000000E0
 #define __USART2_CR2              0x00000000
 #define __USART2_CR3              0x00000000
 #define __USART3_BAUDRATE         9600                    // 22
@@ -4440,9 +4442,9 @@
 //   </e1.6>
 // </e> End of General purpose I/O Configuration
 #define __GPIO_SETUP              1
-#define __GPIO_USED               0x06
+#define __GPIO_USED               0x07
 #define __GPIOA_CRL               0x00000000
-#define __GPIOA_CRH               0x00000000
+#define __GPIOA_CRH               0x00003000
 #define __GPIOB_CRL               0xEE000000
 #define __GPIOB_CRH               0x00033300
 #define __GPIOC_CRL               0x03000000

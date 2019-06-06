@@ -6,6 +6,15 @@ extern bool b1000Hz, b100Hz, b50Hz, b1Hz, b10Hz, b5Hz, b2Hz;
 extern bool bFL, bFL2, bFL5;
 
 //***********************************************
+//Данные из EEPROM
+extern signed short ICA_MODBUS_ADDRESS;//Адрес ведомого для выравнивания токов по шине MODBUS-RTU
+extern signed short MODBUS_ADRESS;
+extern signed int MODBUS_BAUDRATE;
+
+//***********************************************
+//***********************************************
+//***********************************************
+//***********************************************
 //Отладка
-char plazma;
+extern char plazma;
 
