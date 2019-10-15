@@ -416,6 +416,16 @@
               <FileType>1</FileType>
               <FilePath>.\uart1.c</FilePath>
             </File>
+            <File>
+              <FileName>uart2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uart2.c</FilePath>
+            </File>
+            <File>
+              <FileName>modbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\modbus.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

@@ -208,16 +208,16 @@
 //     <o10.2> RTC_CRH.OWIE: Overflow interrupt enabled
 //   </e>
 // </e>
-#define __RTC_SETUP               0
+#define __RTC_SETUP               1
 #define __RTC_CLKSRC_VAL          0x00000100
 #define __RTC_PERIOD              0x000003E8
 #define __RTC_TIME_H              0x00
-#define __RTC_TIME_M              0x00
+#define __RTC_TIME_M              0x05
 #define __RTC_TIME_S              0x00
 #define __RTC_ALARM_H             0x00
 #define __RTC_ALARM_M             0x01
 #define __RTC_ALARM_S             0x00
-#define __RTC_INTERRUPTS          0x00000001
+#define __RTC_INTERRUPTS          0x00000000
 #define __RTC_CRH                 0x00000001
 
 
@@ -1997,8 +1997,8 @@
 //
 //   </e>
 // </e> End of Timer Configuration
-#define __TIMER_SETUP             0                       //  0
-#define __TIMER_USED              0x0000                  //  1
+#define __TIMER_SETUP             1                       //  0
+#define __TIMER_USED              0x0001                  //  1
 #define __TIMER_DETAILS           0x0000                  //  2
 #define __TIMER_INTERRUPTS        0x0000                  //  3
 #define __TIM1_PERIOD             0x00064                 //  4

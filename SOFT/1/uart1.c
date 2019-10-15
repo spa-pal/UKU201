@@ -4,6 +4,7 @@
 #include <stm32f10x_conf.h>
 #include <stm32f10x_lib.h>
 #include "modbus.h" 
+#include "main.h"
 
 //***********************************************
 //сюпр1
@@ -17,6 +18,7 @@ unsigned short rx_wr_index1,rx_rd_index1,rx_counter1;
 unsigned short tx_wr_index1,tx_rd_index1,tx_counter1;
 char rx_buffer_overflow1;
 char tx1_restart;
+bool bTRANSMIT1=FALSE;
 
 const char Table87[]={
 0x00, 0x0E, 0x1C, 0x12, 0x38, 0x36, 0x24, 0x2A, 0x70, 0x7E, 0x6C, 0x62, 0x48, 0x46, 0x54, 0x5A,
@@ -91,7 +93,7 @@ void putchar1(char c)
 while (tx_counter1 == TX_BUFFER_SIZE1);
 
 tx_buffer1[tx_wr_index1]=c;
-   
+bTRANSMIT1=TRUE;   
 if (++tx_wr_index1 >= TX_BUFFER_SIZE1) tx_wr_index1=0;
 
 
@@ -146,8 +148,10 @@ if (IIR & USART_FLAG_RXNE)
 	{                  	
 	USART1->SR &= ~USART_FLAG_RXNE;	          // clear interrupt
 
-	data=USART1->DR & 0x00ff;
+	plazma_uart1[0]++;
 
+	data=USART1->DR & 0x00ff;
+	if(bTRANSMIT1==0) {
 	rx_buffer1[rx_wr_index1]=data;
    	bRXIN1=1;
    	if (++rx_wr_index1 == RX_BUFFER_SIZE1) rx_wr_index1=0;
@@ -156,9 +160,11 @@ if (IIR & USART_FLAG_RXNE)
       	rx_counter1=0;
       	rx_buffer_overflow1=1;
       	}
-//	modbus_rx_buffer[modbus_rx_buffer_ptr]=data;
-//	modbus_rx_buffer_ptr++;
-//	modbus_timeout_cnt=0;
+	modbus_rx_buffer[modbus_rx_buffer_ptr]=data;
+	modbus_rx_buffer_ptr++;
+	modbus_timeout_cnt=0;
+	}
+	
     }
 
 if (IIR & USART_FLAG_TXE) 
@@ -182,6 +188,7 @@ if (IIR & USART_FLAG_TC)
 	{
  	USART1->SR &= ~USART_FLAG_TC;	          // clear interrupt
 	GPIOC->ODR^=(1<<6);
+	bTRANSMIT1=FALSE;
 	GPIOA->ODR&=~(1<<11);
 
    	}

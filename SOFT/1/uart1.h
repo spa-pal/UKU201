@@ -17,3 +17,5 @@ extern char tx1_restart;
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 void putchar1(char c);
 void uart_out1 (char num,char data0,char data1,char data2,char data3,char data4,char data5);
+char crc_87(char* ptr,char num);
+char crc_95(char* ptr,char num);

@@ -3,22 +3,23 @@
 #include <stm32f10x_conf.h>
 #include "modbus.h"
 #include "main.h"
+#include "uart1.h"
 
 //#include "control.h"
 #include <string.h>
 #include <stdio.h>
-//#include "eeprom_map.h"
+#include "eeprom_map.h"
 #include "rtl.h"
 //#include "modbus_tcp.h"
-//#include "25lc640.h"
+#include "25lc640.h"
 //#include "sc16is7xx.h"
 //#include "uart0.h"
-//#include "avar_hndl.h"
+#include "avar_hndl.h"
 
 #define MODBUS_RTU_PROT	0
 #define MODBUS_TCP_PROT	1
 
-//*/extern int  mem_copy (void *dp, void *sp, int len);
+//extern int  mem_copy (void *dp, void *sp, int len);
 
 unsigned char modbus_buf[20];
 short modbus_crc16;
@@ -292,8 +293,9 @@ unsigned short modbus_rx_arg1;		//встроенный в посылку второй аргумент
 unsigned char modbus_func;			//встроенный в посылку код функции
 char i_cnt, j_cnt; //o_2
 
+plazma_uart1[1]++;
 
-//*/mem_copy(modbus_an_buffer,modbus_rx_buffer,modbus_rx_buffer_ptr);
+memcpy(modbus_an_buffer,modbus_rx_buffer,modbus_rx_buffer_ptr);
 modbus_rx_counter=modbus_rx_buffer_ptr;
 modbus_rx_buffer_ptr=0;
 bMODBUS_TIMEOUT=0;
@@ -313,7 +315,6 @@ modbus_rx_arg1=(((unsigned short)modbus_an_buffer[4])*((unsigned short)256))+((u
 
 //#define IPS_CURR_AVG_MODBUS_ADRESS	1
 
-
 if(modbus_an_buffer[0]=='r')
 	{
 	//pvlk=1;
@@ -326,10 +327,10 @@ if(modbus_an_buffer[0]=='r')
 			if(modbus_an_buffer[3]=='d')
 				{
 				//pvlk=4;
-				if(modbus_an_buffer[6]==crc_87(modbus_an_buffer,6))
+				if(modbus_an_buffer[6]==crc_87((char*)modbus_an_buffer,6))
 					{
 					//pvlk=5;
-					if(modbus_an_buffer[7]==crc_95(modbus_an_buffer,6))
+					if(modbus_an_buffer[7]==crc_95((char*)modbus_an_buffer,6))
 						{
 						//pvlk=6;	
 
@@ -339,8 +340,8 @@ if(modbus_an_buffer[0]=='r')
 							char temp_out[20];
 							//pvlk++;
 							ptr=modbus_an_buffer[4]+(modbus_an_buffer[5]*256U);
-							//*/data1=lc640_read_long(ptr);
-							//*/data2=lc640_read_long(ptr+4);
+							data1=lc640_read_long(ptr);
+							data2=lc640_read_long(ptr+4);
 							temp_out[0]='r';
 							temp_out[1]='e';
 							temp_out[2]='a';
@@ -390,10 +391,10 @@ if(modbus_an_buffer[0]=='w')
 				if(modbus_an_buffer[4]=='e')
 					{
 //					pvlk=5;
-					if(modbus_an_buffer[15]==crc_87(modbus_an_buffer,15))
+					if(modbus_an_buffer[15]==crc_87((char*)modbus_an_buffer,15))
 						{
 //						pvlk=6;
-						if(modbus_an_buffer[16]==crc_95(modbus_an_buffer,15))
+						if(modbus_an_buffer[16]==crc_95((char*)modbus_an_buffer,15))
 
 							{
 							unsigned short ptr;
@@ -409,8 +410,8 @@ if(modbus_an_buffer[0]=='w')
 							*(((char*)&data2)+1)=modbus_an_buffer[12];
 							*(((char*)&data2)+2)=modbus_an_buffer[13];
 							*(((char*)&data2)+3)=modbus_an_buffer[14];	
-							//*/lc640_write_long(ptr,data1);
-							//*/lc640_write_long(ptr+4,data2);
+							lc640_write_long(ptr,data1);
+							lc640_write_long(ptr+4,data2);
 							
 							//data1=lc640_read_long(ptr);
 							//data2=lc640_read_long(ptr+4);
@@ -444,13 +445,15 @@ if(modbus_an_buffer[0]=='w')
 
 if(crc16_calculated==crc16_incapsulated)
 	{
-	//ica_plazma[4]++;
+	
+	
  	if(modbus_an_buffer[0]==MODBUS_ADRESS)
 		{
 		//modbus_modbus_adress_eq++;
 		if(modbus_func==3)		//чтение произвольного кол-ва регистров хранения
 			{
 			//modbus_plazma++;
+			
 			modbus_hold_registers_transmit(MODBUS_ADRESS,modbus_func,modbus_rx_arg0,modbus_rx_arg1,MODBUS_RTU_PROT);
 			}
 
@@ -458,6 +461,7 @@ if(crc16_calculated==crc16_incapsulated)
 			{
 			modbus_input_registers_transmit(MODBUS_ADRESS,modbus_func,modbus_rx_arg0,modbus_rx_arg1,MODBUS_RTU_PROT);
 			//modbus_modbus4f_cnt++;
+			plazma_uart1[3]++;
 			}
 
 		else if(modbus_func==6) 	//запись регистров хранения
@@ -488,18 +492,18 @@ if(crc16_calculated==crc16_incapsulated)
 				}
 			if(modbus_rx_arg0==20)		//ток стабилизации для режима стабилизации тока
 				{
-				///*/if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=18))
-				///*/lc640_write_int(EE_NUMIST,modbus_rx_arg1);  
+				if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=18))
+				lc640_write_int(EE_NUMIST,modbus_rx_arg1);  
 				}
 			if(modbus_rx_arg0==21)		//ток стабилизации для режима стабилизации тока
 				{
-				///*/if((modbus_rx_arg1==0)||(modbus_rx_arg1==1))
-				///*/lc640_write_int(EE_PAR,modbus_rx_arg1);  
+				if((modbus_rx_arg1==0)||(modbus_rx_arg1==1))
+				lc640_write_int(EE_PAR,modbus_rx_arg1);  
 				}
 			if(modbus_rx_arg0==22)		//ток стабилизации для режима стабилизации тока
 				{
-				///*/if((modbus_rx_arg1==0)||(modbus_rx_arg1==1))
-				///*/lc640_write_int(EE_ZV_ON,modbus_rx_arg1);  
+				if((modbus_rx_arg1==0)||(modbus_rx_arg1==1))
+				lc640_write_int(EE_ZV_ON,modbus_rx_arg1);  
 				}
 			if(modbus_rx_arg0==23)		//ток стабилизации для режима стабилизации тока
 				{
@@ -693,40 +697,17 @@ if(crc16_calculated==crc16_incapsulated)
 				///*/ica_cntrl_hndl_cnt=200;
 				//plazma1000[2]++;
 				}
-
-			//modbus_hold_registers_transmit(MODBUS_ADRESS,modbus_func,modbus_rx_arg0,1,MODBUS_RTU_PROT);
+			if(modbus_rx_arg0==300)		//Калибровка измеряемых аналоговых величин
 				{
-			/*if(prot==MODBUS_RTU_PROT)
-				{*/
-				//*/mem_copy(modbus_tx_buff,modbus_rx_buffer,8);
+				kalibrate_func(modbus_rx_arg1);
+				}
+			memcpy(modbus_tx_buff,modbus_rx_buffer,8);
 	
-				for (i=0;i<(8);i++)
-					{
-					//*/putchar0(modbus_tx_buff[i]);
-					}
-
-				for (i=0;i<(8);i++)
-					{
-					//*/putchar_sc16is700(modbus_tx_buff[i]);
-					}
-			/*	}
-			else if(prot==MODBUS_TCP_PROT)
+			for (i=0;i<(8);i++)
 				{
-				modbus_tcp_out_ptr=(char*)&modbus_registers[(reg_adr-1)*2];
-				}*/
+				putchar1(modbus_tx_buff[i]);
 				}
 			}
-			else if(modbus_func==1) {	
-				if(modbus_an_buffer[2]==8){
-				  for(i_cnt=0;i_cnt<8;i_cnt++) {
-				  	for(j_cnt=0;j_cnt<8;j_cnt++){
-					   ///*/snmp_enmv_data[i_cnt*8+j_cnt]=(modbus_an_buffer[3+i_cnt]>>j_cnt)&0x01;
-					}				   
-				  }
-				  ///*/enmv_on=0;
-				}
-			} 
-
 		} 
 	else if(modbus_an_buffer[0]==ICA_MODBUS_ADDRESS)
 		{
@@ -1138,12 +1119,12 @@ char i;
 ///*/modbus_registers[38]=(char)(NUMIST>>8);				//Рег20  Количество выпрямителей в структуре
 ///*/modbus_registers[39]=(char)(NUMIST);
 ///*/
-/*
+
 modbus_registers[40]=(char)(PAR>>8);					//Рег21  Параллельная работа выпрямителей вкл./выкл.
 modbus_registers[41]=(char)(PAR);
 modbus_registers[42]=(char)(ZV_ON>>8);					//Рег22  Звуковая аварийная сигнализация вкл./выкл.
 modbus_registers[43]=(char)(ZV_ON);
-modbus_registers[46]=(char)(UBM_AV>>8);				//Рег24  Аварийный уровень отклонения напряжения средней точки батареи, %
+modbus_registers[46]=(char)(UBM_AV>>8);					//Рег24  Аварийный уровень отклонения напряжения средней точки батареи, %
 modbus_registers[47]=(char)(UBM_AV);
 modbus_registers[58]=(char)(TBAT>>8);					//Рег30  Период проверки цепи батареи, минут.
 modbus_registers[59]=(char)(TBAT);
@@ -1195,7 +1176,6 @@ modbus_registers[104]=(char)(U_OUT_KONTR_DELAY>>8);				//Рег53	 Контроль выходно
 modbus_registers[105]=(char)(U_OUT_KONTR_DELAY);
 modbus_registers[106]=(char)(UB0>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
 modbus_registers[107]=(char)(UB0);
-*/
 
 
 
@@ -1203,9 +1183,11 @@ if(prot==MODBUS_RTU_PROT)
 	{
 	modbus_tx_buff[0]=adr;
 	modbus_tx_buff[1]=func;
+
 	modbus_tx_buff[2]=(char)(reg_quantity*2);
-//*/	mem_copy((char*)&modbus_tx_buff[3],(char*)&modbus_registers[(reg_adr-1)*2],reg_quantity*2);
-	
+
+	memcpy((signed char*)&modbus_tx_buff[3],(signed char*)&modbus_registers[(reg_adr-1)*2],reg_quantity*2);
+
 	crc_temp=CRC16_2(modbus_tx_buff,(reg_quantity*2)+3);
 
 	modbus_tx_buff[3+(reg_quantity*2)]=(char)crc_temp;
@@ -1213,17 +1195,13 @@ if(prot==MODBUS_RTU_PROT)
 
 	for (i=0;i<(5+(reg_quantity*2));i++)
 		{
-		//*/putchar0(modbus_tx_buff[i]);
-		}
-
-	for (i=0;i<(5+(reg_quantity*2));i++)
-		{
-		//*/putchar_sc16is700(modbus_tx_buff[i]);
+		putchar1(modbus_tx_buff[i]);
 		}
 	}
 else if(prot==MODBUS_TCP_PROT)
 	{
-	modbus_tcp_out_ptr=(char*)&modbus_registers[(reg_adr-1)*2];
+	//*/mem_copy((signed char*)modbus_tx_buff,(signed char*)&modbus_registers[(reg_adr-1)*2],reg_quantity*2);
+///*/	modbus_tcp_out_ptr=(signed char*)modbus_tx_buff;
 	}
 }
 
@@ -1236,30 +1214,18 @@ unsigned short crc_temp;
 char i;
 short tempS;
 
-//tempS=(MODBUS_INPUT_REGS[0]);
-//bps_I=bps_I_phantom;
+plazma_uart1[2]++;
 
-///*/
-/*
-#if defined(UKU_6U) || defined(UKU_220_V2)
-modbus_registers[0]=(signed char)(load_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
-modbus_registers[1]=(signed char)(load_U);
-modbus_registers[2]=(signed char)(load_I>>8);					//Рег2   	ток выпрямителей, 0.1А
-modbus_registers[3]=(signed char)(load_I);
-#else
+out_U=plazma_short;
+bps_I=5678;
+
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
 modbus_registers[1]=(signed char)(out_U);
 modbus_registers[2]=(signed char)(bps_I>>8);					//Рег2   	ток выпрямителей, 0.1А
 modbus_registers[3]=(signed char)(bps_I);
-#endif*/
-/*
-modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
-modbus_registers[1]=(signed char)(out_U);
-modbus_registers[2]=(signed char)(bps_I>>8);					//Рег2   	ток выпрямителей, 0.1А
-modbus_registers[3]=(signed char)(bps_I);
-*/
-///*/
-/*
+
+
+
 modbus_registers[4]=(signed char)(net_U>>8);					//Рег3   	напряжение сети питания, 1В
 modbus_registers[5]=(signed char)(net_U);
 modbus_registers[6]=(signed char)(net_F>>8);					//Рег4   	частота сети питания, 0.1Гц
@@ -1394,13 +1360,7 @@ if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 //	Бит 4	Авария выпрямителя №2
 modbus_registers[118]=(signed char)(tempS>>8);
 modbus_registers[119]=(signed char)(tempS);
 
-modbus_registers[120]=(signed char)(volta_short>>8);		//Рег61   	напряжение счетчика, 0.1В
-modbus_registers[121]=(signed char)(volta_short);
-modbus_registers[122]=(signed char)(curr_short>>8);			//Рег62  	ток счетчика, 0.01А
-modbus_registers[123]=(signed char)(curr_short);
-modbus_registers[124]=(signed char)(power_int>>8);			//Рег63   	мощность счетчика, 1Вт
-modbus_registers[125]=(signed char)(power_int);
-*/
+
 ///*/
 /*
 tempS=cntrl_stat_old;
@@ -1421,7 +1381,7 @@ tempS=t_ext[2];
 if(ND_EXT[2])tempS=-1000;
 modbus_registers[404]=(signed char)(tempS>>8);				//Рег203	Внешний датчик температуры №3
 modbus_registers[405]=(signed char)(tempS);
-/*tempS=t_ext[3];
+tempS=t_ext[3];
 if(ND_EXT[3])tempS=-1000;
 modbus_registers[406]=(signed char)(tempS>>8);				//Рег204	Внешний датчик температуры №4
 modbus_registers[407]=(signed char)(tempS);   */
@@ -1459,20 +1419,18 @@ if(prot==MODBUS_RTU_PROT)
 
 	modbus_tx_buff[2]=(char)(reg_quantity*2);
 
-	//*/mem_copy((signed char*)&modbus_tx_buff[3],(signed char*)&modbus_registers[(reg_adr-1)*2],reg_quantity*2);
+	memcpy((signed char*)&modbus_tx_buff[3],(signed char*)&modbus_registers[(reg_adr-1)*2],reg_quantity*2);
 
 	crc_temp=CRC16_2(modbus_tx_buff,(reg_quantity*2)+3);
 
 	modbus_tx_buff[3+(reg_quantity*2)]=(char)crc_temp;
 	modbus_tx_buff[4+(reg_quantity*2)]=crc_temp>>8;
 
+//	plazma_uart1[3]=reg_quantity;
+
 	for (i=0;i<(5+(reg_quantity*2));i++)
 		{
-		//*/putchar0(modbus_tx_buff[i]);
-		}
-	for (i=0;i<(5+(reg_quantity*2));i++)
-		{
-		//*/putchar_sc16is700(modbus_tx_buff[i]);
+		putchar1(modbus_tx_buff[i]);
 		}
 	}
 else if(prot==MODBUS_TCP_PROT)
