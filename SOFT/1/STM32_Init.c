@@ -2193,7 +2193,7 @@
 #define __USART_USED              0x03                    //  1
 #define __USART_DETAILS           0x00					  //  2
 #define __USART_INTERRUPTS        0x03					  //  3
-#define __USART1_BAUDRATE         115200				  //  4
+#define __USART1_BAUDRATE         9600				  //  4
 #define __USART1_DATABITS         0x00000000
 #define __USART1_STOPBITS         0x00000000
 #define __USART1_PARITY           0x00000000
@@ -4446,7 +4446,7 @@
 #define __GPIOA_CRL               0x00000000
 #define __GPIOA_CRH               0x00003000
 #define __GPIOB_CRL               0xEE000000
-#define __GPIOB_CRH               0x00033300
+#define __GPIOB_CRH               0x00033340
 #define __GPIOC_CRL               0x03000000
 #define __GPIOC_CRH               0x00000000
 #define __GPIOD_CRL               0x00000000

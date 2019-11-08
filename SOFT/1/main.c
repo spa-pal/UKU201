@@ -49,7 +49,7 @@ signed short		Ib_ips_termokompensat_temp;
 
 //***********************************************
 //Состояние источников
-BPS_STAT bps[29];
+BPS_STAT bps[40];
 
 //***********************************************
 //Состояние выхода
@@ -332,6 +332,7 @@ char plazma;
 char plazma_tx_cnt;
 char plazma_uart1[5];
 short plazma_short;
+char plazma_debug_0,plazma_debug_1;
 
 
 #include <stdio.h>
@@ -513,6 +514,11 @@ void SysTick_Handler (void)
 {
 //GPIOC->ODR^=(1<<6);
 b1000Hz=(bool)1;
+
+	if((GPIOB->IDR&=(1<<9)))bFF=1;
+	else bFF=0;
+	if(bFF!=bFF_) hz_out++;
+	bFF_=bFF;
 	
 if(++t0cnt0>=20)
      {
@@ -554,6 +560,14 @@ if(++t0cnt1>=10)
 		if(bFL)bFL=(bool)0;
 		else bFL=(bool)1;
 		}
+
+     hz_out_cnt++;
+     if(hz_out_cnt>=500)
+	     {	
+	     hz_out_cnt=0;
+	     net_F=hz_out;
+	     hz_out=0;
+	     }
 	}
 if(modbus_timeout_cnt<6)
 	{
@@ -626,6 +640,11 @@ while (1)
 		//can1_out(cnt_net_drv,cnt_net_drv,GETTM,bps[cnt_net_drv]._flags_tu,*((char*)(&bps[cnt_net_drv]._vol_u)),*((char*)((&bps[cnt_net_drv]._vol_u))+1),*((char*)(&bps[cnt_net_drv]._vol_i)),*((char*)((&bps[cnt_net_drv]._vol_i))+1));
      
 		memo_read();
+
+		matemat();
+
+		can1_out(0xff,0xff,MEM_KF1,*((char*)(&TMAX)),*((char*)((&TMAX))+1),*((char*)(&TSIGN)),*((char*)((&TSIGN))+1),(char)TZAS);
+
 		}
 	if (b1Hz) 
 		{
@@ -642,11 +661,14 @@ while (1)
 		//printf("plazma = %d; %d; %d; %d;\r\n  rx_wr_index1 = %d\r\n", plazma_uart1[0], plazma_uart1[1], plazma_uart1[2], plazma_uart1[3], rx_wr_index1);
 		//putchar2('a');
 		//plazma_short = lc640_read_int(0x0010);
-		//printf("adc_buff_ = %d; %d; %d; %d;\r\n  %d; %d; %d; %d;\r\n %d; %d;", adc_buff_[0], adc_buff_[1], adc_buff_[2], adc_buff_[3], adc_buff_[4],  adc_buff_[5],  adc_buff_[6],  adc_buff_[7],adc_ch, adc_cnt);
+		printf("adc_buff_ = %d; %d; %d; %d; %d; %d; %d; %d; %d; %d;\r\n", hz_out, bFF, adc_buff_[2], adc_buff_[3], adc_buff_[4],  adc_buff_[5],  adc_buff_[6],  adc_buff_[7],adc_ch, adc_cnt);
 		//printf("rtc = %x; %x; %x; %x;\r\n", RTC->CRH, RTC->CRL, RTC->CNTH, RTC->CNTL);
 		//printf("cnt = %2d; %2d; %2d; %2d;\r\n", bps[0]._cnt, bps[1]._cnt, bps[2]._cnt, bps[3]._cnt);
-		printf("Ktbat[0] = %5d;\r\n", Ktbat[0]);
+		//printf("Ktbat[0] = %5d;\r\n", Ktbat[0]);
+		//printf("%5d   %5d   %5d   %5d   %5d   \r\n", plazma_uart1[0], plazma_uart1[1], plazma_uart1[2], plazma_uart1[3], plazma_uart1[4]);
 		//spi2(0x55);
+		//printf("%5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   \r\n", adc_buff[0][0], adc_buff[0][1], adc_buff[0][2], adc_buff[0][3], adc_buff[0][4], adc_buff[0][5], adc_buff[0][6], adc_buff[0][7], adc_buff[0][8], adc_buff[0][9], adc_buff[0][10], adc_buff[0][11], adc_buff[0][12], adc_buff[0][13], adc_buff[0][14], adc_buff[0][15]);
+	
 		beep_hndl();
 		}
 	if(bMODBUS_TIMEOUT)
@@ -659,6 +681,11 @@ while (1)
 		{
 		bMCP2515_IN=0;
 		can_in_an1();
+		}
+	if(plazma_debug_1)
+		{
+		plazma_debug_1=0;
+		printf("%d;\r\n", plazma_debug_0);
 		}
 	}
 }

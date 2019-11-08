@@ -107,7 +107,7 @@ typedef struct
 	char _vent_resurs_temp[4];
 	unsigned short _vent_resurs;
 	} BPS_STAT; 
-extern BPS_STAT bps[29];
+extern BPS_STAT bps[40];
 
 //***********************************************
 //Состояние выхода
@@ -570,4 +570,5 @@ extern short ibat_metr_cnt;
 extern char plazma;
 extern char plazma_uart1[5];
 extern short plazma_short;
+extern char plazma_debug_0,plazma_debug_1;
 

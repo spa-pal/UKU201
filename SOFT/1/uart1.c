@@ -12,8 +12,9 @@ char bRXIN1;
 char UIB1[100];
 //char UOB1[100];
 char flag1;
-char rx_buffer1[RX_BUFFER_SIZE1];
 char tx_buffer1[TX_BUFFER_SIZE1];
+char rx_buffer1[RX_BUFFER_SIZE1];
+
 unsigned short rx_wr_index1,rx_rd_index1,rx_counter1;
 unsigned short tx_wr_index1,tx_rd_index1,tx_counter1;
 char rx_buffer_overflow1;
@@ -90,6 +91,7 @@ return r;
 //-----------------------------------------------
 void putchar1(char c)
 {
+short i;
 while (tx_counter1 == TX_BUFFER_SIZE1);
 
 tx_buffer1[tx_wr_index1]=c;
@@ -101,7 +103,13 @@ if (tx1_restart)
 	{                               // If transmit interrupt is disabled, enable it
     tx1_restart = 0;
 	GPIOA->ODR|=(1<<11);
+	for(i=1000;i>0;i--) __nop();
 	USART1->CR1 |= USART_FLAG_TXE;		          // enable TX interrupt
+	
+//	plazma_debug_0=c;
+//	plazma_debug_1=1;
+
+
   	}
 }
 

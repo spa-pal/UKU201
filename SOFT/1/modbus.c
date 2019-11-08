@@ -5,7 +5,7 @@
 #include "main.h"
 #include "uart1.h"
 
-//#include "control.h"
+#include "control.h"
 #include <string.h>
 #include <stdio.h>
 #include "eeprom_map.h"
@@ -45,6 +45,8 @@ unsigned short modbus_rx_arg3;		//встроенный в посылку четвертый аргумент
 char modbus_tx_buff[100];
 
 char* modbus_tcp_out_ptr;
+
+short modbus_register_1000, modbus_register_1001, modbus_register_1002, modbus_register_1003;
 //char modbus_registers[200];
 
 //static const char foo[] = "I wish I'd read K&R, and other tomes more diligently";
@@ -625,6 +627,109 @@ if(crc16_calculated==crc16_incapsulated)
 				///*/lc640_write_int(EE_UB20,modbus_rx_arg1);
 	     		}
 
+			if(modbus_rx_arg0==1000)		//
+				{
+				//if(modbus_rx_arg1==1)
+					{
+					modbus_register_1000=modbus_rx_arg1;
+					}
+	     		}
+			if(modbus_rx_arg0==1001)		//
+				{
+/*				if(modbus_rx_arg1!=0)
+					{
+					modbus_register_1001==modbus_rx_arg1;
+					if(modbus_register_1000==1)
+						{
+						out_U=modbus_register_1001;
+						}
+					}*/
+				//if(modbus_rx_arg1==1)
+					{
+					modbus_register_1001=modbus_rx_arg1;
+					}
+				if(modbus_register_1000==1)
+					{
+					out_U=modbus_register_1001;
+					}
+	     		}
+			if(modbus_rx_arg0==1002)		//
+				{
+					{
+					modbus_register_1002=modbus_rx_arg1;
+					}
+
+	     		}
+			if(modbus_rx_arg0==1003)		//
+				{
+
+	     		}
+			if(modbus_rx_arg0==1005)		//
+				{
+				short tempS;
+				long tempL;
+				
+				tempL=(long)modbus_rx_arg1;
+				tempL*=6000L;
+				tempL/=(signed long)adc_buff_[0];
+				KunetA=(signed short)tempL;
+				lc640_write_int(EE_KUNETA,KunetA);
+	     		}
+
+			if(modbus_rx_arg0==1006)		//
+				{
+				short tempS;
+				long tempL;
+				
+				printf("Reg 1006 writed   \r\n");
+
+				tempL=(long)modbus_rx_arg1;
+				tempL*=6000L;
+				tempL/=(signed long)adc_buff_[1];
+				KunetB=(signed short)tempL;
+				lc640_write_int(EE_KUNETB,KunetB);
+	     		}
+
+			if(modbus_rx_arg0==1007)		//
+				{
+				short tempS;
+				long tempL;
+				
+				printf("Reg 1007 writed   \r\n");
+
+				tempL=(long)modbus_rx_arg1;
+				tempL*=6000L;
+				tempL/=(signed long)adc_buff_[2];
+				KunetC=(signed short)tempL;
+				lc640_write_int(EE_KUNETC,KunetC);
+	     		}
+
+			if(modbus_rx_arg0==1010)		//
+				{
+				printf("Reg 1010 writed   \r\n");
+					{
+					short tempS;
+					long tempL;
+				/*	tempL=(long)modbus_rx_arg1;
+					tempL*=1000L;
+					Kuout=(short)(tempL/(long)adc_buff_virt_0);	*/
+
+					tempL=(long)modbus_rx_arg1;
+					tempL+=273;
+					tempL*=20000L;
+					tempL/=(signed long)adc_buff_[3];
+					Ktbat[0]=(signed short)tempL;
+					lc640_write_int(EE_KTBAT1,Ktbat[0]);
+					}
+	     		}
+
+			if(modbus_rx_arg0==1011)		//
+				{
+				printf("Reg 1011 writed   \r\n");
+
+	     		}
+						
+
 			if(modbus_rx_arg0==19)		//вкл/выкл источника напр.
 				{
 	/*			if(modbus_rx_arg1==1)
@@ -701,6 +806,9 @@ if(crc16_calculated==crc16_incapsulated)
 				{
 				kalibrate_func(modbus_rx_arg1);
 				}
+
+			printf("Register %d writed   \r\n",modbus_rx_arg0);
+
 			memcpy(modbus_tx_buff,modbus_rx_buffer,8);
 	
 			for (i=0;i<(8);i++)
@@ -1099,7 +1207,7 @@ for (i=0;i<8;i++)
 //-----------------------------------------------
 void modbus_hold_registers_transmit(unsigned char adr,unsigned char func,unsigned short reg_adr,unsigned short reg_quantity, char prot)
 {
-signed char modbus_registers[150];
+signed char modbus_registers[2500];
 //char modbus_tx_buff[150];
 unsigned short crc_temp;
 char i;
@@ -1119,6 +1227,8 @@ char i;
 ///*/modbus_registers[38]=(char)(NUMIST>>8);				//Рег20  Количество выпрямителей в структуре
 ///*/modbus_registers[39]=(char)(NUMIST);
 ///*/
+
+PAR=123;
 
 modbus_registers[40]=(char)(PAR>>8);					//Рег21  Параллельная работа выпрямителей вкл./выкл.
 modbus_registers[41]=(char)(PAR);
@@ -1177,6 +1287,18 @@ modbus_registers[105]=(char)(U_OUT_KONTR_DELAY);
 modbus_registers[106]=(char)(UB0>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
 modbus_registers[107]=(char)(UB0);
 
+//modbus_register_1000 = 2;
+//modbus_register_1001 = 7890;
+//modbus_register_1002 = 8765;
+
+modbus_registers[1998]=(char)(modbus_register_1000>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
+modbus_registers[1999]=(char)(modbus_register_1000);
+modbus_registers[2000]=(char)(modbus_register_1001>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
+modbus_registers[2001]=(char)(modbus_register_1001);
+modbus_registers[2002]=(char)(modbus_register_1002>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
+modbus_registers[2003]=(char)(modbus_register_1002);
+modbus_registers[2004]=(char)(modbus_register_1003>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
+modbus_registers[2005]=(char)(modbus_register_1003);
 
 
 if(prot==MODBUS_RTU_PROT)
@@ -1193,6 +1315,8 @@ if(prot==MODBUS_RTU_PROT)
 	modbus_tx_buff[3+(reg_quantity*2)]=(char)crc_temp;
 	modbus_tx_buff[4+(reg_quantity*2)]=crc_temp>>8;
 
+
+
 	for (i=0;i<(5+(reg_quantity*2));i++)
 		{
 		putchar1(modbus_tx_buff[i]);
@@ -1208,16 +1332,24 @@ else if(prot==MODBUS_TCP_PROT)
 //-----------------------------------------------
 void modbus_input_registers_transmit(unsigned char adr,unsigned char func,unsigned short reg_adr,unsigned short reg_quantity, char prot)
 {
-signed char modbus_registers[500];
+signed char modbus_registers[2200];
 //char modbus_tx_buff[200];
 unsigned short crc_temp;
 char i;
 short tempS;
-
+/*
 plazma_uart1[2]++;
 
 out_U=plazma_short;
 bps_I=5678;
+
+net_U=223;
+bps[0]._Uii=281;
+bps[0]._Ii=123;
+
+out_U=1234;
+bps_I=5678;
+*/
 
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
 modbus_registers[1]=(signed char)(out_U);

@@ -48,7 +48,7 @@ KunetA=lc640_read_int(EE_KUNETA);
 KunetB=lc640_read_int(EE_KUNETB);
 KunetC=lc640_read_int(EE_KUNETC);
 Kubps=lc640_read_int(EE_KUBPS);
-Kuout=lc640_read_int(EE_KUOUT);
+//Kuout=lc640_read_int(EE_KUOUT);
 
 Ktext[0]=lc640_read_int(KT_EXT0);
 Ktext[1]=lc640_read_int(KT_EXT1);
