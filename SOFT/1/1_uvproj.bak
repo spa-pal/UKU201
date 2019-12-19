@@ -406,6 +406,51 @@
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
             </File>
+            <File>
+              <FileName>25lc640.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\25lc640.c</FilePath>
+            </File>
+            <File>
+              <FileName>eeprom_map.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\eeprom_map.c</FilePath>
+            </File>
+            <File>
+              <FileName>memo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\memo.c</FilePath>
+            </File>
+            <File>
+              <FileName>gran.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\gran.c</FilePath>
+            </File>
+            <File>
+              <FileName>control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\control.c</FilePath>
+            </File>
+            <File>
+              <FileName>mess.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\mess.c</FilePath>
+            </File>
+            <File>
+              <FileName>mcp2515.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\mcp2515.c</FilePath>
+            </File>
+            <File>
+              <FileName>avar_hndl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\avar_hndl.c</FilePath>
+            </File>
+            <File>
+              <FileName>beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\beep.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -425,6 +470,11 @@
               <FileName>modbus.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\modbus.c</FilePath>
+            </File>
+            <File>
+              <FileName>full_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\full_can.c</FilePath>
             </File>
           </Files>
         </Group>

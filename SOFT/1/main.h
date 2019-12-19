@@ -8,11 +8,17 @@
 #define GET_REG( reg, shift, lengt) 		( (reg & MASK_OFFSET(shift,lengt)) >> shift)
 #define SET_REG( reg, val, shift, lengt)  	reg = ( (reg & ~MASK_OFFSET(shift,lengt)) | (val << shift) )
 
+#define BIN__N(x) (x) | x>>3 | x>>6 | x>>9
+#define BIN__B(x) (x) & 0xf | (x)>>12 & 0xf0
+#define BIN8(v) (BIN__B(BIN__N(0x##v)))
+
 //***********************************************
 //Тайминги
 extern unsigned char t0cnt0, t0cnt1, t0cnt2, t0cnt3, t0cnt4, t0cnt5; 
 extern bool b1000Hz, b100Hz, b50Hz, b1Hz, b10Hz, b5Hz, b2Hz;
 extern bool bFL, bFL2, bFL5;
+extern signed short main_10Hz_cnt;
+extern signed short main_1Hz_cnt;
 
 //***********************************************
 //Данные из EEPROM
@@ -99,13 +105,20 @@ typedef struct
 	signed short _overload_av_cnt;     
 	signed short _temp_av_cnt;
 	signed short _umax_av_cnt;
-	signed short _umin_av_cnt;
+	signed short _umin_av_cnt;		  //счетчик аварии по заниженному напряжению когда сам БПС прислал бит аварии 
+	signed short _umin_av_cnt_uku;	  //счетчик аварии по заниженному напряжению когда уку видит снижение напряжения на выходе БПС
 	signed _rotor;
 	signed  short _x_; 
 	char _adr_ee;
 	char _last_avar;
 	char _vent_resurs_temp[4];
 	unsigned short _vent_resurs;
+	unsigned char _apv_timer_1_lev;		//таймер апв 1-го уровня, считает минуту
+	unsigned char _apv_cnt_1_lev;		//счетчик апв 1-го уровня, считает 3 запуска
+	unsigned short _apv_timer_2_lev;	//таймер апв 2-го уровня, считает установленный для АПВ2 период
+	unsigned char _apv_reset_av_timer;	//таймер для сброса аварий БПСа(пока он ненулевой на БПС шлется сигнал сбросить)
+	unsigned char _apv_succes_timer;	//таймер подсчета времени успешной работы БПС, при достижении порога сбрасывает АПВ 
+
 	} BPS_STAT; 
 extern BPS_STAT bps[40];
 
@@ -453,6 +466,11 @@ extern signed long ibat_metr_buff_[2];
 extern short bIBAT_SMKLBR;
 extern short bIBAT_SMKLBR_cnt;
 extern short ibat_metr_cnt;
+
+//**********************************************
+//Управление регулированием
+extern signed short Isumm;
+extern signed short Isumm_;
 
 //*************************************************
 //сообщения

@@ -18,6 +18,17 @@ extern unsigned short modbus_rx_arg1;		//встроенный в посылку второй аргумент
 extern unsigned short modbus_rx_arg2;		//встроенный в посылку третий аргумент
 extern unsigned short modbus_rx_arg3;		//встроенный в посылку четвертый аргумент
 
+extern short modbus_register_offset;
+extern short modbus_register_offset_ui;
+extern short modbus_register_offset_un;
+extern short modbus_register_offset_i;
+extern short modbus_register_offset_t;
+extern short modbus_register_995, modbus_register_996, modbus_register_997;
+extern short modbus_register_998;
+extern short modbus_register_999;
+extern short modbus_register_1000, modbus_register_1001, modbus_register_1002, modbus_register_1003, modbus_register_1022;
+
+
 extern char modbus_tx_buff[100];
 
 //extern char modbus_registers[200];

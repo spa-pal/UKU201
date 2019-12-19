@@ -212,7 +212,7 @@
 #define __RTC_CLKSRC_VAL          0x00000100
 #define __RTC_PERIOD              0x000003E8
 #define __RTC_TIME_H              0x00
-#define __RTC_TIME_M              0x05
+#define __RTC_TIME_M              0x02
 #define __RTC_TIME_S              0x00
 #define __RTC_ALARM_H             0x00
 #define __RTC_ALARM_M             0x01
@@ -4747,6 +4747,7 @@ __inline static void stm32_SysTickSetup (void) {
 __inline static void stm32_RtcSetup (void) {
 
   RCC->APB1ENR |= RCC_APB1ENR_PWREN;                            // enable clock for Power interface
+  RCC->APB1ENR |= RCC_APB1ENR_BKPEN;
   PWR->CR      |= PWR_CR_DBP;                                   // enable access to RTC, BDC registers
 
   if ((__RTC_CLKSRC_VAL & RCC_BDCR_RTCSEL) == 0x00000100) {     // LSE is RTC clock source
@@ -4767,8 +4768,10 @@ __inline static void stm32_RtcSetup (void) {
   RTC->CRL  |=  RTC_CRL_CNF;                                    // set configuration mode
   RTC->PRLH  = ((__RTC_PERIOD*__RTCCLK/1000-1)>>16) & 0x00FF;   // set prescaler load register high
   RTC->PRLL  = ((__RTC_PERIOD*__RTCCLK/1000-1)    ) & 0xFFFF;   // set prescaler load register low
-  RTC->CNTH  = ((__RTC_CNT)>>16) & 0xFFFF;                      // set counter high
-  RTC->CNTL  = ((__RTC_CNT)    ) & 0xFFFF;                      // set counter low
+//RTC->PRLL  = 5;
+	//BKP->DR5=5;
+  //RTC->CNTH  = ((__RTC_CNT)>>16) & 0xFFFF;                      // set counter high
+  //RTC->CNTL  = ((__RTC_CNT)    ) & 0xFFFF;                      // set counter low
   RTC->ALRH  = ((__RTC_ALR)>>16) & 0xFFFF;                      // set alarm high
   RTC->ALRL  = ((__RTC_ALR)    ) & 0xFFFF;                      // set alarm low
   if (__RTC_INTERRUPTS) {                                       // RTC interrupts used

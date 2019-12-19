@@ -2,6 +2,7 @@
 #include <string.h>                   /* string and memory functions         */
 #include "STM32_Init.h"               /* stm32 initialisation                */
 #include <stm32f10x_lib.h>
+#include "STM32_Reg.h"
 #include "main.h"
 #include "uart1.h"
 #include "uart2.h"
@@ -15,15 +16,20 @@
 #include "mcp2515.h"
 #include "avar_hndl.h"
 #include "beep.h"
+#include "stm32_rtc.h"
 
 #define	putchar putchar2
 #define can1_out mcp2515_transmit
+
+#define SEC_IN_DAY 86400
 
 //***********************************************
 //Тайминги
 unsigned char t0cnt0, t0cnt1, t0cnt2, t0cnt3, t0cnt4, t0cnt5; 
 bool b1000Hz, b100Hz, b50Hz, b1Hz, b10Hz, b5Hz, b2Hz;
 bool bFL, bFL2, bFL5;
+signed short main_10Hz_cnt;
+signed short main_1Hz_cnt;
 
 
 //***********************************************
@@ -323,6 +329,16 @@ short bIBAT_SMKLBR;
 short bIBAT_SMKLBR_cnt;
 short ibat_metr_cnt;
 
+//**********************************************
+//Управление регулированием
+signed short Isumm;
+signed short Isumm_;
+
+
+//**********************************************
+//Инициализация заводских настроек
+short factory_settings_hndl_main_iHz_cnt;
+
 //***********************************************
 //***********************************************
 //***********************************************
@@ -352,6 +368,108 @@ int sendchar(int ch)
 putchar2(ch);
 return 0;
 }
+
+//-----------------------------------------------
+void calendar_hndl(void)
+{
+long tempL;
+tempL=RTC->CNTH;
+tempL<<=16;
+tempL+=RTC->CNTL;
+
+while(tempL>=SEC_IN_DAY)
+	{
+	char max_day_of_month = 31;
+	
+	tempL-=SEC_IN_DAY;
+
+	
+	if( ((BKP->DR2)==4)	|| ((BKP->DR2)==6) || ((BKP->DR2)==9) || ((BKP->DR2)==11) )	max_day_of_month = 30;
+	if((BKP->DR2)==2)
+		{
+		if((BKP->DR1)%4) max_day_of_month = 28;
+		else max_day_of_month = 29;
+		}
+
+	if((BKP->DR3)<max_day_of_month)
+		{
+		PWR->CR	|= PWR_CR_DBP;
+		BKP->DR3++;
+		PWR->CR	&= ~PWR_CR_DBP;		
+		}
+	else 
+		{
+		PWR->CR	|= PWR_CR_DBP;
+		BKP->DR3=1;
+		BKP->DR2++;
+		if((BKP->DR2)>12)
+			{
+			(BKP->DR2)=1;
+			(BKP->DR1)++;
+			}
+		PWR->CR	&= ~PWR_CR_DBP;
+		}
+
+//	tempL-=SEC_IN_DAY;
+/*	PWR->CR	|= PWR_CR_DBP;
+	RTC->CNTH=tempL>>16;
+	RTC->CNTL=(short)tempL;
+	BKP->DR3++;
+	PWR->CR	&= ~PWR_CR_DBP;*/
+				PWR->CR   |= PWR_CR_DBP;
+				RTC->CRL  |=  RTC_CRL_CNF;
+				RTC->CNTH=(short)(tempL>>16);
+				RTC->CNTL=(short)tempL;
+				RTC->CRL  &= ~RTC_CRL_CNF;
+				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
+				PWR->CR   &= ~PWR_CR_DBP;
+	}
+
+}
+
+//-----------------------------------------------
+void factory_settings_hndl(void)
+{
+short tempS;
+tempS=(RTC->CNTL)-(BKP->DR4);
+if((tempS>30)&&(tempS<60)&&((BKP->DR5)==0))
+	{
+	PWR->CR	|= PWR_CR_DBP;
+	BKP->DR5=1;
+	PWR->CR	&= ~PWR_CR_DBP;
+	}
+else if((tempS>10)&&(tempS<20)&&((BKP->DR5)==1))
+	{
+	PWR->CR	|= PWR_CR_DBP;
+	BKP->DR5=2;
+	PWR->CR	&= ~PWR_CR_DBP;
+	}
+else if((tempS>30)&&(tempS<60)&&((BKP->DR5)==2))
+	{
+	PWR->CR	|= PWR_CR_DBP;
+	BKP->DR5=3;
+	PWR->CR	&= ~PWR_CR_DBP;
+	lc640_write_int(EE_MODBUS_ADRESS,1);
+	lc640_write_int(EE_MODBUS_BAUDRATE,960);
+	}
+/*else
+	{
+	PWR->CR	|= PWR_CR_DBP;
+	BKP->DR5=0;
+	PWR->CR	&= ~PWR_CR_DBP;
+	}  */
+PWR->CR	|= PWR_CR_DBP;
+BKP->DR4=RTC->CNTL;
+PWR->CR	&= ~PWR_CR_DBP;
+
+if(factory_settings_hndl_main_iHz_cnt<1000)factory_settings_hndl_main_iHz_cnt++;
+if(factory_settings_hndl_main_iHz_cnt==100)
+	{
+	PWR->CR	|= PWR_CR_DBP;
+	BKP->DR5=0;
+	PWR->CR	&= ~PWR_CR_DBP;
+	}
+}	
 
 //-----------------------------------------------
 char kalibrate_func(short in)
@@ -465,6 +583,7 @@ else if(cnt_net_drv==14)
 	{                 
 	}
 	
+
 	
 else if(cnt_net_drv==15)
 	{
@@ -559,6 +678,7 @@ if(++t0cnt1>=10)
 		b1Hz=(bool)1;
 		if(bFL)bFL=(bool)0;
 		else bFL=(bool)1;
+		if(main_1Hz_cnt<10000) main_1Hz_cnt++;
 		}
 
      hz_out_cnt++;
@@ -603,20 +723,29 @@ spi2_config();
 //i2c_init();
 //tx1_restart=1;
 plazma=1;
-
+rtc_init();
+memo_read();
+stm32_Usart1Setup(MODBUS_BAUDRATE*10UL);
 lc640_write_int(0x0010,0x64);
 adc_init();
 can_mcp2515_init();
+
+//calendar_hndl();
+factory_settings_hndl();
 //beep_init(0x00000005,'A');
 
+//lc640_write_int(EE_NUMIST,3);
+calendar_hndl();
 
 while (1) 
 	{
+	//can_rotor[1]++;
 	//delay_us(100000); 
 	//GPIOB->ODR^=(1<<10)|(1<<11)|(1<<12);
 	//GPIOC->ODR^=(1<<6);
 	if (b1000Hz) 
 		{
+		
 		b1000Hz=(bool)0;
 		//
 		can_mcp2515_hndl();
@@ -625,14 +754,27 @@ while (1)
 		{
 		b100Hz=(bool)0;
 		//adc_drv();
+		//TMAX=80;
+		//TSIGN=80;
+		
+/*		bps[0]._flags_tu=0;
+		bps[1]._flags_tu=1;	*/
+		//NUMIST=3;
 		net_drv();
 		}
 	if (b10Hz) 
 		{
+		char i;
+
 		b10Hz=(bool)0;
 		adc_drv();
 		beep_drv(); 
-//		GPIOB->ODR^=(1<<11);
+
+		u_necc_hndl();
+		cntrl_hndl();
+		for(i=0;i<NUMIST;i++)bps_drv(i);
+		bps_hndl();
+//		calendar_hndl();
 		}   
 	if (b5Hz) 
 		{
@@ -640,15 +782,31 @@ while (1)
 		//can1_out(cnt_net_drv,cnt_net_drv,GETTM,bps[cnt_net_drv]._flags_tu,*((char*)(&bps[cnt_net_drv]._vol_u)),*((char*)((&bps[cnt_net_drv]._vol_u))+1),*((char*)(&bps[cnt_net_drv]._vol_i)),*((char*)((&bps[cnt_net_drv]._vol_i))+1));
      
 		memo_read();
+		TZAS=3;
+		
 
-		matemat();
+		matemat();	//Вычисление всех величин
 
 		can1_out(0xff,0xff,MEM_KF1,*((char*)(&TMAX)),*((char*)((&TMAX))+1),*((char*)(&TSIGN)),*((char*)((&TSIGN))+1),(char)TZAS);
 
 		}
+	if (b2Hz) 
+		{
+		b2Hz=(bool)0;
+
+		avt_klbr_hndl_();	//драйвер автоматической колибровки БПСов и шунта
+
+		}
+
 	if (b1Hz) 
 		{
 		b1Hz=(bool)0;
+
+		num_necc_hndl();
+		
+
+
+
 		plazma_tx_cnt++;
 		
 		GPIOB->ODR^=(1<<10);
@@ -661,15 +819,26 @@ while (1)
 		//printf("plazma = %d; %d; %d; %d;\r\n  rx_wr_index1 = %d\r\n", plazma_uart1[0], plazma_uart1[1], plazma_uart1[2], plazma_uart1[3], rx_wr_index1);
 		//putchar2('a');
 		//plazma_short = lc640_read_int(0x0010);
-		printf("adc_buff_ = %d; %d; %d; %d; %d; %d; %d; %d; %d; %d;\r\n", hz_out, bFF, adc_buff_[2], adc_buff_[3], adc_buff_[4],  adc_buff_[5],  adc_buff_[6],  adc_buff_[7],adc_ch, adc_cnt);
+		//printf("adc_buff = %d; %d; %d; %d; %d; %d; %d; %d; %d; %d;\r\n", adc_buff_[0], adc_buff_[1], adc_buff_[2], adc_buff_[3], adc_buff_[4],  adc_buff_[5],  adc_buff_[6],  adc_buff_[7],adc_ch, adc_cnt);
 		//printf("rtc = %x; %x; %x; %x;\r\n", RTC->CRH, RTC->CRL, RTC->CNTH, RTC->CNTL);
 		//printf("cnt = %2d; %2d; %2d; %2d;\r\n", bps[0]._cnt, bps[1]._cnt, bps[2]._cnt, bps[3]._cnt);
 		//printf("Ktbat[0] = %5d;\r\n", Ktbat[0]);
 		//printf("%5d   %5d   %5d   %5d   %5d   \r\n", plazma_uart1[0], plazma_uart1[1], plazma_uart1[2], plazma_uart1[3], plazma_uart1[4]);
 		//spi2(0x55);
 		//printf("%5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   \r\n", adc_buff[0][0], adc_buff[0][1], adc_buff[0][2], adc_buff[0][3], adc_buff[0][4], adc_buff[0][5], adc_buff[0][6], adc_buff[0][7], adc_buff[0][8], adc_buff[0][9], adc_buff[0][10], adc_buff[0][11], adc_buff[0][12], adc_buff[0][13], adc_buff[0][14], adc_buff[0][15]);
-	
+		//printf("%3d   %3d   %3d   %3d   %3d    %3d \r\n", bps[0]._cnt, bps[1]._cnt, bps[2]._cnt, can_rotor[1], can_rotor[2], bps[0]._Ti);
+		//printf("num_necc= %3d   %d   %d   %3d   %3d    %3d \r\n", num_necc, ibat_metr_buff_[0], ibat_metr_buff_[1], can_rotor[1], can_rotor[2], bps[0]._Ti);
+		//printf("flags_tu= %2x   %2x   %2x  \r\n", bps[0]._flags_tu, bps[1]._flags_tu, bps[2]._flags_tu);
+		
+		//RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+		//PWR->CR      |= PWR_CR_DBP;
+		//BKP->DR1=(BKP->DR1)+1;
+		//PWR->CR   &= ~PWR_CR_DBP;
+		printf("%5d %5d %5d %5d %5d %5d %5d %5d %5d\r\n", BKP->DR1, cntrl_stat, modbus_register_995, bps[0]._flags_tu, RTC->CNTH, RTC->CNTL, MODBUS_ADRESS, BKP->DR4, BKP->DR5);
+
 		beep_hndl();
+		//calendar_hndl();
+		factory_settings_hndl();
 		}
 	if(bMODBUS_TIMEOUT)
 		{

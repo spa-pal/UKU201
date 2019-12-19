@@ -174,34 +174,36 @@ if(mcp2515_buff_wr_ptr>7)mcp2515_buff_wr_ptr=0;
 //-----------------------------------------------
 void can_mcp2515_hndl(void)
 {
-unsigned char /*temp,*/j,/*temp_index,*/c_temp;
+unsigned char j,c_temp;
 static char ch_cnt;
-//#asm("cli")
+
 mcp2515_can_st=mcp2515_read_status();
 mcp2515_can_st_old=mcp2515_can_st;
 
 
-if(mcp2515_can_st&0x02/*0b00000010*/)
+
+if(mcp2515_can_st&0x02)
 	{
 	
 	for(j=0;j<8;j++)
 		{
-		/*MCP2515_*/RXBUFF[j]=mcp2515_read(RXB1D0+j);
+		RXBUFF[j]=mcp2515_read(RXB1D0+j);
 		}
 	
-	mcp2515_bit_modify(CANINTF,0x02 /*0b00000010*/ ,0x00);
+	mcp2515_bit_modify(CANINTF,0x02,0x00);
      bMCP2515_IN=1;
+	 
 	}
            
            
-else if(/*(can_st1&0b10101000)&&*/(!(mcp2515_can_st&0x54/*0b01010100*/)))
+else if((!(mcp2515_can_st&0x54)))
 	{
 	char n;
-     mcp2515_bit_modify(CANINTF,0x1c/*0b00011100*/,0x00);
+    mcp2515_bit_modify(CANINTF,0x1c,0x00);
      
      if(mcp2515_buff_rd_ptr!=mcp2515_buff_wr_ptr)
      	{
-//		can_plazma++;
+
          	for(n=0;n<8;n++)
 			{ 
 			mcp2515_write(TXB0D0+n,mcp2515_out_buff[n][mcp2515_buff_rd_ptr]);
@@ -214,6 +216,5 @@ else if(/*(can_st1&0b10101000)&&*/(!(mcp2515_can_st&0x54/*0b01010100*/)))
     		} 
  	} 	
 		
-//#asm("sei") 
 }
 

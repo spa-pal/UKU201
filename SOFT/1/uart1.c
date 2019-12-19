@@ -1,10 +1,22 @@
 
 
+
 #include "uart1.h"
 #include <stm32f10x_conf.h>
 #include <stm32f10x_lib.h>
 #include "modbus.h" 
 #include "main.h"
+#include "STM32_Reg.h"
+
+#define __HSE                      10000000
+#define __PLLMULL					6
+#define __SYSCLK  ((__HSE >> 0) * __PLLMULL)
+#define __HCLK        (__SYSCLK)
+#define __PCLK2       (__HCLK)
+#define __DIV(__PCLK, __BAUD)       ((__PCLK*25)/(4*__BAUD))
+#define __DIVMANT(__PCLK, __BAUD)   (__DIV(__PCLK, __BAUD)/100)
+#define __DIVFRAQ(__PCLK, __BAUD)   (((__DIV(__PCLK, __BAUD) - (__DIVMANT(__PCLK, __BAUD) * 100)) * 16 + 50) / 100)
+#define __USART_BRR(__PCLK, __BAUD) ((__DIVMANT(__PCLK, __BAUD) << 4)|(__DIVFRAQ(__PCLK, __BAUD) & 0x0F))
 
 //***********************************************
 //сюпр1
@@ -56,6 +68,38 @@ const char Table95[]={
 0x2C, 0x06, 0x78, 0x52, 0x84, 0xAE, 0xD0, 0xFA, 0x56, 0x7C, 0x02, 0x28, 0xFE, 0xD4, 0xAA, 0x80, 
 0x1A, 0x30, 0x4E, 0x64, 0xB2, 0x98, 0xE6, 0xCC, 0x60, 0x4A, 0x34, 0x1E, 0xC8, 0xE2, 0x9C, 0xB6, 
 0xEE, 0xC4, 0xBA, 0x90, 0x46, 0x6C, 0x12, 0x38, 0x94, 0xBE, 0xC0, 0xEA, 0x3C, 0x16, 0x68, 0x42};
+
+
+
+void stm32_Usart1Setup (long baudrate) 
+{
+RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;                     // enable clock for Alternate Function
+AFIO->MAPR   &= ~(1 << 2);                              // clear USART1 remap
+RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;                   // enable clock for GPIOA
+GPIOA->CRH   &= ~(0xFFUL  << 4);                      // Clear PA9, PA10
+GPIOA->CRH   |=  (0x0BUL  << 4);                      // USART1 Tx (PA9)  alternate output push-pull
+GPIOA->CRH   |=  (0x04UL  << 8);                      // USART1 Rx (PA10) input floating
+
+RCC->APB2ENR |= RCC_APB2ENR_USART1EN;                   // enable clock for USART1
+        
+USART1->BRR  = __USART_BRR(__PCLK2, baudrate); // set baudrate
+USART1->CR1  = 0;                       // set Data bits
+USART1->CR2  = 0;                       // set Stop bits
+USART1->CR1 |= 0;                         // set Parity
+USART1->CR3  = 0;                       // Set Flow Control
+
+USART1->CR1 |= (USART_CR1_RE | USART_CR1_TE);           // RX, TX enable
+
+USART1->CR1 |= 0x000000E0;
+USART1->CR2 |= 0x00000000;
+USART1->CR3 |= 0x00000000;
+NVIC->ISER[1]  = (1 << (USART1_IRQChannel & 0x1F));   // enable interrupt
+
+
+USART1->CR1 |= USART_CR1_UE;                            // USART enable
+} // end USART1 used
+
+
 
 
 //-----------------------------------------------

@@ -1,0 +1,10 @@
+Removed Pin From Net: NetName=REL3 Pin=JP2-1
+Removed Pin From Net: NetName=REL2 Pin=JP2-3
+Removed Pin From Net: NetName=REL1 Pin=JP2-5
+Change Component Footprint: Designator=JP2 Old Footprint=HDR2X5 New Footprint=HDR2X10
+Change Component Footprint: Designator=JP1 Old Footprint=HDR2X5 New Footprint=HDR2X10
+Change Net Name : Old Net Name=NetBT2_1 New Net Name=P2_9
+Added Pin To Net: NetName=RS485A Pin=JP2-1
+Added Pin To Net: NetName=RS485B Pin=JP2-3
+Added Pin To Net: NetName=REL3 Pin=JP2-7
+Added Pin To Net: NetName=REL2 Pin=JP2-9

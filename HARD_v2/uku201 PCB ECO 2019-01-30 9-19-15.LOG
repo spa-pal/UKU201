@@ -1,0 +1,4 @@
+Change Net Name : Old Net Name=NetBT500_1 New Net Name=P2_9
+Added Pin To Net: NetName=GND Pin=JP2-8
+Added Pin To Net: NetName=GND Pin=JP2-10
+Added Pin To Net: NetName=GND Pin=JP2-12

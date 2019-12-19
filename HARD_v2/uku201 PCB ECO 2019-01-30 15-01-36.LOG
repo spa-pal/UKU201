@@ -1,0 +1,73 @@
+Added Component: Designator=C21(_1206)
+Added Component: Designator=C22(_1206)
+Added Component: Designator=C23(_1206)
+Added Component: Designator=C24(_1206)
+Added Component: Designator=D10(_1206d)
+Added Component: Designator=R25(_1206)
+Added Component: Designator=R26(_1206)
+Added Component: Designator=R27(_1206)
+Added Component: Designator=R28(_1206)
+Added Component: Designator=R29(_1206)
+Added Component: Designator=R30(_1206)
+Added Component: Designator=R31(_0805)
+Added Component: Designator=R32(_1206)
+Added Component: Designator=R33(_1206)
+Change Net Name : Old Net Name=NetC21_1 New Net Name=P2_9
+Added Pin To Net: NetName=A2 Pin=C21-1
+Added Pin To Net: NetName=A2 Pin=R25-1
+Added Pin To Net: NetName=A2 Pin=R26-1
+Added Pin To Net: NetName=A2 Pin=U6-16
+Added Net: Name=A2
+Added Pin To Net: NetName=A3 Pin=C22-1
+Added Pin To Net: NetName=A3 Pin=R27-1
+Added Pin To Net: NetName=A3 Pin=R28-1
+Added Pin To Net: NetName=A3 Pin=U6-17
+Added Net: Name=A3
+Added Pin To Net: NetName=A4 Pin=C23-1
+Added Pin To Net: NetName=A4 Pin=R29-1
+Added Pin To Net: NetName=A4 Pin=R30-1
+Added Pin To Net: NetName=A4 Pin=U6-20
+Added Net: Name=A4
+Added Pin To Net: NetName=A5 Pin=C24-1
+Added Pin To Net: NetName=A5 Pin=D10-2
+Added Pin To Net: NetName=A5 Pin=R32-2
+Added Pin To Net: NetName=A5 Pin=R33-2
+Added Pin To Net: NetName=A5 Pin=U6-21
+Added Net: Name=A5
+Added Pin To Net: NetName=UN1 Pin=JP2-13
+Added Pin To Net: NetName=UN1 Pin=R25-2
+Added Net: Name=UN1
+Added Pin To Net: NetName=UN2 Pin=JP2-15
+Added Pin To Net: NetName=UN2 Pin=R27-2
+Added Net: Name=UN2
+Added Pin To Net: NetName=UN3 Pin=JP2-14
+Added Pin To Net: NetName=UN3 Pin=R29-2
+Added Net: Name=UN3
+Added Pin To Net: NetName=UT1 Pin=JP2-16
+Added Pin To Net: NetName=UT1 Pin=R31-1
+Added Pin To Net: NetName=UT1 Pin=R32-1
+Added Net: Name=UT1
+Added Pin To Net: NetName=GND Pin=C21-2
+Added Pin To Net: NetName=GND Pin=C22-2
+Added Pin To Net: NetName=GND Pin=C23-2
+Added Pin To Net: NetName=GND Pin=C24-2
+Added Pin To Net: NetName=GND Pin=D10-1
+Added Pin To Net: NetName=GND Pin=R26-2
+Added Pin To Net: NetName=GND Pin=R28-2
+Added Pin To Net: NetName=GND Pin=R30-2
+Added Pin To Net: NetName=+5V Pin=R31-2
+Added Pin To Net: NetName=GND Pin=R33-1
+Added Member To Class: ClassName=cpu_board Member=Component C21 1.0
+Added Member To Class: ClassName=cpu_board Member=Component C22 1.0
+Added Member To Class: ClassName=cpu_board Member=Component C23 1.0
+Added Member To Class: ClassName=cpu_board Member=Component C24 1.0
+Added Member To Class: ClassName=cpu_board Member=Component D10 BZV55-C5V6
+Added Member To Class: ClassName=cpu_board Member=Component R25 10K
+Added Member To Class: ClassName=cpu_board Member=Component R26 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R27 10K
+Added Member To Class: ClassName=cpu_board Member=Component R28 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R29 10K
+Added Member To Class: ClassName=cpu_board Member=Component R30 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R31 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R32 2K7
+Added Member To Class: ClassName=cpu_board Member=Component R33 10K

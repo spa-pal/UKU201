@@ -161,7 +161,7 @@ void can_adr_hndl(void)
 }	
 
 //-----------------------------------------------
-void can_in_an1(void)
+ void can_in_an1(void)
 {
 //char i;
 //signed short temp_SS;
@@ -182,8 +182,10 @@ char slave_num;
 
 if((RXBUFF[1]==PUTTM1)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<17))
      {
+	 can_rotor[1]++;
 	//can_debug_plazma[1][2]++;
      slave_num=RXBUFF[0]&0x1f;
+	 can_rotor[2]=slave_num;
      
     if((RXBUFF[0]&0xe0)==0)bps[slave_num]._device=dSRC;
     else if((RXBUFF[0]&0xe0)==0x40)bps[slave_num]._device=dINV;

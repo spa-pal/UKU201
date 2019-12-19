@@ -1,0 +1,29 @@
+Removed Pin From Net: NetName=GND_CAN Pin=C1000-2
+Removed Member From Class: ClassName=CAN Member=C1000
+Added Component: Designator=JP5(CORTEX_DEBUG_CONNECTOR)
+Added Component: Designator=JP6(HDR1X5_uart)
+Change Net Name : Old Net Name=NetC11_1 New Net Name=P2_9
+Added Pin To Net: NetName=A13 Pin=JP5-2
+Added Pin To Net: NetName=A13 Pin=U6-46
+Added Net: Name=A13
+Added Pin To Net: NetName=A14 Pin=JP5-4
+Added Pin To Net: NetName=A14 Pin=U6-49
+Added Net: Name=A14
+Added Pin To Net: NetName=A15 Pin=JP5-8
+Added Pin To Net: NetName=A15 Pin=U6-50
+Added Net: Name=A15
+Added Pin To Net: NetName=B3 Pin=JP5-6
+Added Pin To Net: NetName=B3 Pin=U6-55
+Added Net: Name=B3
+Added Pin To Net: NetName=B4 Pin=JP5-5
+Added Pin To Net: NetName=B4 Pin=U6-56
+Added Net: Name=B4
+Added Pin To Net: NetName=NRST Pin=JP5-10
+Added Pin To Net: NetName=NRST Pin=U6-7
+Added Net: Name=NRST
+Added Pin To Net: NetName=+3V3 Pin=JP5-1
+Added Pin To Net: NetName=GND Pin=JP5-3
+Added Pin To Net: NetName=GND Pin=JP5-9
+Added Pin To Net: NetName=+3V3 Pin=JP6-1
+Added Member To Class: ClassName=cpu_board Member=Component JP5 CORTEX_DEBUG_CONNECTOR_PAL
+Added Member To Class: ClassName=cpu_board Member=Component JP6 UART_PORT

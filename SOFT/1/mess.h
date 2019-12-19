@@ -1,4 +1,6 @@
 
+extern char mess[MESS_DEEP],mess_old[MESS_DEEP],mess_cnt[MESS_DEEP];
+extern int mess_par0[MESS_DEEP],mess_par1[MESS_DEEP],mess_data[2];
 
 
 

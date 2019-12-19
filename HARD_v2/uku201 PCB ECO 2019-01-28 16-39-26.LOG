@@ -1,0 +1,19 @@
+Added Component: Designator=U2(TSSO6X6-G20/D6.6)
+Added Component: Designator=VD1(_1206d)
+Added Component: Designator=VD2(_1206d)
+Added Component: Designator=VD3(_1206d)
+Added Component: Designator=VD4(_1206d)
+Change Net Name : Old Net Name=CANH New Net Name=VREF
+Change Net Name : Old Net Name=CANL New Net Name=P2_9
+Added Pin To Net: NetName=NetR1_2 Pin=U2-1
+Added Pin To Net: NetName=NetR2_2 Pin=U2-2
+Added Pin To Net: NetName=NetC2_2 Pin=U2-8
+Added Pin To Net: NetName=NetC4_2 Pin=U2-9
+Added Pin To Net: NetName=GND Pin=U2-10
+Added Pin To Net: NetName=+5V Pin=U2-19
+Added Pin To Net: NetName=+5V Pin=U2-20
+Added Member To Class: ClassName=CAN Member=Component U2 MCP2515
+Added Member To Class: ClassName=CAN Member=Component VD1 MBR0520
+Added Member To Class: ClassName=CAN Member=Component VD2 MBR0520
+Added Member To Class: ClassName=RS485 Member=Component VD3 MBR0520
+Added Member To Class: ClassName=RS485 Member=Component VD4 MBR0520

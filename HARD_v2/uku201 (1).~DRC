@@ -1,0 +1,288 @@
+Protel Design System Design Rule Check
+PCB File : \Users\Pal\DEVICES\UKU201\HARD\uku201.PcbDoc
+Date     : 03.02.2019
+Time     : 13:11:44
+
+Processing Rule : Clearance Constraint (Gap=0.4mm) (InPoly),(All)
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=1mm) (OnLayer('Keep-Out Layer')),(not OnLayer('Top Overlay'))
+   Violation between Track (0mm,0mm)(0mm,112mm)  Keep-Out Layer and                      Track (1.35mm,46.35mm)(4.3mm,43.4mm)  Bottom Layer   
+   Violation between Track (0mm,0mm)(0mm,112mm)  Keep-Out Layer and                      Track (1.35mm,46.35mm)(1.35mm,97.2mm)  Bottom Layer   
+   Violation between Track (0mm,112mm)(85mm,112mm)  Keep-Out Layer and                      Track (1.35mm,97.2mm)(14.65mm,110.5mm)  Bottom Layer   
+   Violation between Track (0mm,0mm)(0mm,112mm)  Keep-Out Layer and                      Track (1.35mm,97.2mm)(14.65mm,110.5mm)  Bottom Layer   
+   Violation between Track (0mm,112mm)(85mm,112mm)  Keep-Out Layer and                      Track (14.65mm,110.5mm)(62.7mm,110.5mm)  Bottom Layer   
+   Violation between Track (0mm,112mm)(85mm,112mm)  Keep-Out Layer and                      Track (62.7mm,110.5mm)(71.74mm,101.46mm)  Bottom Layer   
+Rule Violations :6
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-1(98.5718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-1(98.5718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-2(99.2218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-2(99.2218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R19-1(100.1534mm,-2.2625mm)  Top Layer and                      Pad U2-2(99.2218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-3(99.8718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-3(99.8718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R19-1(100.1534mm,-2.2625mm)  Top Layer and                      Pad U2-3(99.8718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-4(100.5218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R19-1(100.1534mm,-2.2625mm)  Top Layer and                      Pad U2-4(100.5218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R19-1(100.1534mm,-2.2625mm)  Top Layer and                      Pad U2-5(101.1718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R32-1(105.1534mm,-2.2625mm)  Top Layer and                      Pad U2-10(104.4218mm,-2.6501mm)  Top Layer   
+   Violation between Pad C19-1(105.3534mm,-2.2625mm)  Top Layer and                      Pad U2-10(104.4218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-2(99.3034mm,0.5375mm)  Top Layer and                      Pad R19-2(100.1534mm,0.5375mm)  Top Layer   
+   Violation between Pad R24-2(99.5534mm,0.5375mm)  Top Layer and                      Pad R19-2(100.1534mm,0.5375mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad R19-1(100.1534mm,-2.2625mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad R19-1(100.1534mm,-2.2625mm)  Top Layer   
+   Violation between Pad C23-2(110.9534mm,0.5375mm)  Top Layer and                      Pad R18-2(112.2034mm,0.5375mm)  Top Layer   
+   Violation between Pad R21-2(110.9534mm,0.5375mm)  Top Layer and                      Pad R18-2(112.2034mm,0.5375mm)  Top Layer   
+   Violation between Pad C23-1(110.9534mm,-2.2625mm)  Top Layer and                      Pad R18-1(112.2034mm,-2.2625mm)  Top Layer   
+   Violation between Pad R21-1(110.9534mm,-2.2625mm)  Top Layer and                      Pad R18-1(112.2034mm,-2.2625mm)  Top Layer   
+   Violation between Pad D10-1(93.7058mm,0.5453mm)  Top Layer and                      Pad R23-2(93.7034mm,0.5375mm)  Top Layer   
+   Violation between Pad D10-2(93.7058mm,-2.2547mm)  Top Layer and                      Pad R23-1(93.7034mm,-2.2625mm)  Top Layer   
+   Violation between Pad R33-2(99.3034mm,0.5375mm)  Top Layer and                      Pad R24-2(99.5534mm,0.5375mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad R24-1(99.5534mm,-2.2625mm)  Top Layer   
+   Violation between Pad R32-2(105.1534mm,0.5375mm)  Top Layer and                      Pad C19-2(105.3534mm,0.5375mm)  Top Layer   
+   Violation between Pad R32-1(105.1534mm,-2.2625mm)  Top Layer and                      Pad C19-1(105.3534mm,-2.2625mm)  Top Layer   
+   Violation between Pad C23-2(110.9534mm,0.5375mm)  Top Layer and                      Pad R21-2(110.9534mm,0.5375mm)  Top Layer   
+   Violation between Pad C23-1(110.9534mm,-2.2625mm)  Top Layer and                      Pad R21-1(110.9534mm,-2.2625mm)  Top Layer   
+   Violation between Pad R31-2(116.6518mm,0.7083mm)  Top Layer and                      Pad R22-2(116.3034mm,0.5375mm)  Top Layer   
+   Violation between Pad R31-1(116.6518mm,-1.1917mm)  Top Layer and                      Pad R22-1(116.3034mm,-2.2625mm)  Top Layer   
+   Violation between Pad JP6-1(87.8063mm,-2.2079mm)  Multi-Layer and                      Pad C24-1(87.8534mm,-2.2625mm)  Top Layer   
+Rule Violations :32
+
+Processing Rule : Broken-Net Constraint ( (All) )
+   Violation         Net +3V3   is broken into 12 sub-nets. Routed To 0.00%
+     Subnet : D6-1          Subnet : D7-1          Subnet : U6-19         Subnet : JP5-1         Subnet : U6-64         Subnet : U6-48         Subnet : D8-1          Subnet : JP6-1         Subnet : D9-1          Subnet : U6-32         Subnet : C14-2         Subnet : R7-1        Violation         Net REL3   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : JP2-7         Subnet : Q8-5          Subnet : Q8-6        Violation         Net NetQ8_4   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : Q8-4          Subnet : R78-2         Subnet : R16-2       Violation         Net UB2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP1-10        Subnet : R23-2       Violation         Net UB1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP1-9         Subnet : R21-2       Violation         Net NetQ8_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : Q8-2          Subnet : R77-2         Subnet : R14-2       Violation         Net NetU8_3   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U8-3          Subnet : U9-1        Violation         Net NetQ7_4   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : Q7-4          Subnet : R39-2         Subnet : R15-2       Violation         Net +5V   is broken into 21 sub-nets. Routed To 0.00%
+     Subnet : JP3-10        Subnet : U10-7         Subnet : JP3-9         Subnet : U10-1         Subnet : U9-2          Subnet : C17-2         Subnet : C5-2          Subnet : U8-2          Subnet : U5-2          Subnet : U4-2          Subnet : A1-1          Subnet : K1-4          Subnet : R31-2         Subnet : U2-20         Subnet : U2-19         Subnet : U7-8          Subnet : U1-1          Subnet : R12-1         Subnet : C13-2         Subnet : R11-2         Subnet : C15-2       Violation         Net REL2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : JP2-9         Subnet : Q7-7          Subnet : Q7-8        Violation         Net NetQ1_1   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : Q1-1          Subnet : R10-1         Subnet : R9-1        Violation         Net GND   is broken into 61 sub-nets. Routed To 0.00%
+     Subnet : JP3-2         Subnet : JP2-8         Subnet : JP2-10        Subnet : U10-8         Subnet : U10-4         Subnet : JP3-1         Subnet : U10-2         Subnet : JP2-12        Subnet : Q7-3          Subnet : C20-2         Subnet : C24-2         Subnet : Q7-1          Subnet : U6-18         Subnet : Q8-3          Subnet : Q8-1          Subnet : C17-1         Subnet : U8-5          Subnet : U8-4          Subnet : C5-1          Subnet : U4-4          Subnet : JP5-3         Subnet : U4-5          Subnet : U6-12         Subnet : U6-63         Subnet : BT1-2         Subnet : U6-31         Subnet : JP5-9         Subnet : U1-2          Subnet : U6-47         Subnet : U1-8          Subnet : D10-1         Subnet : U2-10         Subnet : R33-1         Subnet : R39-1         Subnet : R78-1         Subnet : R24-2         Subnet : C19-2         Subnet : C23-2         Subnet : R22-2         Subnet : R30-2         Subnet : C22-2         Subnet : R28-2         Subnet : R34-1         Subnet : C21-2         Subnet : R26-2         Subnet : R77-1         Subnet : C12-1         Subnet : U7-4          Subnet : R10-2         Subnet : C9-1          Subnet : Q1-2          Subnet : C13-1         Subnet : C16-1         Subnet : C4-1          Subnet : C8-1          Subnet : C7-1          Subnet : C10-1         Subnet : C11-1         Subnet : C15-1         Subnet : C14-1         Subnet : C2-1        Violation         Net NetQ7_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : Q7-2          Subnet : R34-2         Subnet : R13-2       Violation         Net A0   is broken into 4 sub-nets. Routed To 0.00%
+     Subnet : C19-1         Subnet : U6-14         Subnet : R21-1         Subnet : R22-1       Violation         Net A1   is broken into 4 sub-nets. Routed To 0.00%
+     Subnet : C20-1         Subnet : U6-15         Subnet : R23-1         Subnet : R24-1       Violation         Net NetC11_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U6-13         Subnet : C11-2         Subnet : R7-2        Violation         Net REL1   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : JP2-11        Subnet : Q7-5          Subnet : Q7-6        Violation         Net NetBT1_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D5-1          Subnet : BT1-1       Violation         Net VBAT   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U6-1          Subnet : D5-2        Violation         Net GND_CAN   is broken into 13 sub-nets. Routed To 0.00%
+     Subnet : U10-9         Subnet : C18-1         Subnet : U10-15        Subnet : C6-1          Subnet : U1-15         Subnet : U1-9          Subnet : C3-2          Subnet : R5-2          Subnet : C1-2          Subnet : U3-2          Subnet : U3-8          Subnet : R6-1          Subnet : JP1-5       Violation         Net CANL   is broken into 3 sub-nets. Routed To 66.67%
+     Subnet : JP3-6    JP3-5    JP1-3    JP1-4    U3-6          Subnet : R6-2          Subnet : R4-2        Violation         Net CANH   is broken into 3 sub-nets. Routed To 66.67%
+     Subnet : JP3-4    JP3-3    JP1-1    JP1-2    U3-7          Subnet : R5-1          Subnet : R3-1        Violation         Net NetA1_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : A1-2          Subnet : R8-1        Violation         Net NetC1_1   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : R3-2          Subnet : C1-1          Subnet : R4-1        Violation         Net NetC3_1   is broken into 6 sub-nets. Routed To 0.00%
+     Subnet : C6-2          Subnet : D2-2          Subnet : D1-2          Subnet : C3-1          Subnet : U1-16         Subnet : U3-3        Violation         Net NetC4_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U2-9          Subnet : C4-2          Subnet : Y1-1        Violation         Net NetC7_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U6-3          Subnet : C7-2          Subnet : Y2-1        Violation         Net NetC8_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U6-4          Subnet : C8-2          Subnet : Y2-2        Violation         Net NetC9_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U6-5          Subnet : C9-2          Subnet : Y3-1        Violation         Net NetC10_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U6-6          Subnet : C10-2         Subnet : Y3-2        Violation         Net A11   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U10-5         Subnet : U6-44         Subnet : C16-2       Violation         Net NetC18_2   is broken into 4 sub-nets. Routed To 0.00%
+     Subnet : C18-2         Subnet : U10-16        Subnet : D3-2          Subnet : D4-2        Violation         Net NetC2_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U2-8          Subnet : Y1-2          Subnet : C2-2        Violation         Net NetQ1_3   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : Q1-3          Subnet : R8-2        Violation         Net NetR1_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U1-3          Subnet : U2-1          Subnet : R1-2        Violation         Net NetR2_2   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U1-5          Subnet : U2-2          Subnet : R2-2        Violation         Net NetR11_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : R11-1         Subnet : U7-3        Violation         Net NetR12_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U7-7          Subnet : R12-2       Violation         Net NetU1_12   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U1-12         Subnet : U3-4        Violation         Net NetU1_14   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U1-14         Subnet : U3-1        Violation         Net NetU4_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U4-1          Subnet : U5-3        Violation         Net NetU4_3   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U5-1          Subnet : U4-3        Violation         Net NetD2_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U5-4          Subnet : D2-1        Violation         Net NetD1_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U5-6          Subnet : D1-1        Violation         Net NetU8_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U9-3          Subnet : U8-1        Violation         Net NetD4_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D4-1          Subnet : U9-4        Violation         Net NetD3_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D3-1          Subnet : U9-6        Violation         Net NetJP4_1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP4-1         Subnet : K1-1        Violation         Net NetJP4_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP4-2         Subnet : K1-3        Violation         Net NetK1_5   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : K1-5          Subnet : Q8-7          Subnet : Q8-8        Violation         Net NetD6_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D6-2          Subnet : R17-2       Violation         Net NetD7_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D7-2          Subnet : R18-2       Violation         Net NetD8_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D8-2          Subnet : R19-2       Violation         Net NetD9_2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : D9-2          Subnet : R20-2       Violation         Net RS485A   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U10-12        Subnet : JP2-2         Subnet : JP2-1       Violation         Net RS485B   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : U10-13        Subnet : JP2-4         Subnet : JP2-3       Violation         Net A13   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP5-2         Subnet : U6-46       Violation         Net A14   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP5-4         Subnet : U6-49       Violation         Net A15   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP5-8         Subnet : U6-50       Violation         Net B3   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP5-6         Subnet : U6-55       Violation         Net B4   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP5-5         Subnet : U6-56       Violation         Net NRST   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP5-10        Subnet : U6-7        Violation         Net A2   is broken into 4 sub-nets. Routed To 0.00%
+     Subnet : C21-1         Subnet : U6-16         Subnet : R25-1         Subnet : R26-1       Violation         Net A3   is broken into 4 sub-nets. Routed To 0.00%
+     Subnet : C22-1         Subnet : U6-17         Subnet : R27-1         Subnet : R28-1       Violation         Net A4   is broken into 4 sub-nets. Routed To 0.00%
+     Subnet : C23-1         Subnet : U6-20         Subnet : R29-1         Subnet : R30-1       Violation         Net A5   is broken into 5 sub-nets. Routed To 0.00%
+     Subnet : C24-1         Subnet : U6-21         Subnet : D10-2         Subnet : R33-2         Subnet : R32-2       Violation         Net UN1   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP2-13        Subnet : R25-2       Violation         Net UN2   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP2-15        Subnet : R27-2       Violation         Net UN3   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : JP2-14        Subnet : R29-2       Violation         Net UT1   is broken into 3 sub-nets. Routed To 0.00%
+     Subnet : JP2-16        Subnet : R32-1         Subnet : R31-1       Violation         Net A9   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U10-6         Subnet : U6-42       Violation         Net A10   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U10-3         Subnet : U6-43       Violation         Net B8   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U6-61         Subnet : R2-1        Violation         Net B9   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U6-62         Subnet : R1-1        Violation         Net B13   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U6-34         Subnet : U2-14       Violation         Net B14   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U6-35         Subnet : U2-17       Violation         Net B15   is broken into 2 sub-nets. Routed To 0.00%
+     Subnet : U6-36         Subnet : U2-16    Rule Violations :77
+
+Processing Rule : Clearance Constraint (Gap=0.18mm) (All),(All)
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-1(98.5718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-1(98.5718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-2(99.2218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-2(99.2218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R19-1(100.1534mm,-2.2625mm)  Top Layer and                      Pad U2-2(99.2218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-3(99.8718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-3(99.8718mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad U2-4(100.5218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad U2-4(100.5218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R32-1(105.1534mm,-2.2625mm)  Top Layer and                      Pad U2-10(104.4218mm,-2.6501mm)  Top Layer   
+   Violation between Pad C19-1(105.3534mm,-2.2625mm)  Top Layer and                      Pad U2-10(104.4218mm,-2.6501mm)  Top Layer   
+   Violation between Pad R33-2(99.3034mm,0.5375mm)  Top Layer and                      Pad R19-2(100.1534mm,0.5375mm)  Top Layer   
+   Violation between Pad R24-2(99.5534mm,0.5375mm)  Top Layer and                      Pad R19-2(100.1534mm,0.5375mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad R19-1(100.1534mm,-2.2625mm)  Top Layer   
+   Violation between Pad R24-1(99.5534mm,-2.2625mm)  Top Layer and                      Pad R19-1(100.1534mm,-2.2625mm)  Top Layer   
+   Violation between Pad C23-2(110.9534mm,0.5375mm)  Top Layer and                      Pad R18-2(112.2034mm,0.5375mm)  Top Layer   
+   Violation between Pad R21-2(110.9534mm,0.5375mm)  Top Layer and                      Pad R18-2(112.2034mm,0.5375mm)  Top Layer   
+   Violation between Pad C23-1(110.9534mm,-2.2625mm)  Top Layer and                      Pad R18-1(112.2034mm,-2.2625mm)  Top Layer   
+   Violation between Pad R21-1(110.9534mm,-2.2625mm)  Top Layer and                      Pad R18-1(112.2034mm,-2.2625mm)  Top Layer   
+   Violation between Pad D10-1(93.7058mm,0.5453mm)  Top Layer and                      Pad R23-2(93.7034mm,0.5375mm)  Top Layer   
+   Violation between Pad D10-2(93.7058mm,-2.2547mm)  Top Layer and                      Pad R23-1(93.7034mm,-2.2625mm)  Top Layer   
+   Violation between Pad R33-2(99.3034mm,0.5375mm)  Top Layer and                      Pad R24-2(99.5534mm,0.5375mm)  Top Layer   
+   Violation between Pad R33-1(99.3034mm,-2.2625mm)  Top Layer and                      Pad R24-1(99.5534mm,-2.2625mm)  Top Layer   
+   Violation between Pad R32-2(105.1534mm,0.5375mm)  Top Layer and                      Pad C19-2(105.3534mm,0.5375mm)  Top Layer   
+   Violation between Pad R32-1(105.1534mm,-2.2625mm)  Top Layer and                      Pad C19-1(105.3534mm,-2.2625mm)  Top Layer   
+   Violation between Pad C23-2(110.9534mm,0.5375mm)  Top Layer and                      Pad R21-2(110.9534mm,0.5375mm)  Top Layer   
+   Violation between Pad C23-1(110.9534mm,-2.2625mm)  Top Layer and                      Pad R21-1(110.9534mm,-2.2625mm)  Top Layer   
+   Violation between Pad R31-2(116.6518mm,0.7083mm)  Top Layer and                      Pad R22-2(116.3034mm,0.5375mm)  Top Layer   
+   Violation between Pad R31-1(116.6518mm,-1.1917mm)  Top Layer and                      Pad R22-1(116.3034mm,-2.2625mm)  Top Layer   
+   Violation between Pad JP6-1(87.8063mm,-2.2079mm)  Multi-Layer and                      Pad C24-1(87.8534mm,-2.2625mm)  Top Layer   
+Rule Violations :30
+
+Processing Rule : Width Constraint (Min=0.2mm) (Max=5mm) (Preferred=0.254mm) (All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mm) (Max=25.4mm) (Prefered=12.7mm) (All)
+Rule Violations :0
+
+Processing Rule : Hole Size Constraint (Min=0mm) (Max=5mm) (All)
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=2mm) (InPoly),(HasPad('Free-0') Or HasPad('Free-1') Or HasPad('Free-2') Or HasPad('Free-3'))
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=1mm) (InPoly and InNet(NetC500_1)),(All)
+Rule Violations :0
+
+Processing Rule : Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))
+   Violation between SMT Small Component C1(162.6mm,69.5mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component C3(155.75mm,69.85mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component C4(148.85mm,69.6mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component C2(162.15mm,85mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component R1(161.8mm,89.45mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component R2(155.1mm,85mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component R4(148.6mm,84.95mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between Small Component R5(153.35mm,53.45mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between Small Component R6(177.9mm,74.9mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component R3(108.85mm,65mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SOIC Component U1(39.75mm,98mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SOIC Component U3(50.85mm,105.15mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between Component U4(20.8mm,91.85mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SOIC Component U5(20.3mm,101.85mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between Small Component Y1(118.5mm,71.15mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component C5(14.5mm,92.2mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between Small Component C6(29.75mm,95.6mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SOIC Component U2(101.4968mm,0.1999mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component D1(30.4mm,103.75mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+   Violation between SMT Small Component D2(30.3501mm,106.5968mm) on Top Layer and                      Room CAN (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('CAN'))   
+Rule Violations :20
+
+Processing Rule : Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))
+   Violation between SMT Small Component C16(148.65mm,81mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between Component U8(18.55mm,69.9mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between SOIC Component U9(19.25mm,60.2mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between SOIC Component U10(7.35mm,61.15mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between SMT Small Component C17(13.9mm,70.1mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between Small Component C18(10.1mm,50.95mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between SMT Small Component D3(21.7mm,50.45mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+   Violation between SMT Small Component D4(16.8mm,50.55mm) on Top Layer and                      Room RS485 (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('RS485'))   
+Rule Violations :8
+
+Processing Rule : Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))
+   Violation between Small Component A1(77.6mm,24.25mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C7(162.25mm,73.15mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C8(155.7mm,73.3mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C9(148.6mm,73.35mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C10(161.55mm,76.95mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C11(155.25mm,77.05mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C12(109.3mm,69.15mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C13(148.6mm,77.05mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C14(161.8mm,80.9mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C15(155.2mm,81.05mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between DIP Component JP2(37.6mm,21.3mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between DIP Component JP1(73.65mm,104mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component Q1(108.55mm,75.15mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R7(155.45mm,89.1mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R8(148.55mm,88.8mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R9(139.5mm,80.15mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R10(136.2mm,63.2mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R11(129mm,85.8mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R12(128.15mm,66.1mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SOIC Component U7(128.25mm,34.95mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component Y2(120.5mm,80.25mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component Y3(177.7mm,84.65mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Component U6(44.65mm,73.9mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between DIP Component JP3(6.05mm,36.55mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component JP4(11.75mm,5.4mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Component K1(66.15mm,27.55mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SOIC Component Q7(46.4mm,35.7mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT SIP Component Q8(54.4mm,35.7mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R13(122.3968mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R14(127.9968mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R15(99.5468mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R16(105.0968mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R34(110.6968mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R39(87.8468mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R77(116.5468mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R78(93.6968mm,11.5498mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component BT1(72.85mm,43.2mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component D5(63.05mm,43.4mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component D6(35mm,12.5mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component D7(47.5mm,12.5mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component D8(60mm,12.5mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Small Component D9(72.5mm,12.5mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R17(124.2968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R18(112.1968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R19(100.1468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R20(76.3mm,-10.5mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C19(105.3468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C20(81.4mm,-6.75mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R21(110.9468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R22(116.2968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R23(93.6968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R24(99.5468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between Component JP5(29.3mm,74.35mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SIP Component JP6(87.7968mm,-2.2001mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C21(151.3467mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C22(133.8468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C23(110.9468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component C24(87.8468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component D10(93.6968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R25(156.6967mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R26(162.5467mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R27(139.6467mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R28(145.4967mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R29(122.1468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R30(127.9968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R31(116.6468mm,-0.2501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R32(105.1468mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+   Violation between SMT Small Component R33(99.2968mm,-0.8501mm) on Top Layer and                      Room cpu_board (Bounding Region = (0mm, 0mm, 50.8mm, 25.4mm) (InComponentClass('cpu_board'))   
+Rule Violations :68
+
+
+Violations Detected : 241
+Time Elapsed        : 00:00:01

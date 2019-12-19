@@ -48,7 +48,7 @@ KunetA=lc640_read_int(EE_KUNETA);
 KunetB=lc640_read_int(EE_KUNETB);
 KunetC=lc640_read_int(EE_KUNETC);
 Kubps=lc640_read_int(EE_KUBPS);
-//Kuout=lc640_read_int(EE_KUOUT);
+Kuout=lc640_read_int(EE_KUOUT);
 
 Ktext[0]=lc640_read_int(KT_EXT0);
 Ktext[1]=lc640_read_int(KT_EXT1);
@@ -339,7 +339,7 @@ ETH_TRAP5_IP_4=lc640_read_int(EE_ETH_TRAP5_IP_4);
 ETH_SNMP_PORT_READ=lc640_read_int(EE_ETH_SNMP_PORT_READ);
 ETH_SNMP_PORT_WRITE=lc640_read_int(EE_ETH_SNMP_PORT_WRITE);*/
 MODBUS_ADRESS=lc640_read_int(EE_MODBUS_ADRESS);
-MODBUS_ADRESS=1;
+//MODBUS_ADRESS=1;
 MODBUS_BAUDRATE=lc640_read_int(EE_MODBUS_BAUDRATE);
 RELE_SET_MASK[0]=lc640_read_int(EE_RELE_SET_MASK0);
 RELE_SET_MASK[1]=lc640_read_int(EE_RELE_SET_MASK1);

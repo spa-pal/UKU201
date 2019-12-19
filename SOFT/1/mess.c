@@ -1,8 +1,7 @@
 #include <stm32f10x_type.h>
 #include "global_define.h"
-#include "mess.h"
 #include "main.h"
-
+#include "mess.h"
 
 char mess[MESS_DEEP],mess_old[MESS_DEEP],mess_cnt[MESS_DEEP];
 int mess_par0[MESS_DEEP],mess_par1[MESS_DEEP],mess_data[2];

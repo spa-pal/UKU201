@@ -1,10 +1,11 @@
 
 #include <stm32f10x_lib.h>
 #include <stm32f10x_conf.h>
+#include "stm32_Reg.h"
 #include "modbus.h"
 #include "main.h"
 #include "uart1.h"
-
+#include "cmd.h"
 #include "control.h"
 #include <string.h>
 #include <stdio.h>
@@ -15,6 +16,8 @@
 //#include "sc16is7xx.h"
 //#include "uart0.h"
 #include "avar_hndl.h"
+
+#define can1_out mcp2515_transmit
 
 #define MODBUS_RTU_PROT	0
 #define MODBUS_TCP_PROT	1
@@ -46,7 +49,22 @@ char modbus_tx_buff[100];
 
 char* modbus_tcp_out_ptr;
 
+short modbus_register_offset;
+short modbus_register_offset_ui;
+short modbus_register_offset_un;
+short modbus_register_offset_i;
+short modbus_register_offset_t;
+short modbus_register_995, modbus_register_996, modbus_register_997;
+short modbus_register_998;
+short modbus_register_999;
 short modbus_register_1000, modbus_register_1001, modbus_register_1002, modbus_register_1003;
+short modbus_register_1004, modbus_register_1005, modbus_register_1006, modbus_register_1007;
+short modbus_register_1008, modbus_register_1009, modbus_register_1010, modbus_register_1011;
+short modbus_register_1012, modbus_register_1013, modbus_register_1014, modbus_register_1015;
+short modbus_register_1016, modbus_register_1017, modbus_register_1018, modbus_register_1019;
+short modbus_register_1020, modbus_register_1021;
+short modbus_register_1022, modbus_register_1023, modbus_register_1024, modbus_register_1025;
+short modbus_register_1027, modbus_register_1028, modbus_register_1029, modbus_register_1030;
 //char modbus_registers[200];
 
 //static const char foo[] = "I wish I'd read K&R, and other tomes more diligently";
@@ -468,29 +486,95 @@ if(crc16_calculated==crc16_incapsulated)
 
 		else if(modbus_func==6) 	//запись регистров хранения
 			{
-			if(modbus_rx_arg0==11)		//Установка времени 
+			if(modbus_rx_arg0==11)		//Установка времени, год
 				{
-				//LPC_RTC->YEAR=(uint16_t)modbus_rx_arg1;
+				PWR->CR      |= PWR_CR_DBP;
+				BKP->DR1=modbus_rx_arg1;
+				PWR->CR   &= ~PWR_CR_DBP;
 				}
-			if(modbus_rx_arg0==12)		//Установка времени 
+			if(modbus_rx_arg0==12)		//Установка времени, месяц 
 				{
-				//LPC_RTC->MONTH=(uint16_t)modbus_rx_arg1;
-				}
-			if(modbus_rx_arg0==13)		//Установка времени 
+				gran(&modbus_rx_arg1,1,12);
+				PWR->CR      |= PWR_CR_DBP;
+				BKP->DR2=modbus_rx_arg1;
+				PWR->CR   &= ~PWR_CR_DBP;				}
+			if(modbus_rx_arg0==13)		//Установка времени, день 
 				{
+				short temp_t;
+				if(((BKP->DR2)==1)||((BKP->DR2)==3)||((BKP->DR2)==5)||((BKP->DR2)==7)||((BKP->DR2)==8)||((BKP->DR2)==10)||((BKP->DR2)==12))temp_t=31;
+				else if(((BKP->DR2)==4)||((BKP->DR2)==6)||((BKP->DR2)==9)||((BKP->DR2)==11))temp_t=30;
+				else if(((BKP->DR2)==2)&&((BKP->DR1)%4==0)) temp_t=29;
+				else temp_t=28;
+
+				gran(&modbus_rx_arg1,1,temp_t);
+				PWR->CR      |= PWR_CR_DBP;
+				BKP->DR3=modbus_rx_arg1;
+				PWR->CR   &= ~PWR_CR_DBP;
 				//LPC_RTC->DOM=(uint16_t)modbus_rx_arg1;
 				}
-			if(modbus_rx_arg0==14)		//Установка времени 
+			if(modbus_rx_arg0==14)		//Установка времени, час
 				{
-				//LPC_RTC->HOUR=(uint16_t)modbus_rx_arg1;
+				long temp_H, temp_M, temp_S, temp_L;
+				gran(&modbus_rx_arg1,0,23);
+				temp_L=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+				temp_H=modbus_rx_arg1;			
+				temp_M=((temp_L)%3600)/60;		
+				temp_S=((temp_L)%3600)%60;		
+				temp_L=((temp_H*3600L)+(temp_M*60L)+temp_S);
+  				RCC->APB1ENR |= RCC_APB1ENR_PWREN;                            
+  				RCC->APB1ENR |= RCC_APB1ENR_BKPEN;
+				PWR->CR   |= PWR_CR_DBP;
+				RTC->CRL  |=  RTC_CRL_CNF;
+				RTC->CNTH=(short)(temp_L>>16);
+				RTC->CNTL=(short)temp_L;
+				RTC->CRL  &= ~RTC_CRL_CNF;
+				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
+				PWR->CR   &= ~PWR_CR_DBP;
+				printf("Reg 14 writed   \r\n");
+				printf("%d",temp_L);
 				}
-			if(modbus_rx_arg0==15)		//Установка времени 
+			if(modbus_rx_arg0==15)		//Установка времени, минуты 
 				{
-				//LPC_RTC->MIN=(uint16_t)modbus_rx_arg1;
+				long temp_H, temp_M, temp_S, temp_L;
+				gran(&modbus_rx_arg1,0,59);
+				temp_L=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+				temp_H=((temp_L)/3600);			
+				temp_M=modbus_rx_arg1;		
+				temp_S=((temp_L)%3600)%60;		
+				temp_L=((temp_H*3600L)+(temp_M*60L)+temp_S);
+  				RCC->APB1ENR |= RCC_APB1ENR_PWREN;                            
+  				RCC->APB1ENR |= RCC_APB1ENR_BKPEN;
+				PWR->CR   |= PWR_CR_DBP;
+				RTC->CRL  |=  RTC_CRL_CNF;
+				RTC->CNTH=(short)(temp_L>>16);
+				RTC->CNTL=(short)temp_L;
+				RTC->CRL  &= ~RTC_CRL_CNF;
+				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
+				PWR->CR   &= ~PWR_CR_DBP;
+				printf("Reg 15 writed   \r\n");
+				printf("%d",temp_L);
 				}
-			if(modbus_rx_arg0==16)		//Установка времени 
+			if(modbus_rx_arg0==16)		//Установка времени, секунды 
 				{
-				//LPC_RTC->SEC=(uint16_t)modbus_rx_arg1;
+				long temp_H, temp_M, temp_S, temp_L;
+				gran(&modbus_rx_arg1,0,59);
+				temp_L=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+				temp_H=((temp_L)/3600);			
+				temp_M=((temp_L)%3600)/60;		
+				temp_S=modbus_rx_arg1;		
+				temp_L=((temp_H*3600L)+(temp_M*60L)+temp_S);
+				RCC->APB1ENR |= RCC_APB1ENR_PWREN;                            
+  				RCC->APB1ENR |= RCC_APB1ENR_BKPEN;
+				PWR->CR   |= PWR_CR_DBP;
+				RTC->CRL  |=  RTC_CRL_CNF;
+				RTC->CNTH=(short)(temp_L>>16);
+				RTC->CNTL=(short)temp_L;
+				RTC->CRL  &= ~RTC_CRL_CNF;
+				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
+				PWR->CR   &= ~PWR_CR_DBP;
+				printf("Reg 16 writed   \r\n");
+				printf("%d",temp_L);
+
 				}
 			if(modbus_rx_arg0==20)		//ток стабилизации для режима стабилизации тока
 				{
@@ -531,100 +615,187 @@ if(crc16_calculated==crc16_incapsulated)
 	     		}
 			if(modbus_rx_arg0==31)		//
 				{
-				///*/lc640_write_int(EE_UMAX,modbus_rx_arg1);
+				 lc640_write_int(EE_UMAX,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==32)		//
 				{
-				///*/lc640_write_int(EE_DU,UB20-modbus_rx_arg1);
+				 lc640_write_int(EE_DU,UB20-modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==33)		//
 				{
-				///*/lc640_write_int(EE_UB0,modbus_rx_arg1);
+				 lc640_write_int(EE_UB0,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==34)		//
 				{
-				///*/lc640_write_int(EE_UB20,modbus_rx_arg1);
+				 lc640_write_int(EE_UB20,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==35)		//
 				{
-				///*/lc640_write_int(EE_USIGN,modbus_rx_arg1);
+				 lc640_write_int(EE_USIGN,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==36)		//
 				{
-				///*/lc640_write_int(EE_UMN,modbus_rx_arg1);
+				 lc640_write_int(EE_UMN,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==37)		//
 				{
-				///*/lc640_write_int(EE_U0B,modbus_rx_arg1);
+				 lc640_write_int(EE_U0B,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==38)		//
 				{
-				///*/lc640_write_int(EE_IKB,modbus_rx_arg1);
+				 lc640_write_int(EE_IKB,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==39)		//
 				{
-				///*/lc640_write_int(EE_IZMAX,modbus_rx_arg1);
+				 lc640_write_int(EE_IZMAX,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==40)		//
 				{
-				///*/lc640_write_int(EE_IMAX,modbus_rx_arg1);
+				 lc640_write_int(EE_IMAX,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==41)		//
 				{
-				///*/lc640_write_int(EE_IMIN,modbus_rx_arg1);
+				 lc640_write_int(EE_IMIN,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==42)		//
 				{
-				///*/lc640_write_int(EE_UVZ,modbus_rx_arg1);
+				 lc640_write_int(EE_UVZ,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==43)		//
 				{
-				///*/if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=3))lc640_write_int(EE_TZAS,modbus_rx_arg1);
+				 if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=3))lc640_write_int(EE_TZAS,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==44)		//
 				{
-				///*/lc640_write_int(EE_TMAX,modbus_rx_arg1);
+				lc640_write_int(EE_TMAX,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==45)		//
 				{
-				///*/lc640_write_int(EE_TSIGN,modbus_rx_arg1);
+				lc640_write_int(EE_TSIGN,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==46)		//
 				{
-				///*/lc640_write_int(EE_TBATMAX,modbus_rx_arg1);
+				lc640_write_int(EE_TBATMAX,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==47)		//
 				{
-				///*/lc640_write_int(EE_TBATSIGN,modbus_rx_arg1);
+				lc640_write_int(EE_TBATSIGN,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==48)		//
 				{
-				///*/lc640_write_int(EE_SPEED_CHRG_CURR,modbus_rx_arg1);
+				 lc640_write_int(EE_SPEED_CHRG_CURR,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==49)		//
 				{
-				///*/lc640_write_int(EE_SPEED_CHRG_VOLT,modbus_rx_arg1);
+				 lc640_write_int(EE_SPEED_CHRG_VOLT,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==50)		//
 				{
-				///*/lc640_write_int(EE_SPEED_CHRG_TIME,modbus_rx_arg1);
+				 lc640_write_int(EE_SPEED_CHRG_TIME,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==51)		//
 				{
-				///*/lc640_write_int(EE_U_OUT_KONTR_MAX,modbus_rx_arg1);
+				 lc640_write_int(EE_U_OUT_KONTR_MAX,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==52)		//
 				{
-				///*/lc640_write_int(EE_U_OUT_KONTR_MIN,modbus_rx_arg1);
+				 lc640_write_int(EE_U_OUT_KONTR_MIN,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==53)		//
 				{
-				///*/if((modbus_rx_arg1>=5)&&(modbus_rx_arg1<=100))lc640_write_int(EE_U_OUT_KONTR_DELAY,modbus_rx_arg1);
+				 if((modbus_rx_arg1>=5)&&(modbus_rx_arg1<=100))lc640_write_int(EE_U_OUT_KONTR_DELAY,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==54)		//
 				{
-				///*/lc640_write_int(EE_UB0,modbus_rx_arg1);
-				///*/lc640_write_int(EE_UB20,modbus_rx_arg1);
+				 lc640_write_int(EE_UB0,modbus_rx_arg1);
+				 lc640_write_int(EE_UB20,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==70)		//
+				{
+				gran(&modbus_rx_arg1,1,254);
+				lc640_write_int(EE_MODBUS_ADRESS,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==71)		//
+				{
+				if(	(modbus_rx_arg1==240)||(modbus_rx_arg1==480)||
+					(modbus_rx_arg1==960)||(modbus_rx_arg1==1920)||
+					(modbus_rx_arg1==3840)||(modbus_rx_arg1==5670)||
+					(modbus_rx_arg1==11520)||(modbus_rx_arg1==23040)
+					) lc640_write_int(EE_MODBUS_BAUDRATE,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==994)		//
+				{
+/*				  RCC->APB1ENR |= RCC_APB1ENR_PWREN;                            // enable clock for Power interface
+  RCC->APB1ENR |= RCC_APB1ENR_BKPEN;
+  PWR->CR      |= PWR_CR_DBP;                                   // enable access to RTC, BDC registers
+
+
+ 
+//  RTC->CRL   &= ~(1<<3);                                        // reset Registers Synchronized Flag
+//  while ((RTC->CRL & (1<<3)) == 0);                             // wait until registers are synchronized
+
+  RTC->CRL  |=  RTC_CRL_CNF;                                    // set configuration mode
+  RTC->PRLH  = ((__RTC_PERIOD*__RTCCLK/1000-1)>>16) & 0x00FF;   // set prescaler load register high
+  RTC->PRLL  = ((__RTC_PERIOD*__RTCCLK/1000-1)    ) & 0xFFFF;   // set prescaler load register low
+//RTC->PRLL  = 5;
+	//BKP->DR5=5;
+  RTC->CNTH  = ((__RTC_CNT)>>16) & 0xFFFF;                      // set counter high
+  RTC->CNTL  = ((__RTC_CNT)    ) & 0xFFFF;                      // set counter low
+  RTC->ALRH  = ((__RTC_ALR)>>16) & 0xFFFF;                      // set alarm high
+  RTC->ALRL  = ((__RTC_ALR)    ) & 0xFFFF;                      // set alarm low
+  if (__RTC_INTERRUPTS) {                                       // RTC interrupts used
+    RTC->CRH = __RTC_CRH;                                       // enable RTC interrupts
+    NVIC->ISER[0]  = (1 << (RTC_IRQChannel & 0x1F));            // enable interrupt
+  }
+  RTC->CRL  &= ~RTC_CRL_CNF;                                    // reset configuration mode
+  while ((RTC->CRL & RTC_CRL_RTOFF) == 0);                      // wait until write is finished
+
+  PWR->CR   &= ~PWR_CR_DBP; */    
+	     		}
+			if(modbus_rx_arg0==995)		//
+				{
+				modbus_register_995=modbus_rx_arg1;
+	     		}
+
+			if(modbus_rx_arg0==996)		//
+				{
+				if(modbus_rx_arg1==1)
+					{
+					printf("Zero current for IPS#%d executed   \r\n", modbus_register_998);
+					can1_out(modbus_register_998-1,modbus_register_998-1,KLBR,(2*16)+1,(2*16)+1,0,0,0);
+					//modbus_register_998=modbus_rx_arg1;
+					//if(modbus_register_998)can1_out(modbus_register_998-1,modbus_register_998-1,CMND,ALRM_RES,0,0,0,0);
+					}
+	     		}
+
+
+			if(modbus_rx_arg0==997)		//
+				{
+				if(modbus_rx_arg1==1)
+					{
+					can1_out(modbus_register_998-1,modbus_register_998-1,KLBR,(2*16)+1,(2*16)+1,0,0,0);
+					//modbus_register_998=modbus_rx_arg1;
+					//if(modbus_register_998)can1_out(modbus_register_998-1,modbus_register_998-1,CMND,ALRM_RES,0,0,0,0);
+					}
+	     		}
+
+			if(modbus_rx_arg0==998)		//
+				{
+				if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=NUMIST))
+					{
+					modbus_register_998=modbus_rx_arg1;
+					if(modbus_register_998)can1_out(modbus_register_998-1,modbus_register_998-1,CMND,ALRM_RES,0,0,0,0);
+					}
+	     		}
+
+			if(modbus_rx_arg0==999)		//
+				{
+				//if(modbus_rx_arg1!=0)
+					{
+					modbus_register_999=modbus_rx_arg1;
+					gran(&modbus_register_999,0,1023);
+					}
 	     		}
 
 			if(modbus_rx_arg0==1000)		//
@@ -636,22 +807,15 @@ if(crc16_calculated==crc16_incapsulated)
 	     		}
 			if(modbus_rx_arg0==1001)		//
 				{
-/*				if(modbus_rx_arg1!=0)
-					{
-					modbus_register_1001==modbus_rx_arg1;
-					if(modbus_register_1000==1)
-						{
-						out_U=modbus_register_1001;
-						}
-					}*/
-				//if(modbus_rx_arg1==1)
-					{
-					modbus_register_1001=modbus_rx_arg1;
-					}
-				if(modbus_register_1000==1)
-					{
-					out_U=modbus_register_1001;
-					}
+				short tempS;
+				long tempL;
+				
+				tempL=(long)modbus_rx_arg1;
+				tempL*=500L;
+				tempL/=(signed long)adc_buff_[5];
+				Kuout=(signed short)tempL;
+				lc640_write_int(EE_KUOUT,Kuout);
+
 	     		}
 			if(modbus_rx_arg0==1002)		//
 				{
@@ -729,7 +893,133 @@ if(crc16_calculated==crc16_incapsulated)
 
 	     		}
 						
+			if(modbus_rx_arg0==1022)		//
+				{
+				printf("Reg 1022 writed   \r\n");
 
+				if(modbus_rx_arg1)
+					{
+					avt_klbr_mode_ui=1;
+					avt_klbr_num_ui=modbus_register_998;
+					avt_klbr_phase_ui=1;
+					avt_klbr_necc_value_ui=modbus_rx_arg1;
+					avt_klbr_err_cnt_ui=300;
+					modbus_register_1022=modbus_rx_arg1;
+					modbus_register_offset_ui=22;
+					avt_klbr_start_ui();
+					}
+				else
+					{
+					avt_klbr_mode_ui=0;
+					//avt_klbr_num=0;
+					//avt_klbr_phase=0;
+					modbus_register_1022=0;
+					} 
+	     		}
+			if(modbus_rx_arg0==1023)		//
+				{
+				printf("Reg 1023 writed   \r\n");
+
+				if(modbus_rx_arg1)
+					{
+					avt_klbr_mode_un=1;
+					avt_klbr_num_un=modbus_register_998;
+					avt_klbr_phase_un=1;
+					avt_klbr_necc_value_un=modbus_rx_arg1;
+					avt_klbr_err_cnt_un=300;
+					modbus_register_1023=modbus_rx_arg1;
+					modbus_register_offset_un=23;
+					avt_klbr_start_un();
+					}
+				else
+					{
+					avt_klbr_mode_un=0;
+					//avt_klbr_num=0;
+					//avt_klbr_phase=0;
+					modbus_register_1023=0;
+					} 
+	     		}
+			if(modbus_rx_arg0==1024)		//
+				{
+				printf("Reg 1024 writed   \r\n");
+
+				if(modbus_rx_arg1)
+					{
+					avt_klbr_mode_i=1;
+					avt_klbr_num_i=modbus_register_998;
+					avt_klbr_phase_i=1;
+					avt_klbr_necc_value_i=modbus_rx_arg1;
+					avt_klbr_err_cnt_i=300;
+					modbus_register_1024=modbus_rx_arg1;
+					modbus_register_offset_i=24;
+					avt_klbr_start_i();
+					}
+				else
+					{
+					avt_klbr_mode_i=0;
+					//avt_klbr_num=0;
+					//avt_klbr_phase=0;
+					modbus_register_1024=0;
+					} 
+	     		}
+			if(modbus_rx_arg0==1025)		//
+				{
+				printf("Reg 1025 writed   \r\n");
+
+				if(modbus_rx_arg1)
+					{
+					avt_klbr_mode_t=1;
+					avt_klbr_num_t=modbus_register_998;
+					avt_klbr_phase_t=1;
+					avt_klbr_necc_value_t=modbus_rx_arg1;
+					avt_klbr_err_cnt_t=300;
+					modbus_register_1025=modbus_rx_arg1;
+					modbus_register_offset_t=25;
+					avt_klbr_start_t();
+					}
+				else
+					{
+					avt_klbr_mode_t=0;
+					//avt_klbr_num=0;
+					//avt_klbr_phase=0;
+					modbus_register_1025=0;
+					} 
+	     		}
+			if(modbus_rx_arg0==1027)		//
+				{
+				printf("Reg 1027 writed   \r\n");
+
+				if(modbus_rx_arg1)
+					{
+					avt_klbr_mode=akmUI;
+					avt_klbr_num=2;
+					avt_klbr_phase=1;
+					avt_klbr_necc_value=modbus_rx_arg1;
+					avt_klbr_err_cnt=300;
+					modbus_register_1027=modbus_rx_arg1;
+					modbus_register_offset=27;
+					}
+				else
+					{
+					avt_klbr_mode=akmOFF;
+					//avt_klbr_num=0;
+					//avt_klbr_phase=0;
+					modbus_register_1027=0;
+					} 
+	     		}
+
+			if(modbus_rx_arg0==1070)		//
+				{
+				short tempS;
+				long tempL;
+				
+				tempL=(long)modbus_rx_arg1;
+				tempL*=500L;
+				tempL/=(signed long)adc_buff_[4];
+				Kubps=(signed short)tempL;
+				lc640_write_int(EE_KUBPS,Kubps);
+
+	     		}
 			if(modbus_rx_arg0==19)		//вкл/выкл источника напр.
 				{
 	/*			if(modbus_rx_arg1==1)
@@ -1211,24 +1501,26 @@ signed char modbus_registers[2500];
 //char modbus_tx_buff[150];
 unsigned short crc_temp;
 char i;
+long temp_time;
 
-///*/modbus_registers[20]=(char)((LPC_RTC->YEAR)>>8);			//Рег11  Время, год
-///*/modbus_registers[21]=(char)((LPC_RTC->YEAR));
-///*/modbus_registers[22]=(char)((LPC_RTC->MONTH)>>8);		//Рег12  Время, месяц
-///*/modbus_registers[23]=(char)((LPC_RTC->MONTH));
-///*/modbus_registers[24]=(char)((LPC_RTC->DOM)>>8);			//Рег13  Время, день месяца
-///*/modbus_registers[25]=(char)((LPC_RTC->DOM));
-///*/modbus_registers[26]=(char)((LPC_RTC->HOUR)>>8);			//Рег14  Время, час
-///*/modbus_registers[27]=(char)((LPC_RTC->HOUR));
-///*/modbus_registers[28]=(char)((LPC_RTC->MIN)>>8);			//Рег15  Время, минуты
-///*/modbus_registers[29]=(char)((LPC_RTC->MIN));
-///*/modbus_registers[30]=(char)((LPC_RTC->SEC)>>8);			//Рег16  Время, секунды
-///*/modbus_registers[31]=(char)((LPC_RTC->SEC));
-///*/modbus_registers[38]=(char)(NUMIST>>8);				//Рег20  Количество выпрямителей в структуре
-///*/modbus_registers[39]=(char)(NUMIST);
+modbus_registers[20]=(char)((BKP->DR1)>>8);					//Рег11  Время, год
+modbus_registers[21]=(char)((BKP->DR1));
+modbus_registers[22]=(char)((BKP->DR2)>>8);					//Рег12  Время, месяц
+modbus_registers[23]=(char)((BKP->DR2));
+modbus_registers[24]=(char)((BKP->DR3)>>8);					//Рег13  Время, день месяца
+modbus_registers[25]=(char)((BKP->DR3));
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+modbus_registers[26]=(char)((temp_time)/3600)>>8;			//Рег14  Время, час
+modbus_registers[27]=(char)((temp_time)/3600);
+modbus_registers[28]=(char)(((temp_time)%3600)/60)>>8;		//Рег15  Время, минуты
+modbus_registers[29]=(char)(((temp_time)%3600)/60);
+modbus_registers[30]=(char)(((temp_time)%3600)%60)>>8;		//Рег16  Время, секунды
+modbus_registers[31]=(char)(((temp_time)%3600)%60);
+modbus_registers[38]=(char)(NUMIST>>8);				//Рег20  Количество выпрямителей в структуре
+modbus_registers[39]=(char)(NUMIST);
 ///*/
 
-PAR=123;
+//PAR=123;
 
 modbus_registers[40]=(char)(PAR>>8);					//Рег21  Параллельная работа выпрямителей вкл./выкл.
 modbus_registers[41]=(char)(PAR);
@@ -1286,11 +1578,19 @@ modbus_registers[104]=(char)(U_OUT_KONTR_DELAY>>8);				//Рег53	 Контроль выходно
 modbus_registers[105]=(char)(U_OUT_KONTR_DELAY);
 modbus_registers[106]=(char)(UB0>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
 modbus_registers[107]=(char)(UB0);
+modbus_registers[138]=(char)(MODBUS_ADRESS>>8);					//Рег70	 MODBUS ADRESS
+modbus_registers[139]=(char)(MODBUS_ADRESS);
+modbus_registers[140]=(char)(MODBUS_BAUDRATE>>8);				//Рег71	 MODBUS BAUDRATE
+modbus_registers[141]=(char)(MODBUS_BAUDRATE);
+
 
 //modbus_register_1000 = 2;
 //modbus_register_1001 = 7890;
 //modbus_register_1002 = 8765;
-
+modbus_registers[1994]=(char)(modbus_register_998>>8);							//Рег998	 Выбор калибруемого источника
+modbus_registers[1995]=(char)(modbus_register_998);
+modbus_registers[1996]=(char)(modbus_register_999>>8);							//Рег999	 Установка выходного ШИМа при калибровке
+modbus_registers[1997]=(char)(modbus_register_999);
 modbus_registers[1998]=(char)(modbus_register_1000>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
 modbus_registers[1999]=(char)(modbus_register_1000);
 modbus_registers[2000]=(char)(modbus_register_1001>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
@@ -1299,6 +1599,15 @@ modbus_registers[2002]=(char)(modbus_register_1002>>8);							//Рег54	 Установка
 modbus_registers[2003]=(char)(modbus_register_1002);
 modbus_registers[2004]=(char)(modbus_register_1003>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
 modbus_registers[2005]=(char)(modbus_register_1003);
+
+modbus_registers[2042]=(char)(modbus_register_1022>>8);							//Рег1022	 Калибровка Uист. БПС
+modbus_registers[2043]=(char)(modbus_register_1022);
+modbus_registers[2044]=(char)(modbus_register_1023>>8);							//Рег1023	 Калибровка Uист.шин. БПС
+modbus_registers[2045]=(char)(modbus_register_1023);
+modbus_registers[2046]=(char)(modbus_register_1024>>8);							//Рег1024	 Калибровка Iист. БПС
+modbus_registers[2047]=(char)(modbus_register_1024);
+modbus_registers[2048]=(char)(modbus_register_1025>>8);							//Рег1025	 Калибровка Tрад.ист. БПС
+modbus_registers[2049]=(char)(modbus_register_1025);
 
 
 if(prot==MODBUS_RTU_PROT)
@@ -1347,9 +1656,11 @@ net_U=223;
 bps[0]._Uii=281;
 bps[0]._Ii=123;
 
-out_U=1234;
+
 bps_I=5678;
 */
+//out_U=1234;
+//bps_U=3456;
 
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
 modbus_registers[1]=(signed char)(out_U);
@@ -1398,99 +1709,116 @@ modbus_registers[30]=(signed char)(bat[1]._Ib>>8);				//Рег16   	ток батареи №1,
 modbus_registers[31]=(signed char)(bat[1]._Ib);
 modbus_registers[32]=(signed char)(bat[1]._Tb>>8);				//Рег17	температура батареи №1, 1Гц
 modbus_registers[33]=(signed char)(bat[1]._Tb);
-modbus_registers[34]=(signed char)(bat[1]._zar>>8);			//Рег18	заряд батареи №1, %
+modbus_registers[34]=(signed char)(bat[1]._zar>>8);				//Рег18	заряд батареи №1, %
 modbus_registers[35]=(signed char)(bat[1]._zar);
-modbus_registers[36]=(signed char)(bat[1]._Ubm>>8);			//Рег19	напряжение средней точки батареи №1, 0.1В
+modbus_registers[36]=(signed char)(bat[1]._Ubm>>8);				//Рег19	напряжение средней точки батареи №1, 0.1В
 modbus_registers[37]=(signed char)(bat[1]._Ubm);
 modbus_registers[38]=(signed char)(bat[1]._dUbm>>8);			//Рег20	ошибка средней точки батареи №1, %
 modbus_registers[39]=(signed char)(bat[1]._dUbm);
 modbus_registers[40]=(signed char)(BAT_C_REAL[1]>>8);			//Рег21	Реальная емкость батареи №1, 0.1А*ч, если 0x5555 то не измерялась
 modbus_registers[41]=(signed char)(BAT_C_REAL[1]);
-modbus_registers[42]=(signed char)(bps[0]._Uii>>8);			//Рег22	Выходное напряжение выпрямителя №1, 0.1В
+modbus_registers[42]=(signed char)(bps[0]._Uii>>8);				//Рег22	Выходное напряжение выпрямителя №1, 0.1В
 modbus_registers[43]=(signed char)(bps[0]._Uii);
-modbus_registers[44]=(signed char)(bps[0]._Ii>>8);				//Рег23	Выходной ток выпрямителя №1, 0.1А
-modbus_registers[45]=(signed char)(bps[0]._Ii);
-modbus_registers[46]=(signed char)(bps[0]._Ti>>8);				//Рег24	Температура радиатора выпрямителя №1, 1гЦ
-modbus_registers[47]=(signed char)(bps[0]._Ti);
-modbus_registers[48]=(signed char)(bps[0]._av>>8);				//Рег25	Байт флагов выпрямителя №1, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[49]=(signed char)(bps[0]._av);
-modbus_registers[50]=(signed char)(bps[1]._Uii>>8);			//Рег26	Выходное напряжение выпрямителя №2, 0.1В
-modbus_registers[51]=(signed char)(bps[1]._Uii);
-modbus_registers[52]=(signed char)(bps[1]._Ii>>8);				//Рег27	Выходной ток выпрямителя №2, 0.1А
-modbus_registers[53]=(signed char)(bps[1]._Ii);
-modbus_registers[54]=(signed char)(bps[1]._Ti>>8);				//Рег28	Температура радиатора выпрямителя №2, 1гЦ
-modbus_registers[55]=(signed char)(bps[1]._Ti);
-modbus_registers[56]=(signed char)(bps[1]._av>>8);				//Рег29	Байт флагов выпрямителя №2, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[57]=(signed char)(bps[1]._av);
-modbus_registers[58]=(signed char)(bps[2]._Uii>>8);			//Рег30	Выходное напряжение выпрямителя №3, 0.1В
-modbus_registers[59]=(signed char)(bps[2]._Uii);
-modbus_registers[60]=(signed char)(bps[2]._Ii>>8);				//Рег31	Выходной ток выпрямителя №3, 0.1А
-modbus_registers[61]=(signed char)(bps[2]._Ii);
-modbus_registers[62]=(signed char)(bps[2]._Ti>>8);				//Рег32	Температура радиатора выпрямителя №3, 1гЦ
-modbus_registers[63]=(signed char)(bps[2]._Ti);
-modbus_registers[64]=(signed char)(bps[2]._av>>8);				//Рег33	Байт флагов выпрямителя №3, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[65]=(signed char)(bps[2]._av);
-modbus_registers[66]=(signed char)(bps[3]._Uii>>8);			//Рег34	Выходное напряжение выпрямителя №4, 0.1В
-modbus_registers[67]=(signed char)(bps[3]._Uii);
-modbus_registers[68]=(signed char)(bps[3]._Ii>>8);				//Рег35	Выходной ток выпрямителя №4, 0.1А
-modbus_registers[69]=(signed char)(bps[3]._Ii);
-modbus_registers[70]=(signed char)(bps[3]._Ti>>8);				//Рег36	Температура радиатора выпрямителя №4, 1гЦ
-modbus_registers[71]=(signed char)(bps[3]._Ti);
-modbus_registers[72]=(signed char)(bps[3]._av>>8);				//Рег37	Байт флагов выпрямителя №4, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[73]=(signed char)(bps[3]._av);
-modbus_registers[74]=(signed char)(bps[4]._Uii>>8);			//Рег38	Выходное напряжение выпрямителя №5, 0.1В
-modbus_registers[75]=(signed char)(bps[4]._Uii);
-modbus_registers[76]=(signed char)(bps[4]._Ii>>8);				//Рег39	Выходной ток выпрямителя №5, 0.1А
-modbus_registers[77]=(signed char)(bps[4]._Ii);
-modbus_registers[78]=(signed char)(bps[4]._Ti>>8);				//Рег40	Температура радиатора выпрямителя №5, 1гЦ
-modbus_registers[79]=(signed char)(bps[4]._Ti);
-modbus_registers[80]=(signed char)(bps[4]._av>>8);				//Рег41	Байт флагов выпрямителя №5, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[81]=(signed char)(bps[4]._av);
-modbus_registers[82]=(signed char)(bps[5]._Uii>>8);			//Рег42	Выходное напряжение выпрямителя №6, 0.1В
-modbus_registers[83]=(signed char)(bps[5]._Uii);
-modbus_registers[84]=(signed char)(bps[5]._Ii>>8);				//Рег43	Выходной ток выпрямителя №6, 0.1А
-modbus_registers[85]=(signed char)(bps[5]._Ii);
-modbus_registers[86]=(signed char)(bps[5]._Ti>>8);				//Рег44	Температура радиатора выпрямителя №6, 1гЦ
-modbus_registers[87]=(signed char)(bps[5]._Ti);
-modbus_registers[88]=(signed char)(bps[5]._av>>8);				//Рег45	Байт флагов выпрямителя №6, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[89]=(signed char)(bps[5]._av);
-modbus_registers[90]=(signed char)(bps[6]._Uii>>8);			//Рег46	Выходное напряжение выпрямителя №7, 0.1В
-modbus_registers[91]=(signed char)(bps[6]._Uii);
-modbus_registers[92]=(signed char)(bps[6]._Ii>>8);				//Рег47	Выходной ток выпрямителя №7, 0.1А
-modbus_registers[93]=(signed char)(bps[6]._Ii);
-modbus_registers[94]=(signed char)(bps[6]._Ti>>8);				//Рег48	Температура радиатора выпрямителя №7, 1гЦ
-modbus_registers[95]=(signed char)(bps[6]._Ti);
-modbus_registers[96]=(signed char)(bps[6]._av>>8);				//Рег49	Байт флагов выпрямителя №7, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[97]=(signed char)(bps[6]._av);
-modbus_registers[98]=(signed char)(bps[7]._Uii>>8);			//Рег50	Выходное напряжение выпрямителя №8, 0.1В
-modbus_registers[99]=(signed char)(bps[7]._Uii);
-modbus_registers[100]=(signed char)(bps[7]._Ii>>8);			//Рег51	Выходной ток выпрямителя №8, 0.1А
-modbus_registers[101]=(signed char)(bps[7]._Ii);
-modbus_registers[102]=(signed char)(bps[7]._Ti>>8);			//Рег52	Температура радиатора выпрямителя №8, 1гЦ
-modbus_registers[103]=(signed char)(bps[7]._Ti);
-modbus_registers[104]=(signed char)(bps[7]._av>>8);			//Рег53	Байт флагов выпрямителя №8, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
-modbus_registers[105]=(signed char)(bps[7]._av);
-modbus_registers[106]=(signed char)(bps_U>>8);					//Рег54   	напряжение выпрямителей, 0.1В
-modbus_registers[107]=(signed char)(bps_U);
+modbus_registers[44]=(signed char)(bps[0]._Uin>>8);				//Рег23	Напряжение шины выпрямителя №1, 0.1В
+modbus_registers[45]=(signed char)(bps[0]._Uin);
+modbus_registers[46]=(signed char)(bps[0]._Ii>>8);				//Рег24	Выходной ток выпрямителя №1, 0.1А
+modbus_registers[47]=(signed char)(bps[0]._Ii);
+modbus_registers[48]=(signed char)(bps[0]._Ti>>8);				//Рег25	Температура радиатора выпрямителя №1, 1гЦ
+modbus_registers[49]=(signed char)(bps[0]._Ti);
+modbus_registers[50]=(signed char)(bps[0]._av>>8);				//Рег26	Байт флагов выпрямителя №1, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[51]=(signed char)(bps[0]._av);
+modbus_registers[52]=(signed char)(bps[1]._Uii>>8);				//Рег27	Выходное напряжение выпрямителя №2, 0.1В
+modbus_registers[53]=(signed char)(bps[1]._Uii);
+modbus_registers[54]=(signed char)(bps[1]._Uin>>8);				//Рег28	Напряжение шины выпрямителя №2, 0.1В
+modbus_registers[55]=(signed char)(bps[1]._Uin);
+modbus_registers[56]=(signed char)(bps[1]._Ii>>8);				//Рег29	Выходной ток выпрямителя №2, 0.1А
+modbus_registers[57]=(signed char)(bps[1]._Ii);
+modbus_registers[58]=(signed char)(bps[1]._Ti>>8);				//Рег30	Температура радиатора выпрямителя №2, 1гЦ
+modbus_registers[59]=(signed char)(bps[1]._Ti);
+modbus_registers[60]=(signed char)(bps[1]._av>>8);				//Рег31	Байт флагов выпрямителя №2, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[61]=(signed char)(bps[1]._av);
+modbus_registers[62]=(signed char)(bps[2]._Uii>>8);				//Рег32	Выходное напряжение выпрямителя №3, 0.1В
+modbus_registers[63]=(signed char)(bps[2]._Uii);
+modbus_registers[64]=(signed char)(bps[2]._Uin>>8);				//Рег33	Напряжение шины выпрямителя №3, 0.1В
+modbus_registers[65]=(signed char)(bps[2]._Uin);
+modbus_registers[66]=(signed char)(bps[2]._Ii>>8);				//Рег34	Выходной ток выпрямителя №3, 0.1А
+modbus_registers[67]=(signed char)(bps[2]._Ii);
+modbus_registers[68]=(signed char)(bps[2]._Ti>>8);				//Рег35	Температура радиатора выпрямителя №3, 1гЦ
+modbus_registers[69]=(signed char)(bps[2]._Ti);
+modbus_registers[70]=(signed char)(bps[2]._av>>8);				//Рег36	Байт флагов выпрямителя №3, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[71]=(signed char)(bps[2]._av);
+modbus_registers[72]=(signed char)(bps[3]._Uii>>8);				//Рег37	Выходное напряжение выпрямителя №4, 0.1В
+modbus_registers[73]=(signed char)(bps[3]._Uii);
+modbus_registers[74]=(signed char)(bps[3]._Uin>>8);				//Рег38	Напряжение шины выпрямителя №4, 0.1В
+modbus_registers[75]=(signed char)(bps[3]._Uin);
+modbus_registers[76]=(signed char)(bps[3]._Ii>>8);				//Рег39	Выходной ток выпрямителя №4, 0.1А
+modbus_registers[77]=(signed char)(bps[3]._Ii);
+modbus_registers[78]=(signed char)(bps[3]._Ti>>8);				//Рег40	Температура радиатора выпрямителя №4, 1гЦ
+modbus_registers[79]=(signed char)(bps[3]._Ti);
+modbus_registers[80]=(signed char)(bps[3]._av>>8);				//Рег41	Байт флагов выпрямителя №4, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[81]=(signed char)(bps[3]._av);
+modbus_registers[82]=(signed char)(bps[4]._Uii>>8);				//Рег42	Выходное напряжение выпрямителя №5, 0.1В
+modbus_registers[83]=(signed char)(bps[4]._Uii);
+modbus_registers[84]=(signed char)(bps[4]._Uin>>8);				//Рег43	Напряжение шины выпрямителя №5, 0.1В
+modbus_registers[85]=(signed char)(bps[4]._Uin);
+modbus_registers[86]=(signed char)(bps[4]._Ii>>8);				//Рег44	Выходной ток выпрямителя №5, 0.1А
+modbus_registers[87]=(signed char)(bps[4]._Ii);
+modbus_registers[88]=(signed char)(bps[4]._Ti>>8);				//Рег45	Температура радиатора выпрямителя №5, 1гЦ
+modbus_registers[89]=(signed char)(bps[4]._Ti);
+modbus_registers[90]=(signed char)(bps[4]._av>>8);				//Рег46	Байт флагов выпрямителя №5, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[91]=(signed char)(bps[4]._av);
+modbus_registers[92]=(signed char)(bps[5]._Uii>>8);				//Рег47	Выходное напряжение выпрямителя №6, 0.1В
+modbus_registers[93]=(signed char)(bps[5]._Uii);
+modbus_registers[94]=(signed char)(bps[5]._Uin>>8);				//Рег48	Напряжение шины выпрямителя №6, 0.1В
+modbus_registers[95]=(signed char)(bps[5]._Uin);
+modbus_registers[96]=(signed char)(bps[5]._Ii>>8);				//Рег49	Выходной ток выпрямителя №6, 0.1А
+modbus_registers[97]=(signed char)(bps[5]._Ii);
+modbus_registers[98]=(signed char)(bps[5]._Ti>>8);				//Рег50	Температура радиатора выпрямителя №6, 1гЦ
+modbus_registers[99]=(signed char)(bps[5]._Ti);
+modbus_registers[100]=(signed char)(bps[5]._av>>8);				//Рег51	Байт флагов выпрямителя №6, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[101]=(signed char)(bps[5]._av);
+modbus_registers[102]=(signed char)(bps[6]._Uii>>8);			//Рег52	Выходное напряжение выпрямителя №7, 0.1В
+modbus_registers[103]=(signed char)(bps[6]._Uii);
+modbus_registers[104]=(signed char)(bps[6]._Uin>>8);			//Рег53	Напряжение шины выпрямителя №7, 0.1В
+modbus_registers[105]=(signed char)(bps[6]._Uin);
+modbus_registers[106]=(signed char)(bps[6]._Ii>>8);				//Рег54	Выходной ток выпрямителя №7, 0.1А
+modbus_registers[107]=(signed char)(bps[6]._Ii);
+modbus_registers[108]=(signed char)(bps[6]._Ti>>8);				//Рег55	Температура радиатора выпрямителя №7, 1гЦ
+modbus_registers[109]=(signed char)(bps[6]._Ti);
+modbus_registers[110]=(signed char)(bps[6]._av>>8);				//Рег56	Байт флагов выпрямителя №7, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[111]=(signed char)(bps[6]._av);
+modbus_registers[112]=(signed char)(bps[7]._Uii>>8);			//Рег57	Выходное напряжение выпрямителя №8, 0.1В
+modbus_registers[113]=(signed char)(bps[7]._Uii);
+modbus_registers[114]=(signed char)(bps[7]._Uin>>8);			//Рег58	Напряжение шины выпрямителя №8, 0.1В
+modbus_registers[115]=(signed char)(bps[7]._Uin);
+modbus_registers[116]=(signed char)(bps[7]._Ii>>8);				//Рег59	Выходной ток выпрямителя №8, 0.1А
+modbus_registers[117]=(signed char)(bps[7]._Ii);
+modbus_registers[118]=(signed char)(bps[7]._Ti>>8);				//Рег60	Температура радиатора выпрямителя №8, 1гЦ
+modbus_registers[119]=(signed char)(bps[7]._Ti);
+modbus_registers[120]=(signed char)(bps[7]._av>>8);				//Рег61	Байт флагов выпрямителя №8, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
+modbus_registers[121]=(signed char)(bps[7]._av);
+
+modbus_registers[138]=(signed char)(bps_U>>8);					//Рег70   	напряжение выпрямителей, 0.1В
+modbus_registers[139]=(signed char)(bps_U);
 tempS=0;
 if((speedChIsOn)||(sp_ch_stat==scsWRK)) tempS=1;
-modbus_registers[108]=(signed char)(tempS>>8);					//Рег55   	Ускоренный заряд включенность, (1 - вкл, 0 - Выкл)
-modbus_registers[109]=(signed char)(tempS);
+modbus_registers[140]=(signed char)(tempS>>8);					//Рег71   	Ускоренный заряд включенность, (1 - вкл, 0 - Выкл)
+modbus_registers[141]=(signed char)(tempS);
 tempS=0;
 if(spc_stat==spcVZ) tempS=1;
-modbus_registers[110]=(signed char)(tempS>>8);					//Рег56   	Выравнивающий заряд включенность, (1 - вкл, 0 - Выкл)
-modbus_registers[111]=(signed char)(tempS);
-modbus_registers[112]=(signed char)(uout_av>>8);					//Рег57   Контроль выходного напряжения, (0 - норма, 1 - завышено, 2 - занижено)
-modbus_registers[113]=(signed char)(uout_av);
+modbus_registers[142]=(signed char)(tempS>>8);					//Рег72   	Выравнивающий заряд включенность, (1 - вкл, 0 - Выкл)
+modbus_registers[143]=(signed char)(tempS);
+modbus_registers[144]=(signed char)(uout_av>>8);				//Рег73   Контроль выходного напряжения, (0 - норма, 1 - завышено, 2 - занижено)
+modbus_registers[145]=(signed char)(uout_av);
 
-tempS=0;													 //Рег60	Регистр флагов состояния системы
-if(bat_ips._av)			tempS|=(1<<0);						 // Бит 0	Авария батареи
-if(avar_stat&0x0001)   	tempS|=(1<<1);						 //	Бит 1	Авария питающей сети 
-if(avar_stat&(1<<(3+0)))tempS|=(1<<2);						 //	Бит 2	Авария выпрямителя №1
-if(avar_stat&(1<<(3+1)))tempS|=(1<<3);						 //	Бит 3	Авария выпрямителя №2
-if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 //	Бит 4	Авария выпрямителя №2
-modbus_registers[118]=(signed char)(tempS>>8);
-modbus_registers[119]=(signed char)(tempS);
+tempS=0;													 	//Рег74	Регистр флагов состояния системы
+if(bat_ips._av)			tempS|=(1<<0);						 	// Бит 0	Авария батареи
+if(avar_stat&0x0001)   	tempS|=(1<<1);						 	//	Бит 1	Авария питающей сети 
+if(avar_stat&(1<<(3+0)))tempS|=(1<<2);						 	//	Бит 2	Авария выпрямителя №1
+if(avar_stat&(1<<(3+1)))tempS|=(1<<3);						 	//	Бит 3	Авария выпрямителя №2
+if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 	//	Бит 4	Авария выпрямителя №2
+modbus_registers[146]=(signed char)(tempS>>8);
+modbus_registers[147]=(signed char)(tempS);
 
 
 ///*/

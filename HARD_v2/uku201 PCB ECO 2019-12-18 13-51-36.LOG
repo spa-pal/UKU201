@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=GND Pin=JP2-10
+Change Component Comment : Designator=JP4 Old Comment=2EDGR-5.08-02P New Comment=Header 2
+Change Component Comment : Designator=D10 Old Comment=5V6 New Comment=BZV55-C5V6
+Added Component: Designator=D11(_1206d)
+Added Component: Designator=R40(_1206)
+Added Pin To Net: NetName=C1 Pin=D11-2
+Added Pin To Net: NetName=C1 Pin=R40-2
+Added Pin To Net: NetName=C1 Pin=U6-9
+Added Net: Name=C1
+Added Pin To Net: NetName=UF Pin=JP2-10
+Added Pin To Net: NetName=UF Pin=R40-1
+Added Net: Name=UF
+Added Pin To Net: NetName=GND Pin=D11-1
+Added Member To Class: ClassName=cpu_board Member=Component D11 BZV55-C3V3
+Added Member To Class: ClassName=cpu_board Member=Component R40 10K
