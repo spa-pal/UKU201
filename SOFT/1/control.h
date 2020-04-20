@@ -116,6 +116,33 @@ extern char numOfForvardBps,numOfForvardBps_old;
 extern char numOfForvardBps_minCnt;
 extern short numOfForvardBps_hourCnt;
 
+//***********************************************
+//Состояние внешних датчиков
+//signed short tout[4];
+extern char tout_max_cnt[4],tout_min_cnt[4];
+typedef enum {tNORM,tMAX,tMIN}enum_tout_stat;
+extern enum_tout_stat tout_stat[4];
+extern signed short t_ext[3];
+extern char ND_EXT[3];
+extern signed char sk_cnt[4],sk_av_cnt[4];
+typedef enum  {ssOFF,ssON} enum_sk_stat;
+extern enum_sk_stat sk_stat[4],sk_stat_old[4];
+typedef enum  {sasOFF,sasON} enum_sk_av_stat;
+extern enum_sk_av_stat sk_av_stat[4],sk_av_stat_old[4];
+extern signed short t_box,t_box_warm,t_box_vent;
+extern char TELECORE2017_EXT_VENT_PWM,TELECORE2017_INT_VENT_PWM;
+
+
+//**********************************************
+//Контроль наличия батарей
+extern signed short 	main_kb_cnt;
+extern signed short 	kb_cnt_1lev;
+extern signed short 	kb_cnt_2lev;
+extern char 		kb_full_ver;
+extern char kb_start[2],kb_start_ips;
+extern signed short ibat_ips,ibat_ips_;
+extern char ips_bat_av_vzvod;
+extern char ips_bat_av_stat;
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 void adc_drv(void);

@@ -1,0 +1,26 @@
+Removed Member From Class: ClassName=CAN Member=VD1
+Removed Member From Class: ClassName=CAN Member=VD1
+Removed Member From Class: ClassName=CAN Member=VD2
+Removed Member From Class: ClassName=CAN Member=VD2
+Removed Member From Class: ClassName=RS485 Member=VD3
+Removed Member From Class: ClassName=RS485 Member=VD3
+Removed Member From Class: ClassName=RS485 Member=VD4
+Removed Member From Class: ClassName=RS485 Member=VD4
+Added Component: Designator=D1(_1206d)
+Added Component: Designator=D2(_1206d)
+Added Component: Designator=D3(_1206d)
+Added Component: Designator=D4(_1206d)
+Change Net Name : Old Net Name=DB0 New Net Name=VREF
+Change Net Name : Old Net Name=DB1 New Net Name=P2_9
+Change Net Name : Old Net Name=NetU5_4 New Net Name=NetD2_1
+Change Net Name : Old Net Name=NetU5_6 New Net Name=NetD1_1
+Change Net Name : Old Net Name=NetU9_4 New Net Name=NetD4_1
+Change Net Name : Old Net Name=NetU9_6 New Net Name=NetD3_1
+Added Pin To Net: NetName=NetC3_1 Pin=D1-2
+Added Pin To Net: NetName=NetC3_1 Pin=D2-2
+Added Pin To Net: NetName=NetC18_2 Pin=D3-2
+Added Pin To Net: NetName=NetC18_2 Pin=D4-2
+Added Member To Class: ClassName=CAN Member=Component D1 MBR0520
+Added Member To Class: ClassName=CAN Member=Component D2 MBR0520
+Added Member To Class: ClassName=RS485 Member=Component D3 MBR0520
+Added Member To Class: ClassName=RS485 Member=Component D4 MBR0520

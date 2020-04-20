@@ -1,0 +1,13 @@
+Removed Pin From Net: NetName=REL3 Pin=JP2-2
+Removed Pin From Net: NetName=REL2 Pin=JP2-4
+Removed Pin From Net: NetName=REL1 Pin=JP2-6
+Change Net Name : Old Net Name=NetBT1_2 New Net Name=P2_9
+Added Pin To Net: NetName=RS485A Pin=JP2-2
+Added Pin To Net: NetName=RS485A Pin=U10-12
+Added Net: Name=RS485A
+Added Pin To Net: NetName=RS485B Pin=JP2-4
+Added Pin To Net: NetName=RS485B Pin=U10-13
+Added Net: Name=RS485B
+Added Pin To Net: NetName=REL3 Pin=JP2-1
+Added Pin To Net: NetName=REL2 Pin=JP2-3
+Added Pin To Net: NetName=REL1 Pin=JP2-5

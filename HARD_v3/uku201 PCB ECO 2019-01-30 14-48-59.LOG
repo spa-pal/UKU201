@@ -1,0 +1,4 @@
+Change Component Footprint: Designator=JP1 Old Footprint=HDR2X10 New Footprint=HDR2X5
+Change Net Name : Old Net Name=NetC12_2 New Net Name=P2_9
+Change Net Name : Old Net Name=UU1 New Net Name=A0
+Change Net Name : Old Net Name=UU2 New Net Name=A1

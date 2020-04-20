@@ -1,0 +1,6 @@
+Change Net Name : Old Net Name=DB2 New Net Name=VREF
+Change Net Name : Old Net Name=DB3 New Net Name=P2_9
+Added Pin To Net: NetName=NetD1_1 Pin=D1-1
+Added Pin To Net: NetName=NetD2_1 Pin=D2-1
+Added Pin To Net: NetName=NetD3_1 Pin=D3-1
+Added Pin To Net: NetName=NetD4_1 Pin=D4-1

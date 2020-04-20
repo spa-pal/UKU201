@@ -1,0 +1,24 @@
+Added Component: Designator=C?(_1206)
+Added Component: Designator=D?(_1206d)
+Added Component: Designator=R?(_1206)
+Added Component: Designator=R?(_1206)
+Added Component: Designator=R?(_1206)
+Added Pin To Net: NetName=C9 Pin=C?-1
+Added Pin To Net: NetName=C9 Pin=D?-2
+Added Pin To Net: NetName=C9 Pin=R?-2
+Added Pin To Net: NetName=C9 Pin=R?-2
+Added Pin To Net: NetName=C9 Pin=U6-40
+Added Net: Name=C9
+Added Pin To Net: NetName=NetJP4_3 Pin=JP4-3
+Added Pin To Net: NetName=NetJP4_3 Pin=R?-1
+Added Pin To Net: NetName=NetJP4_3 Pin=R?-1
+Added Net: Name=NetJP4_3
+Added Pin To Net: NetName=GND Pin=C?-2
+Added Pin To Net: NetName=GND Pin=D?-1
+Added Pin To Net: NetName=GND Pin=R?-1
+Added Pin To Net: NetName=+5V Pin=R?-2
+Added Member To Class: ClassName=cpu_board Member=Component C? 1.0
+Added Member To Class: ClassName=cpu_board Member=Component D? BZV55-C5V6
+Added Member To Class: ClassName=cpu_board Member=Component R? 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R? 10K
+Added Member To Class: ClassName=cpu_board Member=Component R? 1K0

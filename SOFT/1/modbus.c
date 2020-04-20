@@ -306,8 +306,8 @@ void modbus_in(void)
 char i;
 short crc16_calculated;		//вычисляемая из принятых данных CRC
 short crc16_incapsulated;	//встроеннная в посылку CRC
-unsigned short modbus_rx_arg0;		//встроенный в посылку первый аргумент
-unsigned short modbus_rx_arg1;		//встроенный в посылку второй аргумент
+signed short modbus_rx_arg0;		//встроенный в посылку первый аргумент
+signed short modbus_rx_arg1;		//встроенный в посылку второй аргумент
 //unsigned short modbus_rx_arg2;		//встроенный в посылку третий аргумент
 //unsigned short modbus_rx_arg3;		//встроенный в посылку четвертый аргумент
 unsigned char modbus_func;			//встроенный в посылку код функции
@@ -491,13 +491,16 @@ if(crc16_calculated==crc16_incapsulated)
 				PWR->CR      |= PWR_CR_DBP;
 				BKP->DR1=modbus_rx_arg1;
 				PWR->CR   &= ~PWR_CR_DBP;
+				printf("Reg 11 writed   \r\n");
 				}
 			if(modbus_rx_arg0==12)		//Установка времени, месяц 
 				{
 				gran(&modbus_rx_arg1,1,12);
 				PWR->CR      |= PWR_CR_DBP;
 				BKP->DR2=modbus_rx_arg1;
-				PWR->CR   &= ~PWR_CR_DBP;				}
+				PWR->CR   &= ~PWR_CR_DBP;
+				printf("Reg 12 writed   \r\n");
+				}
 			if(modbus_rx_arg0==13)		//Установка времени, день 
 				{
 				short temp_t;
@@ -511,6 +514,7 @@ if(crc16_calculated==crc16_incapsulated)
 				BKP->DR3=modbus_rx_arg1;
 				PWR->CR   &= ~PWR_CR_DBP;
 				//LPC_RTC->DOM=(uint16_t)modbus_rx_arg1;
+				printf("Reg 13 writed   \r\n");
 				}
 			if(modbus_rx_arg0==14)		//Установка времени, час
 				{
@@ -605,13 +609,12 @@ if(crc16_calculated==crc16_incapsulated)
 
 			if(modbus_rx_arg0==30)		//напряжение стабилизации для режима стабилизации напряжения
 				{
-				///*/
-				/*if((modbus_rx_arg1>0)&&(modbus_rx_arg1<5))modbus_rx_arg1=0;
+				if((modbus_rx_arg1>0)&&(modbus_rx_arg1<5))modbus_rx_arg1=0;
 				else if(modbus_rx_arg1>=60)TBAT=60;
 				else TBAT=modbus_rx_arg1;
 				lc640_write_int(EE_TBAT,TBAT);
 
-				main_kb_cnt=(TBAT*60)-20;*/
+				main_kb_cnt=(TBAT*60)-20;
 	     		}
 			if(modbus_rx_arg0==31)		//
 				{
@@ -710,7 +713,10 @@ if(crc16_calculated==crc16_incapsulated)
 				 lc640_write_int(EE_UB0,modbus_rx_arg1);
 				 lc640_write_int(EE_UB20,modbus_rx_arg1);
 	     		}
-
+			if(modbus_rx_arg0==55)		//Максимальное (аварийное) напряжение питающей сети, 1В
+				{
+				lc640_write_int(EE_UMAXN,modbus_rx_arg1);
+	     		}
 			if(modbus_rx_arg0==70)		//
 				{
 				gran(&modbus_rx_arg1,1,254);
@@ -724,6 +730,44 @@ if(crc16_calculated==crc16_incapsulated)
 					(modbus_rx_arg1==11520)||(modbus_rx_arg1==23040)
 					) lc640_write_int(EE_MODBUS_BAUDRATE,modbus_rx_arg1);
 	     		}
+
+			if(modbus_rx_arg0==72)		//Рег72	 Автоматический ускоренный заряд, вкл(1) выкл(0)
+				{
+				gran(&modbus_rx_arg1,0,1);
+				lc640_write_int(EE_SPEED_CHRG_AVT_EN,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==73)		//Рег73	 Автоматический ускоренный заряд дельта (напряжение просадки включения), 1В
+				{
+				gran(&modbus_rx_arg1,0,20);
+				lc640_write_int(EE_SPEED_CHRG_D_U,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==74)		//Рег74	 Источник блокировки ускоренного заряда, выкл(0) СК1(1) СК2(2)
+				{
+				gran(&modbus_rx_arg1,0,2);
+				lc640_write_int(EE_SPEED_CHRG_BLOCK_SRC,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==75)		//Рег75	 Сигнал блокировки ускоренного заряда, разомкнуто(0) замкнуто(1)
+				{
+				printf("Reg 75 writed   \r\n");
+				gran(&modbus_rx_arg1,0,2);
+				lc640_write_int(EE_SPEED_CHRG_BLOCK_LOG,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==76)		//Рег76	 Блокирование ускоренного заряда вентиляцией, вкл(1) выкл(0) 
+				{
+				printf("Reg 76 writed   \r\n");
+				gran(&modbus_rx_arg1,0,1);
+				lc640_write_int(EE_SP_CH_VENT_BLOK,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==982)		// Включение-выключение ускоренного заряда
+				{
+				speedChargeStartStop();
+				}
+
 			if(modbus_rx_arg0==994)		//
 				{
 /*				  RCC->APB1ENR |= RCC_APB1ENR_PWREN;                            // enable clock for Power interface
@@ -780,7 +824,7 @@ if(crc16_calculated==crc16_incapsulated)
 					}
 	     		}
 
-			if(modbus_rx_arg0==998)		//
+			if(modbus_rx_arg0==998)		//Запись номера калибруемого источника 
 				{
 				if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=NUMIST))
 					{
@@ -866,6 +910,42 @@ if(crc16_calculated==crc16_incapsulated)
 				tempL/=(signed long)adc_buff_[2];
 				KunetC=(signed short)tempL;
 				lc640_write_int(EE_KUNETC,KunetC);
+	     		}
+ 			if(modbus_rx_arg0==1008)		//
+				{
+				short tempS;
+				long tempL;
+				
+				printf("Reg 1008 writed   \r\n");
+
+				tempL=(long)modbus_rx_arg1;
+				tempL*=6000L;
+				tempL/=(signed long)adc_buff_[2];
+				KunetC=(signed short)tempL;
+				lc640_write_int(EE_KUNETC,KunetC);
+	     		}
+			if(modbus_rx_arg0==1009)		//
+				{
+				printf("Reg 1009 writed   \r\n");
+					{
+					short tempS;
+					signed long tempL,tempL1;
+				/*	tempL=(long)modbus_rx_arg1;
+					tempL*=1000L;
+					Kuout=(short)(tempL/(long)adc_buff_virt_0);	*/
+
+					tempL=(signed long)modbus_rx_arg1;
+					//if(modbus_rx_arg1<0)tempL=(signed long)(-modbus_rx_arg1);
+					tempL*=2000L;
+					//tempL/=((signed long)ibat_metr_buff_[0]-(signed long)ibat_metr_buff_[1]);
+					tempL1=(signed long)(ibat_metr_buff_[0]-ibat_metr_buff_[1]);
+					//tempL1=-500L;
+					tempL/=tempL1;
+					
+					Kibat1[0]=(signed short)tempL;
+					//if(modbus_rx_arg1<0)Kibat1[0]=(signed short)(-tempL);
+					lc640_write_int(EE_KI1BAT1,Kibat1[0]);
+					}
 	     		}
 
 			if(modbus_rx_arg0==1010)		//
@@ -1498,6 +1578,7 @@ for (i=0;i<8;i++)
 void modbus_hold_registers_transmit(unsigned char adr,unsigned char func,unsigned short reg_adr,unsigned short reg_quantity, char prot)
 {
 signed char modbus_registers[2500];
+signed short tempSS;
 //char modbus_tx_buff[150];
 unsigned short crc_temp;
 char i;
@@ -1564,29 +1645,92 @@ modbus_registers[90]=(char)(TBATMAX>>8);				//Рег46  Температура батареи аварийн
 modbus_registers[91]=(char)(TBATMAX);
 modbus_registers[92]=(char)(TBATSIGN>>8);				//Рег47  Температура батареи сигнальная, 1гЦ
 modbus_registers[93]=(char)(TBATSIGN);
-modbus_registers[94]=(char)(speedChrgCurr>>8);					//Рег48  Ток ускоренного заряда, 0.1А
+modbus_registers[94]=(char)(speedChrgCurr>>8);			//Рег48  Ток ускоренного заряда, 0.1А
 modbus_registers[95]=(char)(speedChrgCurr);
-modbus_registers[96]=(char)(speedChrgVolt>>8);				//Рег49	 Напряжение ускоренного заряда, 0.1В 
+modbus_registers[96]=(char)(speedChrgVolt>>8);			//Рег49	 Напряжение ускоренного заряда, 0.1В 
 modbus_registers[97]=(char)(speedChrgVolt);
-modbus_registers[98]=(char)(speedChrgTimeInHour>>8);				//Рег50	 Время ускоренного заряда, 1ч
+modbus_registers[98]=(char)(speedChrgTimeInHour>>8);	//Рег50	 Время ускоренного заряда, 1ч
 modbus_registers[99]=(char)(speedChrgTimeInHour);
-modbus_registers[100]=(char)(U_OUT_KONTR_MAX>>8);					//Рег51	 Контроль выходного напряжения, Umax, 0.1В
+modbus_registers[100]=(char)(U_OUT_KONTR_MAX>>8);		//Рег51	 Контроль выходного напряжения, Umax, 0.1В
 modbus_registers[101]=(char)(U_OUT_KONTR_MAX);
-modbus_registers[102]=(char)(U_OUT_KONTR_MIN>>8);					//Рег52	 Контроль выходного напряжения, Umin, 0.1В
+modbus_registers[102]=(char)(U_OUT_KONTR_MIN>>8);		//Рег52	 Контроль выходного напряжения, Umin, 0.1В
 modbus_registers[103]=(char)(U_OUT_KONTR_MIN);
-modbus_registers[104]=(char)(U_OUT_KONTR_DELAY>>8);				//Рег53	 Контроль выходного напряжения, Tзадержки, 1сек.
+modbus_registers[104]=(char)(U_OUT_KONTR_DELAY>>8);		//Рег53	 Контроль выходного напряжения, Tзадержки, 1сек.
 modbus_registers[105]=(char)(U_OUT_KONTR_DELAY);
-modbus_registers[106]=(char)(UB0>>8);							//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
+modbus_registers[106]=(char)(UB0>>8);					//Рег54	 Установка выходного напряжения для ИПС без батареи(СГЕП-ГАЗПРОМ)
 modbus_registers[107]=(char)(UB0);
-modbus_registers[138]=(char)(MODBUS_ADRESS>>8);					//Рег70	 MODBUS ADRESS
+modbus_registers[108]=(char)(UMAXN>>8);					//Рег55  Максимальное (аварийное) напряжение питающей сети, 1В
+modbus_registers[109]=(char)(UMAXN);
+modbus_registers[138]=(char)(MODBUS_ADRESS>>8);			//Рег70	 MODBUS ADRESS
 modbus_registers[139]=(char)(MODBUS_ADRESS);
-modbus_registers[140]=(char)(MODBUS_BAUDRATE>>8);				//Рег71	 MODBUS BAUDRATE
+modbus_registers[140]=(char)(MODBUS_BAUDRATE>>8);		//Рег71	 MODBUS BAUDRATE
 modbus_registers[141]=(char)(MODBUS_BAUDRATE);
+modbus_registers[142]=(char)(speedChrgAvtEn>>8);		//Рег72	 Автоматический ускоренный заряд, вкл(1) выкл(0)
+modbus_registers[143]=(char)(speedChrgAvtEn);
+modbus_registers[144]=(char)(speedChrgDU>>8);			//Рег73	 Автоматический ускоренный заряд дельта (напряжение просадки включения), 1В
+modbus_registers[145]=(char)(speedChrgDU);
+modbus_registers[146]=(char)(speedChrgBlckSrc>>8);		//Рег74	 Источник блокировки ускоренного заряда, выкл(0) СК1(1) СК2(2)
+modbus_registers[147]=(char)(speedChrgBlckSrc);
+modbus_registers[148]=(char)(speedChrgBlckLog>>8);		//Рег75	 Сигнал блокировки ускоренного заряда, разомкнуто(0) замкнуто(1) 
+modbus_registers[149]=(char)(speedChrgBlckLog);
+modbus_registers[150]=(char)(SP_CH_VENT_BLOK>>8);		//Рег76	 Блокирование ускоренного заряда вентиляцией, вкл(1) выкл(0) 
+modbus_registers[151]=(char)(SP_CH_VENT_BLOK);
+/*
 
+	ptrs[0]=	" Iуск.зар.        !А";
+	ptrs[1]=	" Uуск.зар.        @В";
+	ptrs[2]=	" Tуск.зар.        #ч";
+	ptrs[3]=	" Автоматический     ";
+	ptrs[4]=	" ускор.заряд.      $";
+	ptrs[5]=	" dUуск.зар.       %В";
+	ptrs[6]=	" Блокирование      ^";
+	ptrs[7]=	" Сигнал блокирования";
+	ptrs[8]=	"                   &";
+	ptrs[9]=	" Блокирование       ";
+	ptrs[10]=	" вентиляцией       (";
+	ptrs[11]=	" Выход              ";
+
+	
+	if(sub_ind<index_set) index_set=sub_ind;
+	else if((sub_ind-index_set)>2) index_set=sub_ind-2;
+
+     bgnd_par(	"  УСКОРЕННЫЙ ЗАРЯД  ",
+			ptrs[index_set],
+			ptrs[index_set+1],
+			ptrs[index_set+2]);
+	
+	pointer_set(1);
+
+	int2lcd(speedChrgCurr,'!',1);
+	int2lcd(speedChrgVolt,'@',1);
+	int2lcd(speedChrgTimeInHour,'#',0);
+	if(speedChrgAvtEn==1)sub_bgnd("ВКЛ.",'$',-3);   
+    else sub_bgnd("ВЫКЛ.",'$',-4); 
+	int2lcd(speedChrgDU,'%',0);
+	if(speedChrgBlckSrc==1)sub_bgnd("СК1",'^',-2);
+	else if(speedChrgBlckSrc==2)sub_bgnd("СК2",'^',-2);   
+    else if(speedChrgBlckSrc==0)sub_bgnd("ВЫКЛ.",'^',-4);
+	else sub_bgnd("НЕКОРР..",'^',-6); 
+	if(speedChrgBlckLog==0)sub_bgnd("РАЗОМКН.",'&',-7);
+	else if(speedChrgBlckLog==1) sub_bgnd("ЗАМКН.",'&',-5);  
+    else sub_bgnd("НЕКОРР.",'&',-6); 	  
+	if(SP_CH_VENT_BLOK==1)sub_bgnd("ВКЛ",'(',-2);
+    else if(SP_CH_VENT_BLOK==0)sub_bgnd("ВЫКЛ.",'(',-4);
+	else sub_bgnd("НЕКОРР..",'(',-6);*/
 
 //modbus_register_1000 = 2;
 //modbus_register_1001 = 7890;
-//modbus_register_1002 = 8765;
+//modbus_register_1002 = 8765;hv_vz_up_cnt
+tempSS=0;
+if((sp_ch_stat==scsSTEP1)||(sp_ch_stat==scsWRK))tempSS=1;
+modbus_registers[1962]=(char)(tempSS>>8);										//Рег982	 Включенность ускоренного заряда вкл(1) выкл(0) 
+modbus_registers[1963]=(char)(tempSS);
+
+tempSS=(short)(hv_vz_up_cnt/60L);
+modbus_registers[1964]=(char)(tempSS>>8);										//Рег983	 Время работы ускоренного заряда в минутах  
+modbus_registers[1965]=(char)(tempSS);
+
+
 modbus_registers[1994]=(char)(modbus_register_998>>8);							//Рег998	 Выбор калибруемого источника
 modbus_registers[1995]=(char)(modbus_register_998);
 modbus_registers[1996]=(char)(modbus_register_999>>8);							//Рег999	 Установка выходного ШИМа при калибровке
@@ -1681,15 +1825,16 @@ modbus_registers[12]=(signed char)(net_Uc>>8);				//Рег7	напряжение сети питания
 modbus_registers[13]=(signed char)(net_Uc);
 modbus_registers[14]=(signed char)(bat[0]._Ub>>8);				//Рег8	напряжение батареи №1, 0.1В
 modbus_registers[15]=(signed char)(bat[0]._Ub);
-modbus_registers[16]=(signed char)(bat[0]._Ib>>8);				//Рег9   	ток батареи №1, 0.01А
-modbus_registers[17]=(signed char)(bat[0]._Ib);
-#ifdef UKU_ZVU
+modbus_registers[16]=(signed char)(Ib_ips_termokompensat/*bat[0]._Ib*/>>8);				//Рег9   	ток батареи №1, 0.01А
+modbus_registers[17]=(signed char)(Ib_ips_termokompensat/*bat[0]._Ib*/);
+
+t_ext[0]=bat[0]._Tb;
 modbus_registers[18]=(signed char)(t_ext[0]>>8);				//Рег10	температура батареи №1, 1Гц
 modbus_registers[19]=(signed char)(t_ext[0]);
-#else
+/*
 modbus_registers[18]=(signed char)(bat[0]._Tb>>8);				//Рег10	температура батареи №1, 1Гц
 modbus_registers[19]=(signed char)(bat[0]._Tb);
-#endif
+#endif*/
 #ifdef UKU_ZVU
 modbus_registers[20]=(signed char)(((short)(bat_hndl_zvu_Q/10000L))>>8);			//Рег11	заряд батареи №1, %
 modbus_registers[21]=(signed char)(((short)(bat_hndl_zvu_Q/10000L)));
@@ -1797,6 +1942,23 @@ modbus_registers[118]=(signed char)(bps[7]._Ti>>8);				//Рег60	Температура радиа
 modbus_registers[119]=(signed char)(bps[7]._Ti);
 modbus_registers[120]=(signed char)(bps[7]._av>>8);				//Рег61	Байт флагов выпрямителя №8, 0x01 - перегрев, 0x02 завышено Uвых, 0x04 занижено Uвых, 0x08 - отсутствует связь с выпрямителем
 modbus_registers[121]=(signed char)(bps[7]._av);
+modbus_registers[122]=(signed char)(bps[0]._cnt>>8);			//Рег62	Счетчик связи выпрямителя №1
+modbus_registers[123]=(signed char)(bps[0]._cnt);
+modbus_registers[124]=(signed char)(bps[1]._cnt>>8);			//Рег63	Счетчик связи выпрямителя №2
+modbus_registers[125]=(signed char)(bps[1]._cnt);
+modbus_registers[126]=(signed char)(bps[2]._cnt>>8);			//Рег64	Счетчик связи выпрямителя №3
+modbus_registers[127]=(signed char)(bps[2]._cnt);
+modbus_registers[128]=(signed char)(bps[3]._cnt>>8);			//Рег65	Счетчик связи выпрямителя №4
+modbus_registers[129]=(signed char)(bps[3]._cnt);
+modbus_registers[130]=(signed char)(bps[4]._cnt>>8);			//Рег66	Счетчик связи выпрямителя №5
+modbus_registers[131]=(signed char)(bps[4]._cnt);
+modbus_registers[132]=(signed char)(bps[5]._cnt>>8);			//Рег67	Счетчик связи выпрямителя №6
+modbus_registers[133]=(signed char)(bps[5]._cnt);
+modbus_registers[134]=(signed char)(bps[6]._cnt>>8);			//Рег68	Счетчик связи выпрямителя №7
+modbus_registers[135]=(signed char)(bps[6]._cnt);
+modbus_registers[136]=(signed char)(bps[7]._cnt>>8);			//Рег69	Счетчик связи выпрямителя №8
+modbus_registers[137]=(signed char)(bps[7]._cnt);
+
 
 modbus_registers[138]=(signed char)(bps_U>>8);					//Рег70   	напряжение выпрямителей, 0.1В
 modbus_registers[139]=(signed char)(bps_U);
@@ -1816,9 +1978,15 @@ if(bat_ips._av)			tempS|=(1<<0);						 	// Бит 0	Авария батареи
 if(avar_stat&0x0001)   	tempS|=(1<<1);						 	//	Бит 1	Авария питающей сети 
 if(avar_stat&(1<<(3+0)))tempS|=(1<<2);						 	//	Бит 2	Авария выпрямителя №1
 if(avar_stat&(1<<(3+1)))tempS|=(1<<3);						 	//	Бит 3	Авария выпрямителя №2
-if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 	//	Бит 4	Авария выпрямителя №2
+if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 	//	Бит 4	Авария выпрямителя №3
+if(avar_stat&(1<<(3+3)))tempS|=(1<<5);						 	//	Бит 4	Авария выпрямителя №4
+if(avar_stat&(1<<(3+4)))tempS|=(1<<6);						 	//	Бит 4	Авария выпрямителя №5
+if(avar_stat&(1<<(3+5)))tempS|=(1<<7);						 	//	Бит 4	Авария выпрямителя №6
+if(avar_stat&(1<<(3+6)))tempS|=(1<<48);						 	//	Бит 4	Авария выпрямителя №7
 modbus_registers[146]=(signed char)(tempS>>8);
 modbus_registers[147]=(signed char)(tempS);
+
+
 
 
 ///*/

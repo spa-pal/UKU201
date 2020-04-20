@@ -813,7 +813,6 @@ wrk_mem_hndl_end:
 __nop();
 }  
 
-#ifdef UKU_220_IPS_TERMOKOMPENSAT
 //-----------------------------------------------
 void avar_bat_ips_hndl(char in)
 {
@@ -956,7 +955,6 @@ avar_bat_ips_hndl_end:
 __nop();		
 }
 
-#endif
 
 //-----------------------------------------------
 void avar_bat_hndl(char b, char in)

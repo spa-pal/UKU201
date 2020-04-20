@@ -1,0 +1,2 @@
+Added Pin To Net: NetName=GND Pin=JP4-4
+Added Member To Class: ClassName=cpu_board Member=Component R7 1K0

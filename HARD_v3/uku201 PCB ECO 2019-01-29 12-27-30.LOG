@@ -1,0 +1,69 @@
+Added Component: Designator=JP4(2EDGR-5.0-2P)
+Added Component: Designator=K1(kuan)
+Added Component: Designator=Q7(SO-G8/Y2.2)
+Added Component: Designator=Q8(SO-G8/Y2.2)
+Added Component: Designator=R13(_1206)
+Added Component: Designator=R14(_1206)
+Added Component: Designator=R15(_1206)
+Added Component: Designator=R16(_1206)
+Added Component: Designator=R34(_1206)
+Added Component: Designator=R39(_1206)
+Added Component: Designator=R77(_1206)
+Added Component: Designator=R78(_1206)
+Change Net Name : Old Net Name=DT1 New Net Name=VREF
+Change Net Name : Old Net Name=DT2 New Net Name=P2_9
+Change Net Name : Old Net Name=NetR3_1 New Net Name=CANH
+Change Net Name : Old Net Name=NetR4_2 New Net Name=CANL
+Added Pin To Net: NetName=NetJP4_1 Pin=JP4-1
+Added Pin To Net: NetName=NetJP4_1 Pin=K1-1
+Added Net: Name=NetJP4_1
+Added Pin To Net: NetName=NetJP4_2 Pin=JP4-2
+Added Pin To Net: NetName=NetJP4_2 Pin=K1-3
+Added Net: Name=NetJP4_2
+Added Pin To Net: NetName=NetK1_5 Pin=K1-5
+Added Pin To Net: NetName=NetK1_5 Pin=Q8-7
+Added Pin To Net: NetName=NetK1_5 Pin=Q8-8
+Added Net: Name=NetK1_5
+Added Pin To Net: NetName=NetR3_1 Pin=JP3-3
+Added Pin To Net: NetName=NetR3_1 Pin=JP3-4
+Added Pin To Net: NetName=NetR4_2 Pin=JP3-5
+Added Pin To Net: NetName=NetR4_2 Pin=JP3-6
+Added Pin To Net: NetName=+5V Pin=K1-4
+Added Pin To Net: NetName=GND Pin=Q7-1
+Added Pin To Net: NetName=NetQ7_2 Pin=Q7-2
+Added Pin To Net: NetName=GND Pin=Q7-3
+Added Pin To Net: NetName=NetQ7_4 Pin=Q7-4
+Added Pin To Net: NetName=REL1 Pin=Q7-5
+Added Pin To Net: NetName=REL1 Pin=Q7-6
+Added Pin To Net: NetName=REL2 Pin=Q7-7
+Added Pin To Net: NetName=REL2 Pin=Q7-8
+Added Pin To Net: NetName=GND Pin=Q8-1
+Added Pin To Net: NetName=NetQ8_2 Pin=Q8-2
+Added Pin To Net: NetName=GND Pin=Q8-3
+Added Pin To Net: NetName=NetQ8_4 Pin=Q8-4
+Added Pin To Net: NetName=REL3 Pin=Q8-5
+Added Pin To Net: NetName=REL3 Pin=Q8-6
+Added Pin To Net: NetName=NetQ7_2 Pin=R13-2
+Added Pin To Net: NetName=NetQ8_2 Pin=R14-2
+Added Pin To Net: NetName=NetQ7_4 Pin=R15-2
+Added Pin To Net: NetName=NetQ8_4 Pin=R16-2
+Added Pin To Net: NetName=GND Pin=R34-1
+Added Pin To Net: NetName=NetQ7_2 Pin=R34-2
+Added Pin To Net: NetName=GND Pin=R39-1
+Added Pin To Net: NetName=NetQ7_4 Pin=R39-2
+Added Pin To Net: NetName=GND Pin=R77-1
+Added Pin To Net: NetName=NetQ8_2 Pin=R77-2
+Added Pin To Net: NetName=GND Pin=R78-1
+Added Pin To Net: NetName=NetQ8_4 Pin=R78-2
+Added Member To Class: ClassName=cpu_board Member=Component JP4 Header 2
+Added Member To Class: ClassName=cpu_board Member=Component K1 DH1A
+Added Member To Class: ClassName=cpu_board Member=Component Q7 IRF7103
+Added Member To Class: ClassName=cpu_board Member=Component Q8 IRF7103
+Added Member To Class: ClassName=cpu_board Member=Component R13 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R14 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R15 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R16 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R34 10K
+Added Member To Class: ClassName=cpu_board Member=Component R39 10K
+Added Member To Class: ClassName=cpu_board Member=Component R77 10K
+Added Member To Class: ClassName=cpu_board Member=Component R78 10K

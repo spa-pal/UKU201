@@ -86,7 +86,7 @@ typedef struct
 	//2бит - авария по заниженному Uвых
 	//3бит - авария по обрыву связи	
 	//4бит - ресурс вентилятора выработан    
- 	enum {bsAPV,bsWRK,bsRDY,bsBL,bsAV,bsOFF_AV_NET}_state;
+ 	enum {bsAPV,bsWRK,bsRDY,bsBL,bsAV=33,bsOFF_AV_NET}_state;
     char _cnt;
 	char _cnt_old;
 	char _cnt_more2;
@@ -147,6 +147,8 @@ extern signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1
 extern signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
 extern signed short speedChrgBlckStat;		//Сигнал блокировки для выравнивающего и ускоренного заряда.
 extern char  		speedChrgShowCnt;		//Счетчик показа информационного сообщения
+extern signed short SP_CH_VENT_BLOK;
+extern char spch_plazma[2];
 
 //***********************************************
 //Новый ускоренный заряд
@@ -232,6 +234,7 @@ extern signed short TSIGN;
 extern signed short AV_OFF_AVT;
 extern signed short USIGN;
 extern signed short UMN;
+extern signed short UMAXN;
 extern signed short ZV_ON;
 extern signed short IKB;
 extern signed short UVZ;

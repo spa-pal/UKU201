@@ -47,7 +47,7 @@
           <OutputName>1</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\</ListingPath>
@@ -128,7 +128,7 @@
           <Target>
             <UseTarget>1</UseTarget>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
+            <RunToMain>0</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
             <RestoreWatchpoints>1</RestoreWatchpoints>
             <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
@@ -450,6 +450,11 @@
               <FileName>beep.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\beep.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32_rtc.c</FilePath>
             </File>
           </Files>
         </Group>

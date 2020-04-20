@@ -10,6 +10,19 @@
 
 
 //-----------------------------------------------
+void memo_first_init (void)
+{
+if(lc640_read_int(EE_MEMORY_IS_INITIALIZED)!=0x1234)
+	{
+	lc640_write_int(EE_MODBUS_ADRESS,1);
+	lc640_write_int(EE_MODBUS_BAUDRATE,960);
+
+	lc640_write_int(EE_MEMORY_IS_INITIALIZED,0x1234);
+	}
+}
+
+
+//-----------------------------------------------
 void memo_read (void)
 {
 char i;
@@ -63,6 +76,7 @@ TSIGN=lc640_read_int(EE_TSIGN);
 DU=lc640_read_int(EE_DU);
 USIGN=lc640_read_int(EE_USIGN);
 UMN=lc640_read_int(EE_UMN);
+UMAXN=lc640_read_int(EE_UMAXN);
 ZV_ON=lc640_read_int(EE_ZV_ON);
 IKB=lc640_read_int(EE_IKB);
 UVZ=lc640_read_int(EE_UVZ);
@@ -176,6 +190,7 @@ speedChrgAvtEn =lc640_read_int(EE_SPEED_CHRG_AVT_EN);
 speedChrgBlckSrc=lc640_read_int(EE_SPEED_CHRG_BLOCK_SRC);
 speedChrgBlckLog=lc640_read_int(EE_SPEED_CHRG_BLOCK_LOG);
 speedChrgDU=lc640_read_int(EE_SPEED_CHRG_D_U);
+SP_CH_VENT_BLOK=lc640_read_int(EE_SP_CH_VENT_BLOK);
 DU_LI_BAT=lc640_read_int(EE_DU_LI_BAT);
 FORVARDBPSCHHOUR=lc640_read_int(EE_FORVARDBPSCHHOUR);
 U_OUT_KONTR_MAX=lc640_read_int(EE_U_OUT_KONTR_MAX);

@@ -259,7 +259,7 @@ if((RXBUFF[1]==PUTTM_IBATMETER)&&(RXBUFF[0]==PUTTM_IBATMETER))
 		temp_SL=(signed long)ibat_metr_buff_[0];
 		temp_SL-=(signed long)ibat_metr_buff_[1];
 		temp_SL*=(signed long)Kibat1[0];
-		if((AUSW_MAIN==22010)||(AUSW_MAIN==22011)||(AUSW_MAIN==22035)||(AUSW_MAIN==22033)||(AUSW_MAIN==22063)||(AUSW_MAIN==22023)||(AUSW_MAIN==22043)||(AUSW_MAIN==22044))temp_SL/=2000L;
+		temp_SL/=2000L;
 	
 		Ib_ips_termokompensat =(signed short)temp_SL;
 		if(bIBAT_SMKLBR_cnt)

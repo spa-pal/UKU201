@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=GND Pin=R?-1
+Removed Pin From Net: NetName=+5V Pin=R?-2
+Change Component Designator: OldDesignator=C? NewDesignator=C30
+Change Component Designator: OldDesignator=D? NewDesignator=D12
+Change Component Designator: OldDesignator=R? NewDesignator=R7
+Change Component Designator: OldDesignator=R? NewDesignator=R41
+Change Component Designator: OldDesignator=R? NewDesignator=R42
+Added Pin To Net: NetName=NetJP4_3 Pin=R7-1
+Added Pin To Net: NetName=+5V Pin=R7-2
+Added Pin To Net: NetName=NetJP4_3 Pin=R41-1
+Added Pin To Net: NetName=C9 Pin=R41-2
+Added Pin To Net: NetName=GND Pin=R42-1
+Added Pin To Net: NetName=C9 Pin=R42-2
+Added Member To Class: ClassName=cpu_board Member=Component R41 1K0
+Added Member To Class: ClassName=cpu_board Member=Component R42 10K

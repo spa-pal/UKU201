@@ -1,0 +1,13 @@
+Removed Pin From Net: NetName=Net1_1 Pin=1-1
+Removed Pin From Net: NetName=Net2_1 Pin=2-1
+Removed Pin From Net: NetName=GND_CAN Pin=3-1
+Removed Member From Class: ClassName=CAN Member=1
+Removed Member From Class: ClassName=CAN Member=2
+Removed Member From Class: ClassName=CAN Member=3
+Removed Member From Class: ClassName=CAN Member=3
+Removed Member From Class: ClassName=CAN Member=3
+Removed Member From Class: ClassName=CAN Member=3
+Change Net Name : Old Net Name=DB4 New Net Name=VREF
+Change Net Name : Old Net Name=DB5 New Net Name=P2_9
+Change Net Name : Old Net Name=Net1_1 New Net Name=NetR3_1
+Change Net Name : Old Net Name=Net2_1 New Net Name=NetR4_2

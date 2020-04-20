@@ -82,6 +82,8 @@ signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1-СК1, 2
 signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
 signed short speedChrgBlckStat;		//Сигнал блокировки для выравнивающего и ускоренного заряда.
 char  	   	 speedChrgShowCnt;		//Счетчик показа информационного сообщения
+signed short SP_CH_VENT_BLOK;
+char spch_plazma[2];
 
 //***********************************************
 //Новый ускоренный заряд
@@ -151,6 +153,7 @@ signed short TSIGN;
 signed short AV_OFF_AVT;
 signed short USIGN;
 signed short UMN;
+signed short UMAXN;
 signed short ZV_ON;
 signed short IKB;
 //signed short KVZ;
@@ -508,6 +511,8 @@ if(parametr==1)		//Температура датчика батареи
 void net_drv(void)
 { 
 
+
+
 max_net_slot=32;
 //if(NUMINV) max_net_slot=MINIM_INV_ADRESS+NUMINV;
 //gran_char(&max_net_slot,0,MAX_NET_ADRESS);
@@ -634,7 +639,7 @@ void SysTick_Handler (void)
 //GPIOC->ODR^=(1<<6);
 b1000Hz=(bool)1;
 
-	if((GPIOB->IDR&=(1<<9)))bFF=1;
+	if((GPIOC->IDR&=(1<<1)))bFF=1;
 	else bFF=0;
 	if(bFF!=bFF_) hz_out++;
 	bFF_=bFF;
@@ -724,6 +729,8 @@ spi2_config();
 //tx1_restart=1;
 plazma=1;
 rtc_init();
+
+memo_first_init ();
 memo_read();
 stm32_Usart1Setup(MODBUS_BAUDRATE*10UL);
 lc640_write_int(0x0010,0x64);
@@ -769,12 +776,13 @@ while (1)
 		b10Hz=(bool)0;
 		adc_drv();
 		beep_drv(); 
-
+	   	ext_drv();
 		u_necc_hndl();
 		cntrl_hndl();
 		for(i=0;i<NUMIST;i++)bps_drv(i);
 		bps_hndl();
 //		calendar_hndl();
+		led_drv();
 		}   
 	if (b5Hz) 
 		{
@@ -803,14 +811,14 @@ while (1)
 		b1Hz=(bool)0;
 
 		num_necc_hndl();
-		
+		kb_hndl();
 
 
 
 		plazma_tx_cnt++;
 		
-		GPIOB->ODR^=(1<<10);
-
+		//GPIOB->ODR^=(1<<10);
+	   	//printf ("\033c");
 		//putchar1('a');
 		//uart_out1 (4,'a','b','c',plazma_tx_cnt,0,0);
 		//uart_out2 (4,'d','e','f',plazma_tx_cnt,0,0);
@@ -827,18 +835,31 @@ while (1)
 		//spi2(0x55);
 		//printf("%5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   %5d   \r\n", adc_buff[0][0], adc_buff[0][1], adc_buff[0][2], adc_buff[0][3], adc_buff[0][4], adc_buff[0][5], adc_buff[0][6], adc_buff[0][7], adc_buff[0][8], adc_buff[0][9], adc_buff[0][10], adc_buff[0][11], adc_buff[0][12], adc_buff[0][13], adc_buff[0][14], adc_buff[0][15]);
 		//printf("%3d   %3d   %3d   %3d   %3d    %3d \r\n", bps[0]._cnt, bps[1]._cnt, bps[2]._cnt, can_rotor[1], can_rotor[2], bps[0]._Ti);
-		//printf("num_necc= %3d   %d   %d   %3d   %3d    %3d \r\n", num_necc, ibat_metr_buff_[0], ibat_metr_buff_[1], can_rotor[1], can_rotor[2], bps[0]._Ti);
+		//printf("num_necc= %3d   %d   %d   %3d   %3d    %3d \r\n", num_necc, ibat_metr_buff_[0], ibat_metr_buff_[1], Kibat1[0], Ib_ips_termokompensat, bps[0]._Ti);
 		//printf("flags_tu= %2x   %2x   %2x  \r\n", bps[0]._flags_tu, bps[1]._flags_tu, bps[2]._flags_tu);
-		
+		printf("\r\n bat_temper = %d num_necc= %d  u_necc= %3d  cntrl_stat= %4d  UB0= %3d  UB20= %3d  bps_U= %3d  DU= %3d \r\n",bat[0]._Tb ,num_necc, u_necc, cntrl_stat, UB0, UB20, bps_U, DU);
+		//printf("flags_tu= %2X %2X %2X  state= %2X %2X %2X  av= %2X %2X %2X flags_tm= %2X %2X %2X umin_av_cnt= %d %d %d\r\n", bps[0]._flags_tu,bps[1]._flags_tu,bps[2]._flags_tu, bps[0]._state, bps[1]._state, bps[2]._state ,bps[0]._av ,bps[1]._av, bps[2]._av, bps[0]._flags_tm ,bps[1]._flags_tm, bps[2]._flags_tm, bps[0]._umin_av_cnt ,bps[1]._umin_av_cnt, bps[2]._umin_av_cnt);
+	   	//printf("%d  %d  %d  %d \r\n", bps[0]._x_, bps[1]._x_, bps[2]._x_, bps[3]._x_);
+		//printf("%2d; %4d; %2d; %2d;\r\n", avt_klbr_phase_ui, modbus_register_1022, bps[2]._cnt, bps[3]._cnt);
+		printf("%3d   %3d   %3d   %3d   %3d   \r\n", cntrl_hndl_plazma, bps[0]._cnt, bps[1]._cnt, bps[2]._cnt,UMAXN);
+
 		//RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 		//PWR->CR      |= PWR_CR_DBP;
 		//BKP->DR1=(BKP->DR1)+1;
 		//PWR->CR   &= ~PWR_CR_DBP;
-		printf("%5d %5d %5d %5d %5d %5d %5d %5d %5d\r\n", BKP->DR1, cntrl_stat, modbus_register_995, bps[0]._flags_tu, RTC->CNTH, RTC->CNTL, MODBUS_ADRESS, BKP->DR4, BKP->DR5);
+		//printf("%5d %5d %5d %5d %5d %5d %5d %5d %5d\r\n", BKP->DR1, cntrl_stat, modbus_register_995, bps[0]._flags_tu, RTC->CNTH, RTC->CNTL, MODBUS_ADRESS, BKP->DR4, BKP->DR5);
+		avg_hndl();
 
 		beep_hndl();
 		//calendar_hndl();
 		factory_settings_hndl();
+
+		#ifdef UKU_220_IPS_TERMOKOMPENSAT
+		speedChargeHndl();
+		//averageChargeHndl();
+		//vz1_drv();
+		//vz2_drv();
+		#endif
 		}
 	if(bMODBUS_TIMEOUT)
 		{

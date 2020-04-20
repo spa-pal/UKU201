@@ -1,0 +1,18 @@
+Added Component: Designator=C5(_1206)
+Added Component: Designator=C6(el3)
+Added Component: Designator=C17(_1206)
+Added Component: Designator=C18(el3)
+Change Net Name : Old Net Name=-UOUT New Net Name=VREF
+Change Net Name : Old Net Name=BAT New Net Name=P2_9
+Added Pin To Net: NetName=GND Pin=C5-1
+Added Pin To Net: NetName=+5V Pin=C5-2
+Added Pin To Net: NetName=GND_CAN Pin=C6-1
+Added Pin To Net: NetName=NetC3_1 Pin=C6-2
+Added Pin To Net: NetName=GND Pin=C17-1
+Added Pin To Net: NetName=+5V Pin=C17-2
+Added Pin To Net: NetName=GND_CAN Pin=C18-1
+Added Pin To Net: NetName=NetC18_2 Pin=C18-2
+Added Member To Class: ClassName=CAN Member=Component C5 1u
+Added Member To Class: ClassName=CAN Member=Component C6 22u 50v
+Added Member To Class: ClassName=RS485 Member=Component C17 1u
+Added Member To Class: ClassName=RS485 Member=Component C18 22u 50v

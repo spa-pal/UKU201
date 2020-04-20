@@ -1,0 +1,9 @@
+Removed Pin From Net: NetName=CANL Pin=JP1-1
+Removed Pin From Net: NetName=CANL Pin=JP1-2
+Removed Pin From Net: NetName=CANH Pin=JP1-3
+Removed Pin From Net: NetName=CANH Pin=JP1-4
+Change Net Name : Old Net Name=NetC2_2 New Net Name=P2_9
+Added Pin To Net: NetName=CANH Pin=JP1-1
+Added Pin To Net: NetName=CANH Pin=JP1-2
+Added Pin To Net: NetName=CANL Pin=JP1-3
+Added Pin To Net: NetName=CANL Pin=JP1-4

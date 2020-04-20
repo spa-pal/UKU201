@@ -1,0 +1,8 @@
+Removed Pin From Net: NetName=GND Pin=JP2-1
+Removed Pin From Net: NetName=GND Pin=JP2-2
+Removed Pin From Net: NetName=+5V Pin=JP2-3
+Removed Pin From Net: NetName=+5V Pin=JP2-4
+Removed Pin From Net: NetName=-5V Pin=JP2-6
+Change Component Footprint: Designator=JP2 Old Footprint=HDR2X10 New Footprint=HDR2X5
+Change Component Comment : Designator=JP2 Old Comment=PBD-20 New Comment=PBD-10
+Change Net Name : Old Net Name=DT5 New Net Name=P2_9

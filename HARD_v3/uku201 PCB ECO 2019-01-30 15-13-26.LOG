@@ -1,0 +1,23 @@
+Change Net Name : Old Net Name=NetC16_2 New Net Name=A11
+Change Net Name : Old Net Name=NetC22_1 New Net Name=P2_9
+Added Pin To Net: NetName=A9 Pin=U6-42
+Added Pin To Net: NetName=A9 Pin=U10-6
+Added Net: Name=A9
+Added Pin To Net: NetName=A10 Pin=U6-43
+Added Pin To Net: NetName=A10 Pin=U10-3
+Added Net: Name=A10
+Added Pin To Net: NetName=B8 Pin=R2-1
+Added Pin To Net: NetName=B8 Pin=U6-61
+Added Net: Name=B8
+Added Pin To Net: NetName=B9 Pin=R1-1
+Added Pin To Net: NetName=B9 Pin=U6-62
+Added Net: Name=B9
+Added Pin To Net: NetName=B13 Pin=U2-14
+Added Pin To Net: NetName=B13 Pin=U6-34
+Added Net: Name=B13
+Added Pin To Net: NetName=B14 Pin=U2-17
+Added Pin To Net: NetName=B14 Pin=U6-35
+Added Net: Name=B14
+Added Pin To Net: NetName=B15 Pin=U2-16
+Added Pin To Net: NetName=B15 Pin=U6-36
+Added Net: Name=B15

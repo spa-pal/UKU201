@@ -1,0 +1,14 @@
+Added Component: Designator=BT1(BAT_HOLD_SMD)
+Added Component: Designator=D5(_1206d)
+Change Net Name : Old Net Name=DT3 New Net Name=P2_9
+Added Pin To Net: NetName=NetBT1_1 Pin=BT1-1
+Added Pin To Net: NetName=GND Pin=BT1-2
+Added Pin To Net: NetName=NetBT1_1 Pin=D5-1
+Added Pin To Net: NetName=VBAT Pin=D5-2
+Added Pin To Net: NetName=CANH Pin=JP3-3
+Added Pin To Net: NetName=CANH Pin=JP3-4
+Added Pin To Net: NetName=CANL Pin=JP3-5
+Added Pin To Net: NetName=CANL Pin=JP3-6
+Added Pin To Net: NetName=VBAT Pin=U6-1
+Added Member To Class: ClassName=cpu_board Member=Component BT1 CR2032
+Added Member To Class: ClassName=cpu_board Member=Component D5 LL4148

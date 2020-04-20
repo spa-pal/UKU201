@@ -1,0 +1,9 @@
+Removed Pin From Net: NetName=+3V3 Pin=R7-1
+Removed Pin From Net: NetName=NetC11_2 Pin=R7-2
+Removed Member From Class: ClassName=cpu_board Member=R7
+Change Component Comment : Designator=C11 Old Comment=1.0 New Comment=10.0
+Added Component: Designator=U12(so-g3)
+Added Pin To Net: NetName=NetC11_2 Pin=U12-1
+Added Pin To Net: NetName=GND Pin=U12-2
+Added Pin To Net: NetName=+5V Pin=U12-3
+Added Member To Class: ClassName=cpu_board Member=Component U12 AD158X
