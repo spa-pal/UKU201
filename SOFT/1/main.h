@@ -28,11 +28,12 @@ extern signed int MODBUS_BAUDRATE;
 
 //***********************************************
 //Состояние первичной сети
-extern signed short net_U,net_Ustore,net_Ua,net_Ub,net_Uc;
+extern signed short net_U,net_Ustore,net_Ua,net_Ub,net_Uc, net_Umax;
 extern char bFF,bFF_;
 extern signed short net_F,hz_out,hz_out_cnt,net_F3;
-extern signed char unet_drv_cnt;
-extern char net_av;
+extern signed char unet_drv_cnt;	//Счетчик на снижение первичного наряжеия
+extern signed char unet_max_drv_cnt; //Счетчик на превышение первичного наряжеия
+extern char net_av;			//аварийность питающей сети 0 - норма, 1 - занижено, 2 - завышено
 
 //***********************************************
 //Состояние батарей
@@ -332,6 +333,10 @@ extern signed short VZ_KIND;			//Тип выравнивающего заряда, 0 - обычный(историче
 extern signed short SNTP_ENABLE;
 extern signed short SNTP_GMT;
 
+extern signed short RELE1SET;			//Настройка срабатываний реле1
+extern signed short RELE2SET;			//Настройка срабатываний реле2, значение битов как и в реле1
+extern signed short RELE3SET;		   	//Настройка срабатываний реле3, значение битов как и в реле1
+
 extern signed short UZ_U;
 extern signed short UZ_IMAX;
 extern signed short UZ_T;
@@ -344,7 +349,7 @@ extern signed short FZ_U2;
 extern signed short FZ_IMAX2;
 extern signed short FZ_T2;
 
-extern signed short RELE_SET_MASK[4];
+//extern signed short RELE_SET_MASK[4];
 
 typedef enum {bisON=0x0055,bisOFF=0x00aa}enum_bat_is_on;
 extern enum_bat_is_on BAT_IS_ON[2];
@@ -582,6 +587,35 @@ extern signed short Isumm_;
 
 #define MESS2NET_DRV							33
 #define	PARAM_BPS_NET_OFF						34
+
+//***********************************************
+//Управление реле
+extern char rele_output_stat;
+//0 байт -> "1" реле 1 под ток
+//1 байт -> "1" реле 2 под ток
+//2 байт -> "1" реле 3 под ток
+//3 байт -> "1" реле HV под ток
+
+//***********************************************
+//Управление тестовыми процессами
+extern unsigned short test_control_register,test_control_register_old;
+extern char rele_output_stat_test_byte;
+extern char rele_output_stat_test_mask;
+extern char tst_hndl_cnt;
+extern char test_hndl_rele1_cntrl,test_hndl_rele1_cnt;
+extern char test_hndl_rele2_cntrl,test_hndl_rele2_cnt;
+extern char test_hndl_rele3_cntrl,test_hndl_rele3_cnt;
+extern char test_hndl_releHV_cntrl,test_hndl_releHV_cnt;
+extern char test_hndl_bps_number;
+extern char test_hndl_bps_state;
+extern short test_hndl_bps_cnt;
+
+//***********************************************
+//Управление светодиодами
+extern char ledUOUTGOOD;	//Зеленый светодиод "выходное напряжение в норме"
+extern char ledWARNING;  	//Желтый светодиод "тревога в одном из устройств"
+extern char ledERROR;		//Красный светодиод "авария в одном из устройств"
+extern char ledCAN;	   		//Зеленый светодиод "связь по КАН в норме"
 
 //***********************************************
 //***********************************************

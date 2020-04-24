@@ -763,6 +763,74 @@ if(crc16_calculated==crc16_incapsulated)
 				lc640_write_int(EE_SP_CH_VENT_BLOK,modbus_rx_arg1);
 	     		}
 
+			if(modbus_rx_arg0==77)		//Рег77	 Количество фаз питающей сети, 1 - (1)  3 - (3)
+				{
+				printf("Reg 77 writed   \r\n");
+				gran(&modbus_rx_arg1,1,3);
+				lc640_write_int(EE_NUMPHASE,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==78)		//Рег78	 //Настройка срабатываний реле1
+				{
+				printf("Reg 78 writed   \r\n");
+				lc640_write_int(EE_RELE1SET,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==79)		//Рег79	 //Настройка срабатываний реле2
+				{
+				printf("Reg 79 writed   \r\n");
+				lc640_write_int(EE_RELE2SET,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==80)		//Рег80	 //Настройка срабатываний реле1
+				{
+				printf("Reg 80 writed   \r\n");
+				lc640_write_int(EE_RELE3SET,modbus_rx_arg1);
+	     		}											
+			if(modbus_rx_arg0==970)		// Управление реле1 в тесте
+				{
+				test_hndl_rele1_cntrl=modbus_rx_arg1;
+				if(modbus_rx_arg1) test_hndl_rele1_cnt=100;
+				}
+			if(modbus_rx_arg0==971)		// Управление реле2 в тесте
+				{
+				test_hndl_rele2_cntrl=modbus_rx_arg1;
+				if(modbus_rx_arg1) test_hndl_rele2_cnt=100;
+				}
+			if(modbus_rx_arg0==972)		// Управление реле3 в тесте
+				{
+				test_hndl_rele3_cntrl=modbus_rx_arg1;
+				if(modbus_rx_arg1) test_hndl_rele3_cnt=100;
+				}
+			if(modbus_rx_arg0==973)		// Управление релеHV в тесте
+				{
+				test_hndl_releHV_cntrl=modbus_rx_arg1;
+				if(modbus_rx_arg1) test_hndl_releHV_cnt=100;
+				}
+			if(modbus_rx_arg0==974)		// Управление БПСами в тесте, номер БПС (0-не управлеям никаким,1-3 - номер управляемого БПС, 255 - управляем всеми)
+				{
+				test_hndl_bps_number=modbus_rx_arg1;
+				if(modbus_rx_arg1==255) 
+					{
+					test_hndl_bps_cnt=600;
+					test_hndl_bps_state=3;
+					}
+				else if(modbus_rx_arg1==0) 
+					{
+					test_hndl_bps_cnt=0;
+					test_hndl_bps_state=0;
+					}
+				else
+					{
+					test_hndl_bps_cnt=600;
+					test_hndl_bps_state=0;
+					}
+				}
+			if(modbus_rx_arg0==975)		// Управление БПСами в тесте, 0 - выключаем, 1 - включаем максимальный шим, 2 - включаем минимальный шим, 3 - включаем термокопенсацию, 4 - включаем автономно)
+				{
+				test_hndl_bps_cnt=600;
+				test_hndl_bps_state=modbus_rx_arg1;
+				}
 			if(modbus_rx_arg0==982)		// Включение-выключение ускоренного заряда
 				{
 				speedChargeStartStop();
@@ -1675,6 +1743,16 @@ modbus_registers[148]=(char)(speedChrgBlckLog>>8);		//Рег75	 Сигнал блокировки у
 modbus_registers[149]=(char)(speedChrgBlckLog);
 modbus_registers[150]=(char)(SP_CH_VENT_BLOK>>8);		//Рег76	 Блокирование ускоренного заряда вентиляцией, вкл(1) выкл(0) 
 modbus_registers[151]=(char)(SP_CH_VENT_BLOK);
+modbus_registers[152]=(char)(NUMPHASE>>8);				//Рег77	 Количество фаз питающей сети, 1 - (1)  3 - (3) 
+modbus_registers[153]=(char)(NUMPHASE);
+modbus_registers[154]=(char)(RELE1SET>>8);				//Рег78	 Настройка срабатываний реле1  
+modbus_registers[155]=(char)(RELE1SET);					
+modbus_registers[156]=(char)(RELE2SET>>8);				//Рег79	 Настройка срабатываний реле2  
+modbus_registers[157]=(char)(RELE2SET);					//значение битов как и в Рег78
+modbus_registers[158]=(char)(RELE3SET>>8);				//Рег80	 Настройка срабатываний реле3  
+modbus_registers[159]=(char)(RELE3SET);					//значение битов как и в Рег78
+
+
 /*
 
 	ptrs[0]=	" Iуск.зар.        !А";
@@ -1721,6 +1799,21 @@ modbus_registers[151]=(char)(SP_CH_VENT_BLOK);
 //modbus_register_1000 = 2;
 //modbus_register_1001 = 7890;
 //modbus_register_1002 = 8765;hv_vz_up_cnt
+
+modbus_registers[1938]=(char)(test_hndl_rele1_cntrl>>8);						//Рег970	 Управление реле №1 в тесте (0 - не трогаем, 1 - принудительно вкл., 2 - принудительно выкл)
+modbus_registers[1939]=(char)(test_hndl_rele1_cntrl);
+modbus_registers[1940]=(char)(test_hndl_rele2_cntrl>>8);						//Рег971	 Управление реле №2 в тесте (0 - не трогаем, 1 - принудительно вкл., 2 - принудительно выкл)
+modbus_registers[1941]=(char)(test_hndl_rele2_cntrl);
+modbus_registers[1942]=(char)(test_hndl_rele3_cntrl>>8);						//Рег972	 Управление реле №3 в тесте (0 - не трогаем, 1 - принудительно вкл., 2 - принудительно выкл)
+modbus_registers[1943]=(char)(test_hndl_rele3_cntrl);
+modbus_registers[1944]=(char)(test_hndl_releHV_cntrl>>8);						//Рег973	 Управление реле HV в тесте (0 - не трогаем, 1 - принудительно вкл., 2 - принудительно выкл)
+modbus_registers[1945]=(char)(test_hndl_releHV_cntrl);
+modbus_registers[1946]=(char)(test_hndl_bps_number>>8);							//Рег974	 Управление БПСами в тесте, номер БПС (0-не управлеям никаким,1-3 - номер управляемого БПС, 255 - управляем всеми)
+modbus_registers[1947]=(char)(test_hndl_bps_number);
+modbus_registers[1948]=(char)(test_hndl_bps_state>>8);							//Рег975	 Управление БПСами в тесте, (0 - выключаем, 1 - включаем максимальный шим, 2 - включаем минимальный шим, 3 - включаем термокопенсацию, 4 - включаем автономно)
+modbus_registers[1949]=(char)(test_hndl_bps_state);
+
+
 tempSS=0;
 if((sp_ch_stat==scsSTEP1)||(sp_ch_stat==scsWRK))tempSS=1;
 modbus_registers[1962]=(char)(tempSS>>8);										//Рег982	 Включенность ускоренного заряда вкл(1) выкл(0) 
@@ -1790,9 +1883,9 @@ signed char modbus_registers[2200];
 unsigned short crc_temp;
 char i;
 short tempS;
-/*
-plazma_uart1[2]++;
 
+plazma_uart1[2]++;
+/*
 out_U=plazma_short;
 bps_I=5678;
 
@@ -1985,10 +2078,38 @@ if(avar_stat&(1<<(3+5)))tempS|=(1<<7);						 	//	Бит 4	Авария выпрямителя №6
 if(avar_stat&(1<<(3+6)))tempS|=(1<<48);						 	//	Бит 4	Авария выпрямителя №7
 modbus_registers[146]=(signed char)(tempS>>8);
 modbus_registers[147]=(signed char)(tempS);
+/*
+cntrl_stat=641;
+u_necc=2345;
+IZMAX_=1234;
+bps_I=986;	*/
+																//Специнформация
+modbus_registers[158]=(signed char)(cntrl_stat>>8);				//Рег80	Шим
+modbus_registers[159]=(signed char)(cntrl_stat);
+modbus_registers[160]=(signed char)(u_necc>>8);					//Рег81	напряжение поддержания
+modbus_registers[161]=(signed char)(u_necc);
+modbus_registers[162]=(signed char)(IZMAX_>>8);					//Рег82	ток заряда батареи максимальный
+modbus_registers[163]=(signed char)(IZMAX_);
+modbus_registers[164]=(signed char)(bps_I>>8);					//Рег83	суммарный ток БПС
+modbus_registers[165]=(signed char)(bps_I);
 
 
-
-
+modbus_registers[166]=(signed char)(bps[0]._x_>>8);				//Рег84	Регулятор выравнивания токов БПС1 
+modbus_registers[167]=(signed char)(bps[0]._x_);
+modbus_registers[168]=(signed char)(bps[1]._x_>>8);				//Рег85	Регулятор выравнивания токов БПС2 
+modbus_registers[169]=(signed char)(bps[1]._x_);
+modbus_registers[170]=(signed char)(bps[2]._x_>>8);				//Рег86	Регулятор выравнивания токов БПС3 
+modbus_registers[171]=(signed char)(bps[2]._x_);
+modbus_registers[172]=(signed char)(bps[3]._x_>>8);				//Рег87	Регулятор выравнивания токов БПС4 
+modbus_registers[173]=(signed char)(bps[3]._x_);
+modbus_registers[174]=(signed char)(bps[4]._x_>>8);				//Рег88	Регулятор выравнивания токов БПС5 
+modbus_registers[175]=(signed char)(bps[4]._x_);
+modbus_registers[176]=(signed char)(bps[5]._x_>>8);				//Рег89	Регулятор выравнивания токов БПС6 
+modbus_registers[177]=(signed char)(bps[5]._x_);
+modbus_registers[178]=(signed char)(bps[6]._x_>>8);				//Рег90	Регулятор выравнивания токов БПС7 
+modbus_registers[179]=(signed char)(bps[6]._x_);
+modbus_registers[180]=(signed char)(bps[7]._x_>>8);				//Рег91	Регулятор выравнивания токов БПС8 
+modbus_registers[181]=(signed char)(bps[7]._x_);
 ///*/
 /*
 tempS=cntrl_stat_old;

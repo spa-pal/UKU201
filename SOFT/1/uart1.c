@@ -222,7 +222,7 @@ if (IIR & USART_FLAG_RXNE)
 if (IIR & USART_FLAG_TXE) 
 	{
  	USART1->SR &= ~USART_FLAG_TXE;	          // clear interrupt
-	GPIOB->ODR^=(1<<12);
+	//GPIOB->ODR^=(1<<12);
 	if (tx_rd_index1 != tx_wr_index1)
 		{
    		USART1->DR = tx_buffer1[tx_rd_index1];
@@ -239,7 +239,7 @@ if (IIR & USART_FLAG_TXE)
 if (IIR & USART_FLAG_TC) 
 	{
  	USART1->SR &= ~USART_FLAG_TC;	          // clear interrupt
-	GPIOC->ODR^=(1<<6);
+	//GPIOC->ODR^=(1<<6);
 	bTRANSMIT1=FALSE;
 	GPIOA->ODR&=~(1<<11);
 

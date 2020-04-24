@@ -255,7 +255,17 @@ __nop();
 }
 
 //-----------------------------------------------
-//Драйвер светодиодов
+//Управление светодиодами, логическое, 10Гц
+void led_hndl(void)
+{
+ledERROR=0;
+ledWARNING=0;
+ledUOUTGOOD=0;
+ledCAN=1;
+}
+
+//-----------------------------------------------
+//Управление светодиодами, физическое, 10Гц
 void led_drv(void)
 {
 static char led_drv_main_cnt;
@@ -264,6 +274,46 @@ led_drv_main_cnt&=0x0f;
 
 if(led_drv_main_cnt&0x01)
 	{
+	}
+/*	*/
+//Зеленый светодиод "выходное напряжение в норме"
+if(ledUOUTGOOD==1)
+	{
+	GPIOC->ODR&=~(1<<6);
+	}
+else 
+	{
+	GPIOC->ODR|=(1<<6);
+	}
+
+//Желтый светодиод "тревога в одном из устройств"
+if(ledWARNING==1)
+	{
+	GPIOB->ODR&=~(1<<12);
+	}
+else 
+	{
+	GPIOB->ODR|=(1<<12);
+	}
+
+//Красный светодиод "авария в одном из устройств"
+if(ledERROR==1)
+	{
+	GPIOB->ODR&=~(1<<11);
+	}
+else 
+	{
+	GPIOB->ODR|=(1<<11);
+	}
+
+//Зеленый светодиод "связь по КАН в норме"
+if(ledCAN==1)
+	{ 
+	GPIOB->ODR&=~(1<<10);
+	}
+else 
+	{
+	GPIOB->ODR|=(1<<10);
 	}
 
 }
@@ -940,6 +990,21 @@ temp_SL=(signed long)adc_buff_[2];
 temp_SL*=KunetC;
 temp_SL/=6000L;
 net_Uc=(signed short)temp_SL;
+
+if(NUMPHASE==1)
+	{
+	net_U=net_Ua;
+	net_Umax=net_U;
+	}
+else if(NUMPHASE==3)
+	{
+	net_U=net_Ua;
+	if(net_Ub<net_U)net_U=net_Ub;
+	if(net_Uc<net_U)net_U=net_Uc;
+	net_Umax=net_Ua;
+	if(net_Ub>net_Umax)net_Umax=net_Ub;
+	if(net_Uc>net_Umax)net_Umax=net_Uc;
+	}
 
 if((adc_buff_[3]>800)&&(adc_buff_[3]<3800))bat[0]._nd=0;
 else bat[0]._nd=1;
@@ -1667,6 +1732,77 @@ gran(&num_necc,1,NUMIST);
 }
 
 //-----------------------------------------------
+void unet_drv(void)
+{
+//if(net_av_2min_timer)net_av_2min_timer--;
+
+if(net_U<UMN)
+	{
+	if((unet_drv_cnt<10)&&(main_1Hz_cnt>15))
+		{
+		unet_drv_cnt++;
+		if(unet_drv_cnt>=10)
+			{
+			net_Ustore=net_U;
+		 	avar_unet_hndl(1);
+			
+			}
+		}
+	else if(unet_drv_cnt>=10)unet_drv_cnt=10;
+
+	if(net_U<net_Ustore) net_Ustore=net_U;	
+	}
+
+else if(net_U>UMN)
+	{                 
+	if(unet_drv_cnt)
+		{
+		unet_drv_cnt--;
+		if(unet_drv_cnt<=0)
+			{
+			avar_unet_hndl(0);
+			avar_bps_reset_cnt=10;
+			}
+		}
+	else if(unet_drv_cnt<0)unet_drv_cnt=0;
+	
+	}
+if(net_Umax>UMAXN)
+	{
+	if((unet_max_drv_cnt<10)&&(main_1Hz_cnt>15))
+		{
+		unet_max_drv_cnt++;
+		if(unet_max_drv_cnt>=10)
+			{
+			net_Ustore=net_Umax;
+		 	avar_unet_hndl(2);
+			
+			}
+		}
+	else if(unet_max_drv_cnt>=10)unet_max_drv_cnt=10;
+
+	if(net_Umax>net_Ustore) net_Ustore=net_Umax;	
+	}
+
+else if(net_Umax<UMAXN)
+	{                 
+	if(unet_max_drv_cnt)
+		{
+		unet_max_drv_cnt--;
+		if(unet_max_drv_cnt<=0)
+			{
+			avar_unet_hndl(0);
+			avar_bps_reset_cnt=10;
+			}
+		}
+	else if(unet_max_drv_cnt<0)unet_max_drv_cnt=0;
+	
+	}
+if(avar_bps_reset_cnt)	avar_bps_reset_cnt--;
+}
+
+
+//-----------------------------------------------
 void show_mess(char* p1, char* p2, char* p3, char* p4,int m_sec)
 {
 //bgnd_par(p1,p2,p3,p4);
@@ -1989,6 +2125,228 @@ if(speedChrgBlckStat==1)
 		}
 	} 
 else speedChrgShowCnt=0;  */
+}
+
+//-----------------------------------------------
+//Обслуживание тестовых операций, 10Гц
+void tst_hndl(void)
+{
+/*if(tst_hndl_cnt)
+	{
+	tst_hndl_cnt--;
+	if(tst_hndl_cnt==0)
+		{
+		test_control_register=0;
+		}
+	}
+
+if(test_control_register!=test_control_register_old)
+	{
+	if(test_control_register==0)
+		{
+		rele_output_stat_test_byte=0;
+		rele_output_stat_test_mask=0;
+		tst_hndl_cnt=0;
+		}
+	else
+		{
+		tst_hndl_cnt=100;
+		}
+
+	}
+test_control_register_old=test_control_register; */
+
+//Принудительное управление реле1
+if(test_hndl_rele1_cnt)
+	{
+	test_hndl_rele1_cnt--;
+	if(test_hndl_rele1_cnt==0)
+		{
+		test_hndl_rele1_cntrl=0;
+		}
+	rele_output_stat_test_byte&=0xfe;
+	if(test_hndl_rele1_cntrl==1)rele_output_stat_test_byte|=0x01;
+	rele_output_stat_test_mask|=0x01;	
+	if(test_hndl_rele1_cntrl==0)rele_output_stat_test_mask&=0xfe;
+	}
+else
+	{
+	rele_output_stat_test_byte&=0xfe;
+	rele_output_stat_test_mask&=0xfe;
+	}
+
+//Принудительное управление реле2
+if(test_hndl_rele2_cnt)
+	{
+	test_hndl_rele2_cnt--;
+	if(test_hndl_rele2_cnt==0)
+		{
+		test_hndl_rele2_cntrl=0;
+		}
+	rele_output_stat_test_byte&=0xfd;
+	if(test_hndl_rele2_cntrl==1)rele_output_stat_test_byte|=0x02;
+	rele_output_stat_test_mask|=0x02;	
+	if(test_hndl_rele2_cntrl==0)rele_output_stat_test_mask&=0xfd;
+	}
+else
+	{
+	rele_output_stat_test_byte&=0xfd;
+	rele_output_stat_test_mask&=0xfd;
+	}
+
+//Принудительное управление реле3
+if(test_hndl_rele3_cnt)
+	{
+	test_hndl_rele3_cnt--;
+	if(test_hndl_rele3_cnt==0)
+		{
+		test_hndl_rele3_cntrl=0;
+		}
+	rele_output_stat_test_byte&=0xfb;
+	if(test_hndl_rele3_cntrl==1)rele_output_stat_test_byte|=0x04;
+	rele_output_stat_test_mask|=0x04;	
+	if(test_hndl_rele3_cntrl==0)rele_output_stat_test_mask&=0xfb;
+	}
+else
+	{
+	rele_output_stat_test_byte&=0xfb;
+	rele_output_stat_test_mask&=0xfb;
+	}
+
+//Принудительное управление релеHV
+if(test_hndl_releHV_cnt)
+	{
+	test_hndl_releHV_cnt--;
+	if(test_hndl_releHV_cnt==0)
+		{
+		test_hndl_releHV_cntrl=0;
+		}
+	rele_output_stat_test_byte&=0xf7;
+	if(test_hndl_releHV_cntrl==1)rele_output_stat_test_byte|=0x08;
+	rele_output_stat_test_mask|=0x08;	
+	if(test_hndl_releHV_cntrl==0)rele_output_stat_test_mask&=0xf7;
+	}
+else
+	{
+	rele_output_stat_test_byte&=0xf7;
+	rele_output_stat_test_mask&=0xf7;
+	}
+
+//Управление тестом источников
+if(test_hndl_bps_cnt)
+	{
+	test_hndl_bps_cnt--;
+	if(test_hndl_bps_cnt==0)
+		{
+		test_hndl_bps_number=0;
+		test_hndl_bps_state=0;
+		}
+	else
+		{
+		if(test_hndl_bps_number==255)	//если управляем всеми источниками
+			{
+			if(test_hndl_bps_state==1)	//включаем все источники на максимальный шим
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,0xffff,10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_SET,1020,10);
+				}
+			else if(test_hndl_bps_state==2)	//включаем все источники на минимальный шим
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,0xffff,10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_SET,30,10);
+				}
+			else if(test_hndl_bps_state==3)	//включаем все источники на термокоипенсацию
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,0xffff,10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_SET,30,10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_FAST_REG,0,10);
+				}
+			else if(test_hndl_bps_state==4)	//включаем все источники на автономную работу
+				{
+ 				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,0xffff,10);
+				//mess_send(MESS2NET_DRV,PARAM_BPS_NET_OFF,1,10);
+				}			
+			}
+		else
+			{
+			if(test_hndl_bps_state==0)	//выключаем один источник
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,~(1<<(test_hndl_bps_number-1)),10);
+				}
+			else if(test_hndl_bps_state==1)	//включаем один источник на максимальный шим
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,(1<<(test_hndl_bps_number-1)),10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_SET,1020,10);
+				}
+			else if(test_hndl_bps_state==2)	//включаем один источник на минимальный шим
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,(1<<(test_hndl_bps_number-1)),10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_SET,30,10);
+				}
+			else if(test_hndl_bps_state==3)	//включаем один источник на термокоипенсацию
+				{
+				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,(1<<(test_hndl_bps_number-1)),10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_SET,30,10);
+				mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_FAST_REG,0,10);
+				}
+			else if(test_hndl_bps_state==4)	//включаем один источник на автономную работу
+				{
+ 				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,(1<<(test_hndl_bps_number-1)),10);
+				//mess_send(MESS2NET_DRV,PARAM_BPS_NET_OFF,1,10);
+				}
+			}
+		}
+	}
+}
+
+//-----------------------------------------------
+//Управление реле, физическое, 10Гц
+void rele_drv(void)
+{
+//static char temp;
+//if(temp==1) temp=0;
+//else temp=1;
+
+//GPIOC4 -> первое реле с верху, крайнее правое на плате
+//GPIOB1 -> второе реле с верху, среднее на плате
+//GPIOB0 -> третье реле с верху, крайнее левое на плате
+//GPIOC5 -> Реле включения высокого напряжения 
+if(rele_output_stat&0x01) 	GPIOC->ODR|=(1<<4);
+else 						GPIOC->ODR&=~(1<<4);
+if(rele_output_stat&0x02) 	GPIOB->ODR|=(1<<1);
+else 						GPIOB->ODR&=~(1<<1);
+if(rele_output_stat&0x04) 	GPIOB->ODR|=(1<<0);
+else 						GPIOB->ODR&=~(1<<0);
+if(rele_output_stat&0x08) 	GPIOC->ODR|=(1<<5);
+else 						GPIOC->ODR&=~(1<<5);
+
+}
+
+//-----------------------------------------------
+//Управление реле, логическое, 10Гц
+void rele_hndl(void)
+{
+char i;
+char temp;
+short releset[3];
+releset[0]=RELE1SET;
+releset[1]=RELE2SET;
+releset[2]=RELE3SET;
+temp=0;
+
+for(i=0;i<3;i++)
+	{
+	if((net_av==1)&&(releset[i]&(1<<1)))  temp|=(1<<i);  //Отработка аварии по заниженному сетевому
+	if((net_av==2)&&(releset[i]&(1<<2)))  temp|=(1<<i);  //Отработка аварии по завышенному сетевому
+	
+	}
+
+
+rele_output_stat=temp;
+
+rele_output_stat&=~rele_output_stat_test_mask;
+rele_output_stat|=(rele_output_stat_test_byte&rele_output_stat_test_mask);
+//if()
 }
 
 //-----------------------------------------------

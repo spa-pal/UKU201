@@ -40,11 +40,12 @@ signed int MODBUS_BAUDRATE=115200;
 
 //***********************************************
 //Состояние первичной сети
-signed short net_U,net_Ustore,net_Ua,net_Ub,net_Uc;
+signed short net_U,net_Ustore,net_Ua,net_Ub, net_Uc, net_Umax;
 char bFF,bFF_;
 signed short net_F,hz_out,hz_out_cnt,net_F3;
-signed char unet_drv_cnt;
-char net_av;
+signed char unet_drv_cnt;	//Счетчик на снижение первичного наряжеия
+signed char unet_max_drv_cnt; //Счетчик на превышение первичного наряжеия
+char net_av;		//аварийность питающей сети 0 - норма, 1 - занижено, 2 - завышено
 
 //***********************************************
 //Состояние батарей
@@ -239,6 +240,19 @@ signed short VZ_KIND;			//Тип выравнивающего заряда, 0 - обычный(исторический, п
 signed short SNTP_ENABLE;
 signed short SNTP_GMT;
 
+signed short RELE1SET;			//Настройка срабатываний реле1
+								//0бит - инверсия (1 - срабатывание оточиванием, 0 - срабатывание обесточиванием)
+								//1бит - авария питающей сети, занижено(1 - вкл)
+								//2бит - авария питающей сети, завышено(1 - вкл)
+								//3бит - тревога батареи (1 - вкл)
+								//4бит - авария батареи (1 - вкл)
+								//5бит - тревога выпрямителей (1 - вкл)
+								//6бит - авария выпрямителей (1 - вкл)
+								//7бит - авария выходного напряжения, занижено (1 - вкл)
+								//8бит - авария выходного напряжения, завышено (1 - вкл)
+signed short RELE2SET;			//Настройка срабатываний реле2, значение битов как и в реле1
+signed short RELE3SET;		   	//Настройка срабатываний реле3, значение битов как и в реле1
+
 signed short UZ_U;
 signed short UZ_IMAX;
 signed short UZ_T;
@@ -251,7 +265,7 @@ signed short FZ_U2;
 signed short FZ_IMAX2;
 signed short FZ_T2;
 
-signed short RELE_SET_MASK[4]={1,2,3,4};
+//signed short RELE_SET_MASK[4]={1,2,3,4};
 
 enum_bat_is_on BAT_IS_ON[2];
 signed short BAT_DAY_OF_ON[2];
@@ -341,6 +355,37 @@ signed short Isumm_;
 //**********************************************
 //Инициализация заводских настроек
 short factory_settings_hndl_main_iHz_cnt;
+
+//***********************************************
+//Управление реле
+char rele_output_stat;
+//0 байт -> "1" реле 1 под ток
+//1 байт -> "1" реле 2 под ток
+//2 байт -> "1" реле 3 под ток
+//3 байт -> "1" реле HV под ток
+
+//***********************************************
+//Управление тестовыми процессами
+unsigned short test_control_register,test_control_register_old;
+char rele_output_stat_test_byte=0;
+char rele_output_stat_test_mask=0;
+char tst_hndl_cnt;
+char test_hndl_rele1_cntrl,test_hndl_rele1_cnt;
+char test_hndl_rele2_cntrl,test_hndl_rele2_cnt;
+char test_hndl_rele3_cntrl,test_hndl_rele3_cnt;
+char test_hndl_releHV_cntrl,test_hndl_releHV_cnt;
+char test_hndl_bps_number;
+char test_hndl_bps_state;
+short test_hndl_bps_cnt;
+
+
+//***********************************************
+//Управление светодиодами
+char ledUOUTGOOD;	//Зеленый светодиод "выходное напряжение в норме"
+char ledWARNING;  	//Желтый светодиод "тревога в одном из устройств"
+char ledERROR;		//Красный светодиод "авария в одном из устройств"
+char ledCAN;	   	//Зеленый светодиод "связь по КАН в норме"
+
 
 //***********************************************
 //***********************************************
@@ -741,7 +786,7 @@ can_mcp2515_init();
 factory_settings_hndl();
 //beep_init(0x00000005,'A');
 
-//lc640_write_int(EE_NUMIST,3);
+//lc640_write_int(EE_NUMPHASE,3);
 calendar_hndl();
 
 while (1) 
@@ -782,7 +827,13 @@ while (1)
 		for(i=0;i<NUMIST;i++)bps_drv(i);
 		bps_hndl();
 //		calendar_hndl();
-		led_drv();
+		led_hndl();		//Управление светодиодами, логическое
+		led_drv();		//Управление светодиодами, физическое
+	   	rele_hndl(); 	//Логическое управление реле
+		rele_drv(); 	//Физическое управление реле
+		tst_hndl();		//обслуживание тестовых операций
+		mess_hndl();
+		unet_drv();
 		}   
 	if (b5Hz) 
 		{
@@ -837,12 +888,14 @@ while (1)
 		//printf("%3d   %3d   %3d   %3d   %3d    %3d \r\n", bps[0]._cnt, bps[1]._cnt, bps[2]._cnt, can_rotor[1], can_rotor[2], bps[0]._Ti);
 		//printf("num_necc= %3d   %d   %d   %3d   %3d    %3d \r\n", num_necc, ibat_metr_buff_[0], ibat_metr_buff_[1], Kibat1[0], Ib_ips_termokompensat, bps[0]._Ti);
 		//printf("flags_tu= %2x   %2x   %2x  \r\n", bps[0]._flags_tu, bps[1]._flags_tu, bps[2]._flags_tu);
-		printf("\r\n bat_temper = %d num_necc= %d  u_necc= %3d  cntrl_stat= %4d  UB0= %3d  UB20= %3d  bps_U= %3d  DU= %3d \r\n",bat[0]._Tb ,num_necc, u_necc, cntrl_stat, UB0, UB20, bps_U, DU);
+		//printf("RELESET= %2x   %2x   %2x  \r\n", RELE1SET, RELE2SET, RELE3SET);
+		//printf("\r\n bat_temper = %d num_necc= %d  u_necc= %3d  cntrl_stat= %4d  UB0= %3d  UB20= %3d  bps_U= %3d  DU= %3d \r\n",bat[0]._Tb ,num_necc, u_necc, cntrl_stat, UB0, UB20, bps_U, DU);
 		//printf("flags_tu= %2X %2X %2X  state= %2X %2X %2X  av= %2X %2X %2X flags_tm= %2X %2X %2X umin_av_cnt= %d %d %d\r\n", bps[0]._flags_tu,bps[1]._flags_tu,bps[2]._flags_tu, bps[0]._state, bps[1]._state, bps[2]._state ,bps[0]._av ,bps[1]._av, bps[2]._av, bps[0]._flags_tm ,bps[1]._flags_tm, bps[2]._flags_tm, bps[0]._umin_av_cnt ,bps[1]._umin_av_cnt, bps[2]._umin_av_cnt);
 	   	//printf("%d  %d  %d  %d \r\n", bps[0]._x_, bps[1]._x_, bps[2]._x_, bps[3]._x_);
 		//printf("%2d; %4d; %2d; %2d;\r\n", avt_klbr_phase_ui, modbus_register_1022, bps[2]._cnt, bps[3]._cnt);
-		printf("%3d   %3d   %3d   %3d   %3d   \r\n", cntrl_hndl_plazma, bps[0]._cnt, bps[1]._cnt, bps[2]._cnt,UMAXN);
-
+		//printf("%3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d\r\n", cntrl_hndl_plazma, bps[0]._cnt, bps[1]._cnt, bps[2]._cnt,UMAXN,MODBUS_BAUDRATE,/*MODBUS_ADRESS*/test_hndl_rele2_cntrl,/*plazma_uart1[2]*/test_hndl_rele2_cnt,/* NUMIST*/rele_output_stat_test_byte, /*NUMPHASE*/ rele_output_stat_test_mask);
+		printf("net_U= %3d  %3d  %3d  %3d  net_av= %2d u_necc = %2d  releset[0] = %2d \r\n", net_U, net_Ua, net_Ub, net_Uc, net_av, rele_output_stat, RELE1SET);
+		printf("%3d; %3d; %3d; %3d;\r\n", net_Umax, UMAXN, unet_max_drv_cnt);
 		//RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 		//PWR->CR      |= PWR_CR_DBP;
 		//BKP->DR1=(BKP->DR1)+1;

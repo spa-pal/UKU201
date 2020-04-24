@@ -1,4 +1,5 @@
 #include <stm32f10x_type.h>
+#include <stm32f10x_lib.h>
 #include "avar_hndl.h"
 #include "eeprom_map.h"	   
 #include "full_can.h"
@@ -187,7 +188,13 @@ void avar_unet_hndl(char in)
 
 char data[4];
 unsigned int event_ptr,lc640_adr,event_ptr_find,event_cnt;
+long temp_time;
+char time_H,time_M,time_S;
 
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(in==1)
 	{
@@ -222,15 +229,15 @@ if(in==1)
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
-//*/	data[3]=0;
-//*/	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
+	data[3]=0;
+	lc640_write_long_ptr(lc640_adr+8,data);
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -270,6 +277,78 @@ if(in==1)
      usart_out_adr0(memo_out0,8); 
 	*/
 	//snmp_trap_send("Main power alarm",2,1,0);
+	}
+
+else if(in==2)
+	{
+	net_av=2;
+
+	//beep_init(0x01L,'O');
+	//a.av.bAN=1;
+
+
+	//beep_init(0x33333333,'A');
+	 
+	event_ptr=lc640_read_int(PTR_EVENT_LOG);
+	event_ptr++;	
+	if(event_ptr>63)event_ptr=0;	
+	lc640_write_int(PTR_EVENT_LOG,event_ptr);	
+	
+     event_cnt=lc640_read_int(CNT_EVENT_LOG);
+	if(event_cnt!=63)event_cnt=event_ptr;
+	lc640_write_int(CNT_EVENT_LOG,event_cnt); 
+	
+	lc640_adr=EVENT_LOG+(lc640_read_int(PTR_EVENT_LOG)*32);
+	
+	data[0]='P';
+	data[1]=0;
+	data[2]='B';
+	data[3]=0;
+	lc640_write_long_ptr(lc640_adr,data);
+
+	data[0]=0;//*((char*)&Unet_store);
+	data[1]=0;//*(((char*)&Unet_store)+1);
+	data[2]=0;
+	data[3]=0;
+	lc640_write_long_ptr(lc640_adr+4,data);
+
+/*	data[0]=LPC_RTC->YEAR;
+	data[1]=LPC_RTC->MONTH;
+	data[2]=LPC_RTC->DOM;
+	data[3]=0;
+	lc640_write_long_ptr(lc640_adr+8,data);
+
+	data[0]=LPC_RTC->HOUR;
+	data[1]=LPC_RTC->MIN;
+	data[2]=LPC_RTC->SEC;
+	data[3]=0;	   */
+	lc640_write_long_ptr(lc640_adr+12,data);
+	
+	data[0]='A';
+	data[1]='A';
+	data[2]='A';
+	data[3]='A';
+	lc640_write_long_ptr(lc640_adr+16,data);
+	
+	data[0]='A';
+	data[1]='A';
+	data[2]='A';
+	data[3]='A';
+	lc640_write_long_ptr(lc640_adr+20,data);
+	
+	data[0]='A';
+	data[1]='A';
+	data[2]='A';
+	data[3]='A';
+	lc640_write_long_ptr(lc640_adr+24,data);
+	
+	data[0]='A';
+	data[1]='A';
+	data[2]='A';
+	data[3]='A';
+	lc640_write_long_ptr(lc640_adr+28,data);				
+	
+//	snmp_trap_send("Main power alarm, voltage increased",2,2,0);
 	}
 
 else if(in==0)
