@@ -142,17 +142,16 @@ data[2]=0;
 data[3]=0;
 lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/data[0]=LPC_RTC->YEAR;
-//*/data[1]=LPC_RTC->MONTH;
-//*/data[2]=LPC_RTC->DOM;
+data[0]=(char)(BKP->DR1);
+data[1]=(char)(BKP->DR2);
+data[2]=(char)(BKP->DR3);
 data[3]=0;
 lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/data[0]=LPC_RTC->HOUR;
-//*/data[1]=LPC_RTC->MIN;
-//*/data[2]=LPC_RTC->SEC;
-//*/data[3]=LPC_SC->RSID;
-
+	
+data[0]=time_H;
+data[1]=time_M;
+data[2]=time_S;
+data[3]=0;
 lc640_write_long_ptr(lc640_adr+12,data);
 	
 data[0]='A';
@@ -265,18 +264,6 @@ if(in==1)
 	data[3]='A';
 	lc640_write_long_ptr(lc640_adr+28,data);				
 	
-/*	memo_out0[0]=0x55;
-     memo_out0[1]=0x00+2;
-     memo_out0[2]=1;
-     memo_out0[3]=0x0b;
-     memo_out0[4]=0x55;
-     memo_out0[5]=0x55; 
-     	
-     memo_out0[6]=crc_87(memo_out0,6);
-	memo_out0[7]=crc_95(memo_out0,6);
-     usart_out_adr0(memo_out0,8); 
-	*/
-	//snmp_trap_send("Main power alarm",2,1,0);
 	}
 
 else if(in==2)
@@ -312,16 +299,16 @@ else if(in==2)
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-/*	data[0]=LPC_RTC->YEAR;
-	data[1]=LPC_RTC->MONTH;
-	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-	data[0]=LPC_RTC->HOUR;
-	data[1]=LPC_RTC->MIN;
-	data[2]=LPC_RTC->SEC;
-	data[3]=0;	   */
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
+	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
 	data[0]='A';
@@ -423,18 +410,6 @@ avar_unet_hndl_lbl1:
 	data[2]='B';
 	data[3]='B';
 	lc640_write_long_ptr(lc640_adr+28,data);	
-	
-/*	memo_out0[0]=0x55;
-     memo_out0[1]=0x00+2;
-     memo_out0[2]=1;
-     memo_out0[3]=0x0b;
-     memo_out0[4]=0xaa;
-     memo_out0[5]=0xaa; 
-     	
-     memo_out0[6]=crc_87(memo_out0,6);
-	memo_out0[7]=crc_95(memo_out0,6);
-     usart_out_adr0(memo_out0,8); */
-     //snmp_trap_send("Main power alarm  clear",2,1,1);	
 	}
 avar_unet_hndl_end:
 	__nop();		
@@ -448,7 +423,6 @@ void avar_uout_hndl(char in)
 char data[4];
 unsigned int event_ptr,lc640_adr,event_ptr_find,event_cnt;
 char avar_data=0;
-
 long temp_time;
 char time_H,time_M,time_S;
 
@@ -595,18 +569,6 @@ avar_uout_hndl_lbl1:
 	data[2]='B';
 	data[3]='B';
 	lc640_write_long_ptr(lc640_adr+28,data);	
-	
-/*	memo_out0[0]=0x55;
-     memo_out0[1]=0x00+2;
-     memo_out0[2]=1;
-     memo_out0[3]=0x0b;
-     memo_out0[4]=0xaa;
-     memo_out0[5]=0xaa; 
-     	
-     memo_out0[6]=crc_87(memo_out0,6);
-	memo_out0[7]=crc_95(memo_out0,6);
-     usart_out_adr0(memo_out0,8); */
-     //snmp_trap_send("Main power is on",2,1,1);	
 	}
 avar_uout_hndl_end:
 	__nop();		
@@ -618,6 +580,12 @@ void avar_bps_hndl(char dev, char v, char in)
 char data[4];
 unsigned short event_ptr,lc640_adr,event_ptr_find,event_cnt;
 char avar_simbol;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 avar_simbol='T';
 if(v==0)avar_simbol='T';
@@ -664,15 +632,15 @@ if(in==1)
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -786,15 +754,15 @@ avar_src_hndl_lbl1:
 
 
 	
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+20,data);
 	
@@ -881,6 +849,13 @@ void avar_bat_ips_hndl(char in)
 {
 char data[4];
 unsigned short event_ptr,lc640_adr,event_ptr_find,event_cnt;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(in==1)
 	{
@@ -911,15 +886,15 @@ if(in==1)
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -986,15 +961,15 @@ avar_bat_ips_hndl_lbl1:
 
      	}
      		
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+20,data);
 	
@@ -1020,7 +995,7 @@ __nop();
 
 
 //-----------------------------------------------
-void avar_bat_hndl(char b, char in)
+void avar_bat_hndl_(char b, char in)
 {
 char data[4];
 unsigned short event_ptr,lc640_adr,event_ptr_find,event_cnt;
@@ -1132,15 +1107,15 @@ avar_bat_hndl_lbl1:
 
      	}
      		
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+20,data);
 	
@@ -1378,15 +1353,15 @@ vz_mem_hndl_lbl1:
 
 
 	
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+20,data);
 	
@@ -1519,15 +1494,15 @@ else if(in==0)	//штатное завершение
 		}
 	if(lc640_adr!=0)
 		{
-//*/		data[0]=LPC_RTC->YEAR;
-//*/		data[1]=LPC_RTC->MONTH;
-//*/		data[2]=LPC_RTC->DOM;
+		data[0]=(char)(BKP->DR1);
+		data[1]=(char)(BKP->DR2);
+		data[2]=(char)(BKP->DR3);
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+16,data);
-	
-//*/		data[0]=LPC_RTC->HOUR;
-//*/		data[1]=LPC_RTC->MIN;
-//*/		data[2]=LPC_RTC->SEC;
+		
+		data[0]=time_H;
+		data[1]=time_M;
+		data[2]=time_S;
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+20,data);
 		
@@ -1584,15 +1559,15 @@ else if(in==10) 	// прервано оператором
 		}
 	if(lc640_adr!=0)
 		{
-//*/		data[0]=LPC_RTC->YEAR;
-//*/		data[1]=LPC_RTC->MONTH;
-//*/		data[2]=LPC_RTC->DOM;
+		data[0]=(char)(BKP->DR1);
+		data[1]=(char)(BKP->DR2);
+		data[2]=(char)(BKP->DR3);
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+16,data);
-	
-//*/		data[0]=LPC_RTC->HOUR;
-//*/		data[1]=LPC_RTC->MIN;
-//*/		data[2]=LPC_RTC->SEC;
+		
+		data[0]=time_H;
+		data[1]=time_M;
+		data[2]=time_S;
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+20,data);
 		
@@ -1721,15 +1696,15 @@ else if(in==0)	//штатное завершение
 		}
 	if(lc640_adr!=0)
 		{
-//*/		data[0]=LPC_RTC->YEAR;
-//*/		data[1]=LPC_RTC->MONTH;
-//*/		data[2]=LPC_RTC->DOM;
+		data[0]=(char)(BKP->DR1);
+		data[1]=(char)(BKP->DR2);
+		data[2]=(char)(BKP->DR3);
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+16,data);
-	
-//*/		data[0]=LPC_RTC->HOUR;
-//*/		data[1]=LPC_RTC->MIN;
-//*/		data[2]=LPC_RTC->SEC;
+		
+		data[0]=time_H;
+		data[1]=time_M;
+		data[2]=time_S;
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+20,data);
 		
@@ -1786,18 +1761,18 @@ else if(in==10) 	// прервано оператором
 		}
 	if(lc640_adr!=0)
 		{
-//*/		data[0]=LPC_RTC->YEAR;
-//*/		data[1]=LPC_RTC->MONTH;
-//*/		data[2]=LPC_RTC->DOM;
+		data[0]=(char)(BKP->DR1);
+		data[1]=(char)(BKP->DR2);
+		data[2]=(char)(BKP->DR3);
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+16,data);
-	
-//*/		data[0]=LPC_RTC->HOUR;
-//*/		data[1]=LPC_RTC->MIN;
-//*/		data[2]=LPC_RTC->SEC;
+		
+		data[0]=time_H;
+		data[1]=time_M;
+		data[2]=time_S;
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+20,data);
-		
+				
 		data[0]='B';
 		data[1]='B';
 		data[2]='B';
@@ -1922,15 +1897,15 @@ else if(in==0)	//штатное завершение
 		}
 	if(lc640_adr!=0)
 		{
-//*/		data[0]=LPC_RTC->YEAR;
-//*/		data[1]=LPC_RTC->MONTH;
-//*/		data[2]=LPC_RTC->DOM;
+		data[0]=(char)(BKP->DR1);
+		data[1]=(char)(BKP->DR2);
+		data[2]=(char)(BKP->DR3);
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+16,data);
-	
-//*/		data[0]=LPC_RTC->HOUR;
-//*/		data[1]=LPC_RTC->MIN;
-//*/		data[2]=LPC_RTC->SEC;
+		
+		data[0]=time_H;
+		data[1]=time_M;
+		data[2]=time_S;
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+20,data);
 		
@@ -1987,15 +1962,15 @@ else if(in==10) 	// прервано оператором
 		}
 	if(lc640_adr!=0)
 		{
-//*/		data[0]=LPC_RTC->YEAR;
-//*/		data[1]=LPC_RTC->MONTH;
-//*/		data[2]=LPC_RTC->DOM;
+		data[0]=(char)(BKP->DR1);
+		data[1]=(char)(BKP->DR2);
+		data[2]=(char)(BKP->DR3);
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+16,data);
-	
-//*/		data[0]=LPC_RTC->HOUR;
-//*/		data[1]=LPC_RTC->MIN;
-//*/		data[2]=LPC_RTC->SEC;
+		
+		data[0]=time_H;
+		data[1]=time_M;
+		data[2]=time_S;
 		data[3]=0;
 		lc640_write_long_ptr(lc640_adr+20,data);
 		

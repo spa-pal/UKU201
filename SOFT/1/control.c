@@ -2938,7 +2938,7 @@ else if(kb_full_ver)
 		kb_full_ver=0;
 		}
 
-	if(( (mess_find(MESS2KB_HNDL))	&& (mess_data[0]==PARAM_CNTRL_IS_DOWN) ) || (load_U<(USIGN*10)) )
+	if(( (mess_find(MESS2KB_HNDL))	&& (mess_data[0]==PARAM_CNTRL_IS_DOWN) ) || (out_U<(USIGN*10)) )
 		{
 		kb_full_ver=0;
 		/*if((kb_start[0]==1)&&((load_I>(2*IKB)/10))&&(!(bat[0]._av&0x01))) avar_bat_hndl(0,1);
