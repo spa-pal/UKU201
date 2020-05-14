@@ -2,6 +2,7 @@
 #include "control.h"
 #include <stm32f10x_lib.h>
 #include "main.h"
+#include "beep.h"
 #include "mess.h"
 #include "full_can.h"
 #include "modbus.h"
@@ -167,11 +168,16 @@ signed short 	main_kb_cnt;
 signed short 	kb_cnt_1lev;
 signed short 	kb_cnt_2lev;
 char 		kb_full_ver;
-char kb_start[2],kb_start_ips;
+char /*kb_start[2],*/kb_start_ips;
 signed short ibat_ips,ibat_ips_;
 char ips_bat_av_vzvod=0;
 char ips_bat_av_stat=0;
 
+//-----------------------------------------------
+//Контроль выходного напряжения
+signed short outVoltContrHndlCntUp;		//Счетчик, считает в плюс в случае превышения
+signed short outVoltContrHndlCntDn;		//Счетчик, считает в плюс в случае занижения
+char uout_av;							//Авария по выходному напряжению 0 - норма, 1 - занижено, 2 - завышено
 
 //-----------------------------------------------
 void avg_hndl(void)
@@ -262,6 +268,86 @@ ledERROR=0;
 ledWARNING=0;
 ledUOUTGOOD=0;
 ledCAN=1;
+
+if((net_av)||(net_av))ledERROR=1;
+
+if(!uout_av)ledUOUTGOOD=1;
+
+
+if(test_led_stat==1)
+	{
+	ledERROR=0;
+	ledWARNING=0;
+	ledUOUTGOOD=1;
+	ledCAN=0;
+	}
+else if(test_led_stat==2)
+	{
+	ledERROR=0;
+	ledWARNING=1;
+	ledUOUTGOOD=0;
+	ledCAN=0;
+	}
+else if(test_led_stat==3)
+	{
+	ledERROR=1;
+	ledWARNING=0;
+	ledUOUTGOOD=0;
+	ledCAN=0;
+	}
+else if(test_led_stat==4)
+	{
+	ledERROR=0;
+	ledWARNING=0;
+	ledUOUTGOOD=0;
+	ledCAN=1;
+	}
+else if(test_led_stat==5)
+	{
+	ledERROR=0;
+	ledWARNING=0;
+	ledUOUTGOOD=0;
+	ledCAN=0;
+	}
+if(test_led_cnt)
+	{
+	test_led_cnt--;
+	if(!test_led_cnt)
+		{
+		test_led_stat=0;
+		}
+	}
+
+if(factory_settings_led_reg0)
+	{
+	factory_settings_led_reg0--;
+	ledERROR=0;
+	ledWARNING=0;
+	ledUOUTGOOD=0;
+	ledCAN=0;
+	}
+if((factory_settings_led_reg0==7)||(factory_settings_led_reg0==1)) ledUOUTGOOD=1;
+else if((factory_settings_led_reg0==6)||(factory_settings_led_reg0==2)) ledWARNING=1;
+else if((factory_settings_led_reg0==5)||(factory_settings_led_reg0==3)) ledERROR=1;
+else if(factory_settings_led_reg0==4) ledCAN=1;
+
+if(factory_settings_led_reg1)
+	{
+	factory_settings_led_reg1--;
+	ledERROR=0;
+	ledWARNING=0;
+	ledUOUTGOOD=0;
+	ledCAN=0;
+	}
+
+if((factory_settings_led_reg1==5)||(factory_settings_led_reg1==3)||(factory_settings_led_reg1==1))
+	{
+	ledERROR=1;
+	ledWARNING=1;
+	ledUOUTGOOD=1;
+	ledCAN=1;
+	}
+
 }
 
 //-----------------------------------------------
@@ -1081,6 +1167,8 @@ for (i=0;i<NUMIST;i++)
 	}
 bps_I=(signed short)temp_SL;
 
+
+Ibmax=Ib_ips_termokompensat;
 
 }
 
@@ -1943,6 +2031,74 @@ else
 }
 
 //-----------------------------------------------
+//Контроль выходного напряжения, 1Гц
+void outVoltContrHndl(void)
+{ 
+if(out_U>U_OUT_KONTR_MAX)
+	{
+	if(outVoltContrHndlCntUp<U_OUT_KONTR_DELAY)
+		{
+		outVoltContrHndlCntUp++;
+		if(outVoltContrHndlCntUp==U_OUT_KONTR_DELAY)
+			{
+			if(!uout_av) avar_uout_hndl(2);
+			}
+		}
+	}
+else
+	{
+	if(outVoltContrHndlCntUp)
+		{
+		outVoltContrHndlCntUp--;
+			{
+			if(outVoltContrHndlCntUp==0)
+				{
+				if(uout_av)avar_uout_hndl(0);
+				}
+			}
+		}
+	}
+
+if(out_U<U_OUT_KONTR_MIN)
+	{
+	if(outVoltContrHndlCntDn<U_OUT_KONTR_DELAY)
+		{
+		outVoltContrHndlCntDn++;
+		if(outVoltContrHndlCntDn==U_OUT_KONTR_DELAY)
+			{
+			if(!uout_av) avar_uout_hndl(1);
+			}
+		}
+	}
+else
+	{
+	if(outVoltContrHndlCntDn)
+		{
+		outVoltContrHndlCntDn--;
+			{
+			if(outVoltContrHndlCntDn==0)
+				{
+				if(uout_av)avar_uout_hndl(0);
+				}
+			}
+		}
+	}
+
+if (out_U<(USIGN*10)) 
+	{
+	if(!bSILENT)
+		{
+		mess_send(MESS2RELE_HNDL,PARAM_RELE_BAT_IS_DISCHARGED,1,20);
+		}
+
+	//bU_BAT2REL_AV_BAT=1;
+	}
+
+
+}
+
+
+//-----------------------------------------------
 void speedChargeHndl(void)
 {
 /*
@@ -2093,9 +2249,9 @@ if(speedChrgAvtEn)
 
 
 */
-if(/*(speedChrgBlckSrc!=1)&&*/(speedChrgBlckSrc!=2)) speedChrgBlckStat=0;
-else
-	{
+//if(/*(speedChrgBlckSrc!=1)&&*/(speedChrgBlckSrc!=2)) speedChrgBlckStat=0;
+//else
+/*	{
 	speedChrgBlckStat=0;
 	if(speedChrgBlckSrc==1)
 		{
@@ -2105,7 +2261,7 @@ else
 		{
 		if(((speedChrgBlckLog==0)&&(adc_buff_[13]>2000)) || ((speedChrgBlckLog==1)&&(adc_buff_[13]<2000))) speedChrgBlckStat=1;
 		}
-	}
+	}  */
 
 /*
 if(speedChrgBlckStat==1)
@@ -2264,7 +2420,7 @@ if(test_hndl_bps_cnt)
 			else if(test_hndl_bps_state==4)	//включаем все источники на автономную работу
 				{
  				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,0xffff,10);
-				//mess_send(MESS2NET_DRV,PARAM_BPS_NET_OFF,1,10);
+				mess_send(MESS2NET_DRV,PARAM_BPS_NET_OFF,1,10);
 				}			
 			}
 		else
@@ -2292,7 +2448,7 @@ if(test_hndl_bps_cnt)
 			else if(test_hndl_bps_state==4)	//включаем один источник на автономную работу
 				{
  				mess_send(MESS2BPS_HNDL,PARAM_BPS_MASK_ON_OFF_AFTER_2SEC,(1<<(test_hndl_bps_number-1)),10);
-				//mess_send(MESS2NET_DRV,PARAM_BPS_NET_OFF,1,10);
+				mess_send(MESS2NET_DRV,PARAM_BPS_NET_OFF,1,10);
 				}
 			}
 		}
@@ -2336,9 +2492,14 @@ temp=0;
 
 for(i=0;i<3;i++)
 	{
-	if((net_av==1)&&(releset[i]&(1<<1)))  temp|=(1<<i);  //Отработка аварии по заниженному сетевому
-	if((net_av==2)&&(releset[i]&(1<<2)))  temp|=(1<<i);  //Отработка аварии по завышенному сетевому
+	if((net_av==1)&&(releset[i]&(1<<1)))  temp|=(1<<i);  	//Отработка аварии по заниженному сетевому напряжению
+	if((net_av==2)&&(releset[i]&(1<<2)))  temp|=(1<<i);  	//Отработка аварии по завышенному сетевому напряжению
 	
+
+	if((uout_av==1)&&(releset[i]&(1<<7))) temp|=(1<<i);  	//Отработка аварии по заниженному выходному напряжению
+	if((uout_av==2)&&(releset[i]&(1<<8))) temp|=(1<<i);  	//Отработка аварии по завышенному выходному напряжению
+	
+	if(releset[i]&(1<<0)) temp^=(1<<i); 					//Инверсия выхода если есть соответствующая установка
 	}
 
 
@@ -2583,32 +2744,41 @@ b1Hz_ch=0;
 }
 
 //-----------------------------------------------
+void kb_init(void)
+{
+main_kb_cnt=(TBAT*60)-60/*120*/;
+}
+
+//-----------------------------------------------
 void kb_hndl(void)
 {
 
 static signed short ibat[2],ibat_[2];
 
+KB_ALGORITM=3;
+
+
 if(((++main_kb_cnt>=TBAT*60)&&(TBAT)))
 	{
 	main_kb_cnt=0;
 	
-	kb_start[0]=0;
-	kb_start[1]=0;
+	//kb_start[0]=0;
+	//kb_start[1]=0;
 	kb_start_ips=0;
 
-	if( (BAT_IS_ON[0]==bisON) && (bat[0]._Ub>80) && ( (abs(bat[0]._Ib)<IKB) || (bat[0]._av&1) ) ) kb_start[0]=1;
-	if( (!ips_bat_av_vzvod)                      && ((abs(Ib_ips_termokompensat)<IKB) || (bat_ips._av&1) ) ) kb_start_ips=1;
+	//if( (BAT_IS_ON[0]==bisON) && (bat[0]._Ub>80) && ( (abs(bat[0]._Ib)<IKB) || (bat[0]._av&1) ) ) kb_start[0]=1;
+	if( (!ips_bat_av_vzvod)&& ((abs(Ib_ips_termokompensat)<IKB) || (bat_ips._av&1) ) ) kb_start_ips=1;
 	if( (net_av) || (num_of_wrks_bps==0) || ( (spc_stat!=spcOFF) && (spc_stat!=spcVZ) ) 
 	  ||(((vz1_stat!=vz1sOFF)||(vz2_stat!=vz2sOFF))&&SMART_SPC)
-	  ||(sp_ch_stat!=scsOFF) 	)
+	  ||(sp_ch_stat!=scsOFF) /**/	)  
  
 		{
-		kb_start[0]=0;
-		kb_start[1]=0;
+		//kb_start[0]=0;
+		//kb_start[1]=0;
 		kb_start_ips=0;
 		}
 
-	if((kb_start[0]==1)||(kb_start[1]==1)||(kb_start_ips==1))
+	if(/*(kb_start[0]==1)||(kb_start[1]==1)||*/(kb_start_ips==1))
 		{
 		kb_cnt_1lev=10;
 		}
@@ -2625,21 +2795,21 @@ if(kb_cnt_1lev)
 
 	if(kb_cnt_1lev==5)
 		{
-		ibat[0]=abs(bat[0]._Ib);
-		ibat[1]=abs(bat[1]._Ib);
+/*		ibat[0]=abs(bat[0]._Ib);
+		ibat[1]=abs(bat[1]._Ib);   */
 		ibat_ips=abs(Ib_ips_termokompensat);
 		}
 	
 	if(kb_cnt_1lev==0)
 		{
-		ibat_[0]=abs(bat[0]._Ib);
-		ibat_[1]=abs(bat[1]._Ib);
+/*		ibat_[0]=abs(bat[0]._Ib);
+		ibat_[1]=abs(bat[1]._Ib); */
 		ibat_ips_=abs(Ib_ips_termokompensat);
 
 		kb_cnt_2lev=0;
 
 
-		if(( (ibat[0]+ibat_[0]) < IKB )&& (kb_start[0]==1))
+/*		if(( (ibat[0]+ibat_[0]) < IKB )&& (kb_start[0]==1))
 			{
 			kb_cnt_2lev=10;  
 			}
@@ -2647,9 +2817,9 @@ if(kb_cnt_1lev)
 			{
 			kb_start[0]=0;
 			avar_bat_hndl(0,0);
-			}
+			}  */
 		
-		if(( (ibat[1]+ibat_[1]) < IKB ) && (kb_start[1]==1))
+/*		if(( (ibat[1]+ibat_[1]) < IKB ) && (kb_start[1]==1))
 			{
 			kb_cnt_2lev=10;     
 			}
@@ -2657,7 +2827,7 @@ if(kb_cnt_1lev)
 			{
 			kb_start[1]=0;
 			avar_bat_hndl(1,0);
-			}
+			}  */
 		if(( (ibat_ips+ibat_ips_) < IKB ) && (kb_start_ips==1))
 			{
 			if(KB_ALGORITM==1)
@@ -2684,20 +2854,20 @@ else if(kb_cnt_2lev)
 
 	if(kb_cnt_2lev==5)
 		{
-		ibat[0]=abs(bat[0]._Ib);
-		ibat[1]=abs(bat[1]._Ib);
+		/*ibat[0]=abs(bat[0]._Ib);
+		ibat[1]=abs(bat[1]._Ib); */
 		ibat_ips=abs(Ib_ips_termokompensat);
 		}
 	
 	if(kb_cnt_2lev==0)
 		{
-		ibat_[0]=abs(bat[0]._Ib);
-		ibat_[1]=abs(bat[1]._Ib);
+		/*ibat_[0]=abs(bat[0]._Ib);
+		ibat_[1]=abs(bat[1]._Ib); */
 		ibat_ips_=abs(Ib_ips_termokompensat);
 
 		kb_full_ver=0;
 
-		if(( (ibat[0]+ibat_[0]) < IKB ) && (kb_start[0]==1))
+/*		if(( (ibat[0]+ibat_[0]) < IKB ) && (kb_start[0]==1))
 			{
 			kb_full_ver=1;  
 			}
@@ -2705,9 +2875,9 @@ else if(kb_cnt_2lev)
 			{
 			kb_start[0]=0;
 			avar_bat_hndl(0,0);
-			}
+			} */
 
-		if(( (ibat[1]+ibat_[1]) < IKB ) && (kb_start[1]==1))
+/*		if(( (ibat[1]+ibat_[1]) < IKB ) && (kb_start[1]==1))
 			{
 			kb_full_ver=1;     
 			}
@@ -2715,7 +2885,8 @@ else if(kb_cnt_2lev)
 			{
 			kb_start[1]=0;
 			avar_bat_hndl(1,0);
-			}
+			} */
+
 		if(( (ibat_ips+ibat_ips_) < IKB )  && (kb_start_ips==1))
 			{
 			if(KB_ALGORITM==2)
@@ -2736,23 +2907,23 @@ else if(kb_full_ver)
 	
 	mess_send(MESS2CNTRL_HNDL,PARAM_CNTRL_STAT_STEP_DOWN,0,15);
 
-	if( abs(bat[0]._Ib) > IKB ) 
+/*	if( abs(bat[0]._Ib) > IKB ) 
 		{
 		if(kb_start[0]==1)
 			{
 			kb_start[0]=0;
 			avar_bat_hndl(0,0);
 			}
-		}
+		}*/
 
-	if( abs(bat[1]._Ib) > IKB ) 
+/*	if( abs(bat[1]._Ib) > IKB ) 
 		{
 		if(kb_start[1]==1)
 			{
 			kb_start[1]=0;
 			avar_bat_hndl(1,0);
 			}
-		}
+		} */
 	if( abs(Ib_ips_termokompensat) > IKB ) 
 		{
 		if(kb_start_ips==1)
@@ -2762,7 +2933,7 @@ else if(kb_full_ver)
 			}
 		}
 
-	if ((kb_start[0]==0) && (kb_start[1]==0) && (kb_start_ips==0)) 
+	if (/*(kb_start[0]==0) && (kb_start[1]==0) && */(kb_start_ips==0)) 
 		{
 		kb_full_ver=0;
 		}
@@ -2770,8 +2941,8 @@ else if(kb_full_ver)
 	if(( (mess_find(MESS2KB_HNDL))	&& (mess_data[0]==PARAM_CNTRL_IS_DOWN) ) || (load_U<(USIGN*10)) )
 		{
 		kb_full_ver=0;
-		if((kb_start[0]==1)&&((load_I>(2*IKB)/10))&&(!(bat[0]._av&0x01))) avar_bat_hndl(0,1);
-		if((kb_start[1]==1)&&((load_I>(2*IKB)/10))&&(!(bat[1]._av&0x01))) avar_bat_hndl(1,1);
+		/*if((kb_start[0]==1)&&((load_I>(2*IKB)/10))&&(!(bat[0]._av&0x01))) avar_bat_hndl(0,1);
+		if((kb_start[1]==1)&&((load_I>(2*IKB)/10))&&(!(bat[1]._av&0x01))) avar_bat_hndl(1,1);*/
 		if((kb_start_ips==1)&&((load_I>(2*IKB)/10))&&(!(bat_ips._av&0x01))) avar_bat_ips_hndl(1);
 		}
 	}

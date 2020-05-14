@@ -3,8 +3,8 @@ extern unsigned char modbus_buf[20];
 extern short modbus_crc16;
 extern char modbus_timeout_cnt;
 extern char bMODBUS_TIMEOUT;
-extern unsigned char modbus_rx_buffer[30];	//Буфер, куда складывает принимаемые даннные обработчик прерывания по приему УАРТа
-extern unsigned char modbus_an_buffer[30];	//Буфер, куда они потом копируются для анализа
+extern unsigned char modbus_rx_buffer[100];	//Буфер, куда складывает принимаемые даннные обработчик прерывания по приему УАРТа
+extern unsigned char modbus_an_buffer[100];	//Буфер, куда они потом копируются для анализа
 extern unsigned char modbus_rx_buffer_ptr;	//Указатель на текущую позицию принимающего буфера
 extern unsigned char modbus_rx_counter;		//Количество принятых байт, используется при анализе целостности посылки и при расшифровке
 
@@ -29,7 +29,7 @@ extern short modbus_register_999;
 extern short modbus_register_1000, modbus_register_1001, modbus_register_1002, modbus_register_1003, modbus_register_1022;
 
 
-extern char modbus_tx_buff[100];
+extern char modbus_tx_buff[500];
 
 //extern char modbus_registers[200];
 //-----------------------------------------------

@@ -139,10 +139,17 @@ extern signed short 	main_kb_cnt;
 extern signed short 	kb_cnt_1lev;
 extern signed short 	kb_cnt_2lev;
 extern char 		kb_full_ver;
-extern char kb_start[2],kb_start_ips;
+extern char /*kb_start[2],*/kb_start_ips;
 extern signed short ibat_ips,ibat_ips_;
 extern char ips_bat_av_vzvod;
 extern char ips_bat_av_stat;
+
+//-----------------------------------------------
+//Контроль выходного напряжения
+extern signed short outVoltContrHndlCntUp;		//Счетчик, считает в плюс в случае превышения
+extern signed short outVoltContrHndlCntDn;		//Счетчик, считает в плюс в случае занижения
+extern char uout_av;							//Авария по выходному напряжению 0 - норма, 1 - занижено, 2 - завышено
+
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 void adc_drv(void);

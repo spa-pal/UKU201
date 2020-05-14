@@ -157,8 +157,8 @@ speedChrgCurr =lc640_read_int(EE_SPEED_CHRG_CURR);
 speedChrgVolt =lc640_read_int(EE_SPEED_CHRG_VOLT);
 speedChrgTimeInHour =lc640_read_int(EE_SPEED_CHRG_TIME);
 speedChrgAvtEn =lc640_read_int(EE_SPEED_CHRG_AVT_EN);
-speedChrgBlckSrc=lc640_read_int(EE_SPEED_CHRG_BLOCK_SRC);
-speedChrgBlckLog=lc640_read_int(EE_SPEED_CHRG_BLOCK_LOG);
+//speedChrgBlckSrc=lc640_read_int(EE_SPEED_CHRG_BLOCK_SRC);
+//speedChrgBlckLog=lc640_read_int(EE_SPEED_CHRG_BLOCK_LOG);
 speedChrgDU=lc640_read_int(EE_SPEED_CHRG_D_U);
 SP_CH_VENT_BLOK=lc640_read_int(EE_SP_CH_VENT_BLOK);
 DU_LI_BAT=lc640_read_int(EE_DU_LI_BAT);
@@ -328,7 +328,6 @@ RELE3SET=lc640_read_int(EE_RELE3SET);
 //*/vz2_stat=(enum_vz2_stat)lc640_read_int(EE_VZ2_STAT);
 //*/if(vz2_stat==255)vz2_stat=vz2sOFF;
 VZ_KIND=lc640_read_int(EE_VZ_KIND);
-#ifdef UKU_ZVU
 BAT_C_POINT_1_6=lc640_read_int(EE_BAT_C_POINT_1_6);
 BAT_C_POINT_1_2=lc640_read_int(EE_BAT_C_POINT_1_2);
 BAT_C_POINT_1=lc640_read_int(EE_BAT_C_POINT_1);				
@@ -345,7 +344,7 @@ BAT_U_END_10=lc640_read_int(EE_BAT_U_END_10);
 BAT_U_END_20=lc640_read_int(EE_BAT_U_END_20);
 BAT_C_POINT_NUM_ELEM=lc640_read_int(EE_BAT_C_POINT_NUM_ELEM);
 BAT_K_OLD=lc640_read_int(EE_BAT_K_OLD);
-#endif
+
 //*/SP_CH_VENT_BLOK=lc640_read_int(EE_SP_CH_VENT_BLOK);
 //*/VZ_CH_VENT_BLOK=lc640_read_int(EE_VZ_CH_VENT_BLOK);
 

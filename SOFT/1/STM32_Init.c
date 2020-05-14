@@ -4447,7 +4447,7 @@
 #define __GPIOA_CRH               0x00003000
 #define __GPIOB_CRL               0xEE000011
 #define __GPIOB_CRH               0x00811140
-#define __GPIOC_CRL               0x01110040
+#define __GPIOC_CRL               0x11110040
 #define __GPIOC_CRH               0x00000040
 #define __GPIOD_CRL               0x00000000
 #define __GPIOD_CRH               0x00000000

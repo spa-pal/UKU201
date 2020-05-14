@@ -3,21 +3,23 @@
 #include "main.h"
 #include "avar_hndl.h"
 #include "mess.h"
+#include "control.h"
 
 //***********************************************
 //«вуки
 bool bSILENT;
 unsigned long beep_stat_temp,beep_stat;
-char beep_stat_cnt;
+signed short beep_stat_cnt;
 char beep_cnt;
 char bU_BAT2REL_AV_BAT;
 
-//-----------------------------------------------
-void beep_drv(void)
-{
-GPIOC->CRL&=~0xf0000000;GPIOC->CRL|=0x30000000;GPIOC->ODR&=~(1<<7);
 
-if((beep_stat_temp&0x00000001UL)/*&&(ZV_ON)*/)
+//-----------------------------------------------
+void beep_drv(void)	 //”правление бипером, физическое. 10√ц
+{
+//GPIOC->CRL&=~0xf0000000;GPIOC->CRL|=0x30000000;GPIOC->ODR&=~(1<<7);
+
+if((beep_stat_temp&0x00000001UL)&&(ZV_ON))
     	{
     	GPIOC->ODR|=(1<<7);
     	beep_cnt=6;
@@ -25,11 +27,19 @@ if((beep_stat_temp&0x00000001UL)/*&&(ZV_ON)*/)
 else GPIOC->ODR&=~(1<<7);
 
 beep_stat_temp>>=1;
-if(--beep_stat_cnt==0)
+if(--beep_stat_cnt<=0)
 	{
 	beep_stat_cnt=32;
 	beep_stat_temp=beep_stat;
 	}
+
+if(zv_test_cnt)
+	{
+	zv_test_cnt--;
+	GPIOC->ODR|=(1<<7);
+	zv_test_sign=1;
+	}
+else zv_test_sign=0;
 
 //IO1SET|=(1UL<<27);
 //FIO1SET|=(1UL<<27);
@@ -66,6 +76,7 @@ else if(fl=='S')
 }
 
 //-----------------------------------------------
+//”правление бипером, логическое, 1√ц
 void beep_hndl(void) 
 { 
 static char bcnt;
@@ -74,6 +85,7 @@ if(bcnt>9)bcnt=0;
 //bU_BAT2REL_AV_BAT=0;
 if((avar_ind_stat)/*//||(ips_bat_av_stat)*/)beep_init(0x33333333,'R');
 
+else if(uout_av) beep_init(0x0033333,'R');
 
 else if ( (((bat[0]._Ub<(USIGN*10))&&(BAT_IS_ON[0]==bisON))||((bat[1]._Ub<(USIGN*10))&&(BAT_IS_ON[1]==bisON)))) 
 	{
@@ -131,11 +143,5 @@ else if(bIbr) beep_init(0x00000001,'R');
 
 
 bU_BAT2REL_AV_BAT=0;
-#ifdef UKU206_220
-if  (((bat[0]._Ub<(USIGN*10))&&(BAT_IS_ON[0]==bisON))) 
-	{
-	bU_BAT2REL_AV_BAT=1;
-	}
-#endif
 
 }

@@ -144,11 +144,11 @@ extern signed short speedChrgAvtEn;	 	//Автоматическое включение Ускоренного зар
 extern signed short speedChrgDU;	    		//Просадка напряжения необходимая для включения ускоренного заряда
 extern signed short speedChIsOn;			//Текущее состояние ускоренного заряда вкл/выкл
 extern signed long  speedChTimeCnt;		//Счетчик времени прямой ускоренного заряда
-extern signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1-СК1, 2-СК2
-extern signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
+//extern signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1-СК1, 2-СК2
+//extern signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
 extern signed short speedChrgBlckStat;		//Сигнал блокировки для выравнивающего и ускоренного заряда.
 extern char  		speedChrgShowCnt;		//Счетчик показа информационного сообщения
-extern signed short SP_CH_VENT_BLOK;
+extern signed short SP_CH_VENT_BLOK;		//Блокировка ускоренного заряда вентиляцией (0-выкл, 1-замыканием, 2-размыканием)
 extern char spch_plazma[2];
 
 //***********************************************
@@ -158,12 +158,12 @@ extern enum_sp_ch_stat sp_ch_stat,sp_ch_stat_old;
 extern short sp_ch_stat_cnt;
 extern long sp_ch_wrk_cnt;
 extern char speedChargeStartCnt;
-
+/*
 //***********************************************
 //Контроль выходного напряжения
 extern signed short outVoltContrHndlCnt;		//Счетчик, считает в плюс в случае выполнения условия аварии
 extern signed short outVoltContrHndlCnt_;		//Счетчик, считает в плюс в случае отсутствия выполнения условия аварии
-extern char uout_av;
+extern char uout_av; */
 
 //***********************************************
 //Межблоковая связь
@@ -480,6 +480,11 @@ extern short ibat_metr_cnt;
 extern signed short Isumm;
 extern signed short Isumm_;
 
+//**********************************************
+//Инициализация заводских настроек
+extern short factory_settings_hndl_main_iHz_cnt;
+extern char factory_settings_led_reg0, factory_settings_led_reg1;
+
 //*************************************************
 //сообщения
 #define MESS_DEEP	10
@@ -609,6 +614,8 @@ extern char test_hndl_releHV_cntrl,test_hndl_releHV_cnt;
 extern char test_hndl_bps_number;
 extern char test_hndl_bps_state;
 extern short test_hndl_bps_cnt;
+extern char zv_test_cnt,zv_test_sign;
+extern char test_led_stat, test_led_cnt;
 
 //***********************************************
 //Управление светодиодами
@@ -616,6 +623,14 @@ extern char ledUOUTGOOD;	//Зеленый светодиод "выходное напряжение в норме"
 extern char ledWARNING;  	//Желтый светодиод "тревога в одном из устройств"
 extern char ledERROR;		//Красный светодиод "авария в одном из устройств"
 extern char ledCAN;	   		//Зеленый светодиод "связь по КАН в норме"
+
+//***********************************************
+//Чтение журнала в панель
+extern unsigned short log_buff_mb[16];
+extern unsigned short log_deep_mb;
+extern unsigned short log_cmd_mb;
+extern unsigned short log_debug0_mb;
+extern unsigned short log_debug1_mb;
 
 //***********************************************
 //***********************************************
@@ -626,4 +641,5 @@ extern char plazma;
 extern char plazma_uart1[5];
 extern short plazma_short;
 extern char plazma_debug_0,plazma_debug_1;
+extern short hmi_plazma[9];
 

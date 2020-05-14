@@ -25,7 +25,7 @@ char UIB1[100];
 //char UOB1[100];
 char flag1;
 char tx_buffer1[TX_BUFFER_SIZE1];
-char rx_buffer1[RX_BUFFER_SIZE1];
+//char rx_buffer1[RX_BUFFER_SIZE1];
 
 unsigned short rx_wr_index1,rx_rd_index1,rx_counter1;
 unsigned short tx_wr_index1,tx_rd_index1,tx_counter1;
@@ -203,19 +203,20 @@ if (IIR & USART_FLAG_RXNE)
 	plazma_uart1[0]++;
 
 	data=USART1->DR & 0x00ff;
-	if(bTRANSMIT1==0) {
-	rx_buffer1[rx_wr_index1]=data;
-   	bRXIN1=1;
-   	if (++rx_wr_index1 == RX_BUFFER_SIZE1) rx_wr_index1=0;
-   	if (++rx_counter1 == RX_BUFFER_SIZE1)
-      	{
-      	rx_counter1=0;
-      	rx_buffer_overflow1=1;
-      	}
-	modbus_rx_buffer[modbus_rx_buffer_ptr]=data;
-	modbus_rx_buffer_ptr++;
-	modbus_timeout_cnt=0;
-	}
+	if(bTRANSMIT1==0) 
+		{
+		/*rx_buffer1[rx_wr_index1]=data;
+   		bRXIN1=1;
+   		if (++rx_wr_index1 == RX_BUFFER_SIZE1) rx_wr_index1=0;
+   		if (++rx_counter1 == RX_BUFFER_SIZE1)
+      		{
+      		rx_counter1=0;
+      		rx_buffer_overflow1=1;
+      		}*/
+		modbus_rx_buffer[modbus_rx_buffer_ptr]=data;
+		modbus_rx_buffer_ptr++;
+		modbus_timeout_cnt=10;
+		}
 	
     }
 

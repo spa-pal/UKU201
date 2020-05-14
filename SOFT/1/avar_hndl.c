@@ -449,21 +449,18 @@ char data[4];
 unsigned int event_ptr,lc640_adr,event_ptr_find,event_cnt;
 char avar_data=0;
 
-if(in==1)
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
+
+if((in==1)||(in==2))
 	{
-	//net_av=1;
-
-	//beep_init(0x01L,'O');
-	//a.av.bAN=1;
-
-
-	//beep_init(0x33333333,'A');
-
-	if(load_U>U_OUT_KONTR_MAX)uout_av=1;
-	if(load_U<U_OUT_KONTR_MIN)uout_av=2;
-	
-	avar_data=uout_av;
-		 
+	uout_av=in;
+		
 	event_ptr=lc640_read_int(PTR_EVENT_LOG);
 	event_ptr++;	
 	if(event_ptr>63)event_ptr=0;	
@@ -476,31 +473,30 @@ if(in==1)
 	lc640_adr=EVENT_LOG+(lc640_read_int(PTR_EVENT_LOG)*32);
 	
 	data[0]='Q';
-	data[1]=0;
-	data[2]='A';
-	data[3]=avar_data;
+	data[1]='A';
+	data[2]='D';
+	if(in==2) data[2]='U';
+	data[3]=0;
 	lc640_write_long_ptr(lc640_adr,data);
 
-	 //load_U=4321;
-
-	data[0]=*((char*)&load_U);
-	data[1]=*(((char*)&load_U)+1);
+	data[0]=*((char*)&out_U);
+	data[1]=*(((char*)&out_U)+1);
 	data[2]=0;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
-	
+		
 	data[0]='A';
 	data[1]='A';
 	data[2]='A';
@@ -525,18 +521,6 @@ if(in==1)
 	data[3]='A';
 	lc640_write_long_ptr(lc640_adr+28,data);				
 	
-/*	memo_out0[0]=0x55;
-     memo_out0[1]=0x00+2;
-     memo_out0[2]=1;
-     memo_out0[3]=0x0b;
-     memo_out0[4]=0x55;
-     memo_out0[5]=0x55; 
-     	
-     memo_out0[6]=crc_87(memo_out0,6);
-	memo_out0[7]=crc_95(memo_out0,6);
-     usart_out_adr0(memo_out0,8); 
-	*/
-	//snmp_trap_send("Main power is off",2,1,0);
 	}
 
 else if(in==0)
@@ -572,7 +556,7 @@ avar_uout_hndl_lbl1:
      	{        
      	if(event_ptr_find)event_ptr_find--;
      	else event_ptr_find=63;
-     	if(event_ptr_find==event_ptr)goto avar_unet_hndl_end;
+     	if(event_ptr_find==event_ptr)goto avar_uout_hndl_end;
      	else goto avar_uout_hndl_lbl1;
      	}
      else 
@@ -582,26 +566,26 @@ avar_uout_hndl_lbl1:
      		{        
      		if(event_ptr_find)event_ptr_find--;
          		else event_ptr_find=63;
-         		if(event_ptr_find==event_ptr)goto avar_unet_hndl_end;
+         		if(event_ptr_find==event_ptr)goto avar_uout_hndl_end;
      		else goto avar_uout_hndl_lbl1;
      		}
 
      	}	
 	
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+20,data); 
 	
-	data[0]=*((char*)(&net_Ustore));
-	data[1]=*(((char*)(&net_Ustore))+1);
+	data[0]='B';
+	data[1]='B';
 	data[2]='B';
 	data[3]='B';
 	lc640_write_long_ptr(lc640_adr+24,data);
@@ -624,7 +608,7 @@ avar_uout_hndl_lbl1:
      usart_out_adr0(memo_out0,8); */
      //snmp_trap_send("Main power is on",2,1,1);	
 	}
-avar_unet_hndl_end:
+avar_uout_hndl_end:
 	__nop();		
 }
 

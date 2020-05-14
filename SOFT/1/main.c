@@ -10,6 +10,7 @@
 #include "25lc640.h"
 #include "eeprom_map.h"
 #include "memo.h"
+#include "mess.h"
 #include "control.h"
 #include "cmd.h"
 #include "full_can.h"
@@ -79,11 +80,11 @@ signed short speedChrgAvtEn;	    		//Автоматическое включение Ускоренного заряда
 signed short speedChrgDU;	    		//Просадка напряжения необходимая для включения ускоренного заряда
 signed short speedChIsOn;			//Текущее состояние ускоренного заряда вкл/выкл
 signed long  speedChTimeCnt;			//Счетчик времени прямой ускоренного заряда
-signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1-СК1, 2-СК2
-signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
+//signed short speedChrgBlckSrc;		//Источник сигнала блокировки, 0-выкл., 1-СК1, 2-СК2
+//signed short speedChrgBlckLog;		//Логика сигнала блокировки, 1 - блокировка по замкнутому СК, 0 - по разомкнутому
 signed short speedChrgBlckStat;		//Сигнал блокировки для выравнивающего и ускоренного заряда.
 char  	   	 speedChrgShowCnt;		//Счетчик показа информационного сообщения
-signed short SP_CH_VENT_BLOK;
+signed short SP_CH_VENT_BLOK;		//Блокировка ускоренного заряда вентиляцией (0-выкл, 1-замыканием, 2-размыканием)
 char spch_plazma[2];
 
 //***********************************************
@@ -93,11 +94,12 @@ short sp_ch_stat_cnt;
 long sp_ch_wrk_cnt;
 char speedChargeStartCnt=0;
 
+/*
 //***********************************************
 //Контроль выходного напряжения
 signed short outVoltContrHndlCnt;		//Счетчик, считает в плюс в случае выполнения условия аварии
 signed short outVoltContrHndlCnt_;		//Счетчик, считает в плюс в случае отсутствия выполнения условия аварии
-char uout_av;
+char uout_av; */
 
 //***********************************************
 //Межблоковая связь
@@ -355,6 +357,7 @@ signed short Isumm_;
 //**********************************************
 //Инициализация заводских настроек
 short factory_settings_hndl_main_iHz_cnt;
+char factory_settings_led_reg0, factory_settings_led_reg1;
 
 //***********************************************
 //Управление реле
@@ -377,6 +380,8 @@ char test_hndl_releHV_cntrl,test_hndl_releHV_cnt;
 char test_hndl_bps_number;
 char test_hndl_bps_state;
 short test_hndl_bps_cnt;
+char zv_test_cnt,zv_test_sign;
+char test_led_stat, test_led_cnt;
 
 
 //***********************************************
@@ -385,6 +390,14 @@ char ledUOUTGOOD;	//Зеленый светодиод "выходное напряжение в норме"
 char ledWARNING;  	//Желтый светодиод "тревога в одном из устройств"
 char ledERROR;		//Красный светодиод "авария в одном из устройств"
 char ledCAN;	   	//Зеленый светодиод "связь по КАН в норме"
+
+//***********************************************
+//Чтение журнала в панель
+unsigned short log_buff_mb[16];
+unsigned short log_deep_mb;
+unsigned short log_cmd_mb;
+unsigned short log_debug0_mb;
+unsigned short log_debug1_mb;
 
 
 //***********************************************
@@ -397,6 +410,7 @@ char plazma_tx_cnt;
 char plazma_uart1[5];
 short plazma_short;
 char plazma_debug_0,plazma_debug_1;
+short hmi_plazma[9];
 
 
 #include <stdio.h>
@@ -480,25 +494,28 @@ void factory_settings_hndl(void)
 {
 short tempS;
 tempS=(RTC->CNTL)-(BKP->DR4);
-if((tempS>30)&&(tempS<60)&&((BKP->DR5)==0))
+if((tempS>7)&&(tempS<14)&&((BKP->DR5)==0))
 	{
 	PWR->CR	|= PWR_CR_DBP;
 	BKP->DR5=1;
 	PWR->CR	&= ~PWR_CR_DBP;
+	factory_settings_led_reg0=8;
 	}
-else if((tempS>10)&&(tempS<20)&&((BKP->DR5)==1))
+else if((tempS>7)&&(tempS<14)&&((BKP->DR5)==1))
 	{
 	PWR->CR	|= PWR_CR_DBP;
 	BKP->DR5=2;
 	PWR->CR	&= ~PWR_CR_DBP;
+	factory_settings_led_reg0=8;
 	}
-else if((tempS>30)&&(tempS<60)&&((BKP->DR5)==2))
+else if((tempS>7)&&(tempS<14)&&((BKP->DR5)==2))
 	{
 	PWR->CR	|= PWR_CR_DBP;
 	BKP->DR5=3;
 	PWR->CR	&= ~PWR_CR_DBP;
 	lc640_write_int(EE_MODBUS_ADRESS,1);
 	lc640_write_int(EE_MODBUS_BAUDRATE,960);
+	factory_settings_led_reg1=6;
 	}
 /*else
 	{
@@ -518,6 +535,51 @@ if(factory_settings_hndl_main_iHz_cnt==100)
 	PWR->CR	&= ~PWR_CR_DBP;
 	}
 }	
+
+//-----------------------------------------------
+void log_hndl(void)
+{
+log_debug0_mb++;
+
+if(log_cmd_mb==2000)
+	{
+	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
+	log_cmd_mb=0;
+	}
+
+else if(log_cmd_mb==1000)
+	{
+	lc640_write(CNT_EVENT_LOG,0);
+	lc640_write(PTR_EVENT_LOG,0);
+	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
+	log_cmd_mb=0;
+	}
+
+else if(log_cmd_mb==10001)
+	{
+	avar_unet_hndl(1);
+	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
+	log_cmd_mb=0;
+	}
+else if(log_cmd_mb==20001)
+	{
+	avar_unet_hndl(0);
+	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
+	log_cmd_mb=0;
+	}
+else if(log_cmd_mb==10002)
+	{
+	avar_unet_hndl(2);
+	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
+	log_cmd_mb=0;
+	}
+else if(log_cmd_mb==20002)
+	{
+	avar_unet_hndl(0);
+	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
+	log_cmd_mb=0;
+	}
+}
 
 //-----------------------------------------------
 char kalibrate_func(short in)
@@ -577,17 +639,17 @@ if(++cnt_net_drv>max_net_slot)
 if((cnt_net_drv>=0)&&(cnt_net_drv<=32)) // с 1 по 12 посылки адресные
 	{
 	//cnt_net_drv=2; 
-//	if(mess_find_unvol(MESS2NET_DRV))
-//		{
-//		if(mess_data[0]==PARAM_BPS_NET_OFF)
-//			{
+	if(mess_find_unvol(MESS2NET_DRV))
+		{
+		if(mess_data[0]==PARAM_BPS_NET_OFF)
+			{
 			//mess_data[1]=1;
 //			if(sub_ind1==cnt_net_drv)
 //				{
-//				return;
+				return;
 //				}
-//			}
-//		}
+			}
+		}
 			   
 	if(!bCAN_OFF)can1_out(cnt_net_drv,cnt_net_drv,GETTM,bps[cnt_net_drv]._flags_tu,*((char*)(&bps[cnt_net_drv]._vol_u)),*((char*)((&bps[cnt_net_drv]._vol_u))+1),*((char*)(&bps[cnt_net_drv]._vol_i)),*((char*)((&bps[cnt_net_drv]._vol_i))+1));
      
@@ -704,6 +766,7 @@ if(++t0cnt1>=10)
 	 	{
 		t0cnt2=0;
 		b10Hz=(bool)1;
+		beep_drv(); 
 		}
 
      if(++t0cnt3>=20)
@@ -739,19 +802,20 @@ if(++t0cnt1>=10)
 	     hz_out=0;
 	     }
 	}
-if(modbus_timeout_cnt<6)
+if(modbus_timeout_cnt)
 	{
-	modbus_timeout_cnt++;
-	if(modbus_timeout_cnt>=6)
+	modbus_timeout_cnt--;
+	if(modbus_timeout_cnt==0)
 		{
-		bMODBUS_TIMEOUT=1;
+		//bMODBUS_TIMEOUT=1;
+		modbus_in();
 		}
 	}
-else if (modbus_timeout_cnt>6)
+/*else if (modbus_timeout_cnt>=5)
 	{
 	modbus_timeout_cnt=0;
-	bMODBUS_TIMEOUT=0;
-	}
+	//bMODBUS_TIMEOUT=0;
+	}	*/
 } 
 
 /*----------------------------------------------------------------------------
@@ -781,13 +845,17 @@ stm32_Usart1Setup(MODBUS_BAUDRATE*10UL);
 lc640_write_int(0x0010,0x64);
 adc_init();
 can_mcp2515_init();
+kb_init();
 
 //calendar_hndl();
 factory_settings_hndl();
 //beep_init(0x00000005,'A');
 
 //lc640_write_int(EE_NUMPHASE,3);
+//lc640_write_int(EE_MODBUS_BAUDRATE,960);
+//lc640_write_int(EE_MODBUS_ADRESS,1);
 calendar_hndl();
+//lc640_write_int(EE_BAT_C_POINT_20,1234);
 
 while (1) 
 	{
@@ -795,6 +863,7 @@ while (1)
 	//delay_us(100000); 
 	//GPIOB->ODR^=(1<<10)|(1<<11)|(1<<12);
 	//GPIOC->ODR^=(1<<6);
+	if(bMODBUS_TIMEOUT)modbus_in();
 	if (b1000Hz) 
 		{
 		
@@ -802,10 +871,11 @@ while (1)
 		//
 		can_mcp2515_hndl();
 		}
+	if(bMODBUS_TIMEOUT)modbus_in();
 	if (b100Hz) 
 		{
 		b100Hz=(bool)0;
-		//adc_drv();
+		adc_drv();
 		//TMAX=80;
 		//TSIGN=80;
 		
@@ -813,15 +883,16 @@ while (1)
 		bps[1]._flags_tu=1;	*/
 		//NUMIST=3;
 		net_drv();
+		//log_hndl();		//Обработка запросов на чтение журнала
 		}
+	if(bMODBUS_TIMEOUT)modbus_in();
 	if (b10Hz) 
 		{
 		char i;
 
 		b10Hz=(bool)0;
-		adc_drv();
-		beep_drv(); 
-	   	ext_drv();
+	//	adc_drv();
+		ext_drv();
 		u_necc_hndl();
 		cntrl_hndl();
 		for(i=0;i<NUMIST;i++)bps_drv(i);
@@ -864,6 +935,7 @@ while (1)
 		num_necc_hndl();
 		kb_hndl();
 
+		outVoltContrHndl();		//контроль выходного напряжения
 
 
 		plazma_tx_cnt++;
@@ -894,8 +966,25 @@ while (1)
 	   	//printf("%d  %d  %d  %d \r\n", bps[0]._x_, bps[1]._x_, bps[2]._x_, bps[3]._x_);
 		//printf("%2d; %4d; %2d; %2d;\r\n", avt_klbr_phase_ui, modbus_register_1022, bps[2]._cnt, bps[3]._cnt);
 		//printf("%3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d\r\n", cntrl_hndl_plazma, bps[0]._cnt, bps[1]._cnt, bps[2]._cnt,UMAXN,MODBUS_BAUDRATE,/*MODBUS_ADRESS*/test_hndl_rele2_cntrl,/*plazma_uart1[2]*/test_hndl_rele2_cnt,/* NUMIST*/rele_output_stat_test_byte, /*NUMPHASE*/ rele_output_stat_test_mask);
-		printf("net_U= %3d  %3d  %3d  %3d  net_av= %2d u_necc = %2d  releset[0] = %2d \r\n", net_U, net_Ua, net_Ub, net_Uc, net_av, rele_output_stat, RELE1SET);
-		printf("%3d; %3d; %3d; %3d;\r\n", net_Umax, UMAXN, unet_max_drv_cnt);
+		///printf("net_U= %3d  %3d  %3d  %3d  net_av= %2d u_necc = %2d  releset[0] = %2d \r\n", net_U, net_Ua, net_Ub, net_Uc, net_av, rele_output_stat, RELE1SET);
+		///printf("%3d; %3d; %3d; %3d;\r\n", net_Umax, UMAXN, unet_max_drv_cnt);
+		///printf("log_cmd = %3d log_deep = %3d log_debug0 = %4d log_debug1 = %4d  %3d;\r\n", log_cmd_mb, log_deep_mb, log_debug0_mb, log_debug1_mb, unet_max_drv_cnt);
+		
+		// контроль выходного напряжения printf("out_U = %4d out_U_max = %4d out_U_min = %4d delay = %4d max_cnt = %4d  min_cnt = %4d uout_av = %3d;\r\n", out_U, U_OUT_KONTR_MAX, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, outVoltContrHndlCntUp, outVoltContrHndlCntDn, uout_av);
+		// бипер printf("beep_stat = %8x beep_stat_temp = %8x beep_stat_cnt = %4d\r\n", beep_stat, beep_stat_temp, beep_stat_cnt);
+		// управление регистрами в калибровке printf("modbus_register_998 = %4d  modbus_register_999 = %4d \r\n", modbus_register_998, modbus_register_999);
+		//	printf("Ib = %4.1d   IZMAX_ = %4d  PWM = %4d\r\n", Ib_ips_termokompensat, IZMAX_, cntrl_stat);
+
+		//printf("C_20=%4d C_10=%4d C_5=%4d C_3=%4d C_1=%4d C_1_2=%4d C_1_6=%4d\r\n",BAT_C_POINT_20, BAT_C_POINT_10, BAT_C_POINT_5,BAT_C_POINT_3,BAT_C_POINT_1,BAT_C_POINT_1_2,BAT_C_POINT_1_6);
+		//printf("U_20=%4d U_10=%4d U_5=%4d U_3=%4d U_1=%4d U_1_2=%4d U_1_6=%4d\r\n",BAT_U_END_20, BAT_U_END_10, BAT_U_END_5,BAT_U_END_3,BAT_U_END_1,BAT_U_END_1_2,BAT_U_END_1_6);
+		//printf("NUM_ELEM=%4d K_OLD=%4d \r\n",BAT_C_POINT_NUM_ELEM, BAT_K_OLD);  
+
+		//printf("FZ_U1=%4d FZ_IMAX1=%4d FZ_T1=%4d FZ_ISW12=%4d FZ_U2=%4d FZ_IMAX2=%4d FZ_T2=%4d\r\n", FZ_U1, FZ_IMAX1, FZ_T1, FZ_ISW12, FZ_U2, FZ_IMAX2, FZ_T2);
+		printf("%5d \r\n",MODBUS_ADRESS);  
+		printf("UZ_U=%4d UZ_I=%4d UZ_T=%4d UZ_AVT_EN=%4d UZ_DU=%4d UZ_VENT=%4d \r\n", speedChrgVolt, speedChrgCurr, speedChrgTimeInHour, speedChrgAvtEn, speedChrgDU, SP_CH_VENT_BLOK);
+
+		//printf("IZMAX=%4d TBAT=%4d UB0=%4d UB20=%4d TBATSIGN=%4d TBATMAX=%4d  IKB=%4d USIGN=%4d \r\n", IZMAX, TBAT, UB0, UB20, TBATSIGN, TBATMAX, IKB, USIGN);
+
 		//RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 		//PWR->CR      |= PWR_CR_DBP;
 		//BKP->DR1=(BKP->DR1)+1;
@@ -903,7 +992,7 @@ while (1)
 		//printf("%5d %5d %5d %5d %5d %5d %5d %5d %5d\r\n", BKP->DR1, cntrl_stat, modbus_register_995, bps[0]._flags_tu, RTC->CNTH, RTC->CNTL, MODBUS_ADRESS, BKP->DR4, BKP->DR5);
 		avg_hndl();
 
-		beep_hndl();
+		beep_hndl(); 	//Управление бипером, логическое
 		//calendar_hndl();
 		factory_settings_hndl();
 
@@ -914,12 +1003,12 @@ while (1)
 		//vz2_drv();
 		#endif
 		}
-	if(bMODBUS_TIMEOUT)
-		{
+	if(bMODBUS_TIMEOUT)modbus_in();
+	/*	{
 		bMODBUS_TIMEOUT=0;
 		//modbus_plazma++;;
 		modbus_in();
-		}
+		}	*/
 	if(bMCP2515_IN)
 		{
 		bMCP2515_IN=0;

@@ -4,6 +4,7 @@
 #include "stm32_Reg.h"
 #include "modbus.h"
 #include "main.h"
+#include "beep.h"
 #include "uart1.h"
 #include "cmd.h"
 #include "control.h"
@@ -28,9 +29,11 @@ unsigned char modbus_buf[20];
 short modbus_crc16;
 char modbus_timeout_cnt;
 char bMODBUS_TIMEOUT;
-unsigned char modbus_rx_buffer[30];	//Буфер, куда складывает принимаемые даннные обработчик прерывания по приему УАРТа 
-unsigned char modbus_an_buffer[30];    	//Буфер, куда они потом копируются для анализа
-unsigned char modbus_rx_buffer_ptr;	//Указатель на текущую позицию принимающего буфера
+unsigned char modbus_rx_buffer_d1[500];
+unsigned char modbus_rx_buffer[100];		//Буфер, куда складывает принимаемые даннные обработчик прерывания по приему УАРТа 
+unsigned char modbus_rx_buffer_d2[500];
+unsigned char modbus_an_buffer[100];    	//Буфер, куда они потом копируются для анализа
+unsigned char modbus_rx_buffer_ptr;		//Указатель на текущую позицию принимающего буфера
 unsigned char modbus_rx_counter;		//Количество принятых байт, используется при анализе целостности посылки и при расшифровке
 
 short modbus_plazma;				//Отладка
@@ -45,7 +48,7 @@ unsigned short modbus_rx_arg1;		//встроенный в посылку второй аргумент
 unsigned short modbus_rx_arg2;		//встроенный в посылку третий аргумент
 unsigned short modbus_rx_arg3;		//встроенный в посылку четвертый аргумент
 
-char modbus_tx_buff[100];
+char modbus_tx_buff[500];
 
 char* modbus_tcp_out_ptr;
 
@@ -323,9 +326,9 @@ bMODBUS_TIMEOUT=0;
 crc16_calculated  = CRC16_2((char*)modbus_an_buffer, modbus_rx_counter-2);
 crc16_incapsulated = *((short*)&modbus_an_buffer[modbus_rx_counter-2]);
 
-modbus_plazma1=modbus_rx_counter;
-modbus_plazma2=crc16_calculated;
-modbus_plazma3=crc16_incapsulated;
+//modbus_plazma1=modbus_rx_counter;
+//modbus_plazma2=crc16_calculated;
+//modbus_plazma3=crc16_incapsulated;
 
 modbus_func=modbus_an_buffer[1];
 modbus_rx_arg0=(((unsigned short)modbus_an_buffer[2])*((unsigned short)256))+((unsigned short)modbus_an_buffer[3]);
@@ -469,11 +472,13 @@ if(crc16_calculated==crc16_incapsulated)
 	
  	if(modbus_an_buffer[0]==MODBUS_ADRESS)
 		{
+		modbus_plazma++;
 		//modbus_modbus_adress_eq++;
 		if(modbus_func==3)		//чтение произвольного кол-ва регистров хранения
 			{
-			//modbus_plazma++;
 			
+			 modbus_plazma1++;
+			modbus_plazma2++;
 			modbus_hold_registers_transmit(MODBUS_ADRESS,modbus_func,modbus_rx_arg0,modbus_rx_arg1,MODBUS_RTU_PROT);
 			}
 
@@ -482,6 +487,8 @@ if(crc16_calculated==crc16_incapsulated)
 			modbus_input_registers_transmit(MODBUS_ADRESS,modbus_func,modbus_rx_arg0,modbus_rx_arg1,MODBUS_RTU_PROT);
 			//modbus_modbus4f_cnt++;
 			plazma_uart1[3]++;
+			modbus_plazma1++;
+			
 			}
 
 		else if(modbus_func==6) 	//запись регистров хранения
@@ -726,9 +733,13 @@ if(crc16_calculated==crc16_incapsulated)
 				{
 				if(	(modbus_rx_arg1==240)||(modbus_rx_arg1==480)||
 					(modbus_rx_arg1==960)||(modbus_rx_arg1==1920)||
-					(modbus_rx_arg1==3840)||(modbus_rx_arg1==5670)||
+					(modbus_rx_arg1==3840)||(modbus_rx_arg1==5760)||
 					(modbus_rx_arg1==11520)||(modbus_rx_arg1==23040)
-					) lc640_write_int(EE_MODBUS_BAUDRATE,modbus_rx_arg1);
+					) 
+					{
+					lc640_write_int(EE_MODBUS_BAUDRATE,modbus_rx_arg1);
+					stm32_Usart1Setup(modbus_rx_arg1*10UL);
+					}
 	     		}
 
 			if(modbus_rx_arg0==72)		//Рег72	 Автоматический ускоренный заряд, вкл(1) выкл(0)
@@ -739,7 +750,7 @@ if(crc16_calculated==crc16_incapsulated)
 
 			if(modbus_rx_arg0==73)		//Рег73	 Автоматический ускоренный заряд дельта (напряжение просадки включения), 1В
 				{
-				gran(&modbus_rx_arg1,0,20);
+				gran(&modbus_rx_arg1,0,100);
 				lc640_write_int(EE_SPEED_CHRG_D_U,modbus_rx_arg1);
 	     		}
 
@@ -759,15 +770,16 @@ if(crc16_calculated==crc16_incapsulated)
 			if(modbus_rx_arg0==76)		//Рег76	 Блокирование ускоренного заряда вентиляцией, вкл(1) выкл(0) 
 				{
 				printf("Reg 76 writed   \r\n");
-				gran(&modbus_rx_arg1,0,1);
+				gran(&modbus_rx_arg1,0,2);
 				lc640_write_int(EE_SP_CH_VENT_BLOK,modbus_rx_arg1);
 	     		}
 
 			if(modbus_rx_arg0==77)		//Рег77	 Количество фаз питающей сети, 1 - (1)  3 - (3)
 				{
 				printf("Reg 77 writed   \r\n");
-				gran(&modbus_rx_arg1,1,3);
-				lc640_write_int(EE_NUMPHASE,modbus_rx_arg1);
+				gran(&modbus_rx_arg1,0,1);
+				if(modbus_rx_arg1==1)lc640_write_int(EE_NUMPHASE,1);
+				else lc640_write_int(EE_NUMPHASE,3);
 	     		}
 
 			if(modbus_rx_arg0==78)		//Рег78	 //Настройка срабатываний реле1
@@ -786,7 +798,152 @@ if(crc16_calculated==crc16_incapsulated)
 				{
 				printf("Reg 80 writed   \r\n");
 				lc640_write_int(EE_RELE3SET,modbus_rx_arg1);
-	     		}											
+	     		}
+
+			if(modbus_rx_arg0==81)		//Рег81	 Емкость батареи при 20-ти часовом разряде
+				{
+				printf("Reg 81 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_20,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==82)		//Рег82	 Емкость батареи при 10-ти часовом разряде
+				{
+				printf("Reg 82 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_10,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==83)		//Рег83	 Емкость батареи при 5-ти часовом разряде
+				{
+				printf("Reg 83 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_5,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==84)		//Рег84	 Емкость батареи при 3-х часовом разряде
+				{
+				printf("Reg 84 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_3,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==85)		//Рег85	 Емкость батареи при 1-о часовом разряде
+				{
+				printf("Reg 85 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_1,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==86)		//Рег86	 Емкость батареи при 1/2 часовом разряде
+				{
+				printf("Reg 86 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_1_2,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==87)		//Рег87	 Емкость батареи при 1/6 часовом разряде
+				{
+				printf("Reg 87 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_1_6,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==88)		//Рег88	 Напряжение разряженного состояния при 20-ти часовом разряде
+				{
+				printf("Reg 88 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_20,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==89)		//Рег89	 Напряжение разряженного состояния при 10-ти часовом разряде
+				{
+				printf("Reg 89 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_10,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==90)		//Рег90	 Напряжение разряженного состояния при 5-ти часовом разряде
+				{
+				printf("Reg 90 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_5,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==91)		//Рег91	 Напряжение разряженного состояния при 3-х часовом разряде
+				{
+				printf("Reg 91 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_3,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==92)		//Рег92	 Напряжение разряженного состояния при 1-о часовом разряде
+				{
+				printf("Reg 92 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_1,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==93)		//Рег93	 Напряжение разряженного состояния при 1/2 часовом разряде
+				{
+				printf("Reg 93 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_1_2,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==94)		//Рег94	 Напряжение разряженного состояния при 1/6 часовом разряде
+				{
+				printf("Reg 94 writed   \r\n");
+				lc640_write_int(EE_BAT_U_END_1_6,modbus_rx_arg1);
+	     		}
+
+ 			if(modbus_rx_arg0==95)		//Рег95	 Количество двухвольтовых элементов в батарее
+				{
+				printf("Reg 95 writed   \r\n");
+				lc640_write_int(EE_BAT_C_POINT_NUM_ELEM,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==96)		//Рег96	 Коэффициент старения батареи
+				{
+				printf("Reg 96 writed   \r\n");
+				lc640_write_int(EE_BAT_K_OLD,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==97)		//Рег97	 Формовочный заряд, напряжение фазы 1, 0.1В 
+				{
+				printf("Reg 97 writed   \r\n");
+				lc640_write_int(EE_FZ_U1,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==98)		//Рег98	 Формовочный заряд, максимальный ток фазы 1, 0.1А
+				{
+				printf("Reg 98 writed   \r\n");
+				lc640_write_int(EE_FZ_IMAX1,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==99)		//Рег99	 Формовочный заряд, длительность фазы 1, 1ч
+				{
+				printf("Reg 99 writed   \r\n");
+				lc640_write_int(EE_FZ_T1,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==100)		//Рег100  Формовочный заряд, ток переключения с фазы 1 на фазу 2, 0.1В
+				{
+				printf("Reg 100 writed   \r\n");
+				lc640_write_int(EE_FZ_ISW12,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==101)		//Рег101  Формовочный заряд, напряжение фазы 2, 0.1В
+				{
+				printf("Reg 101 writed   \r\n");
+				lc640_write_int(EE_FZ_U2,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==102)		//Рег102  Формовочный заряд, максимальный ток фазы 2, 0.1А
+				{
+				printf("Reg 102 writed   \r\n");
+				lc640_write_int(EE_FZ_IMAX2,modbus_rx_arg1);
+	     		}
+			if(modbus_rx_arg0==103)		//Рег103  Формовочный заряд, длительность фазы 2, 1ч 
+				{
+				printf("Reg 103 writed   \r\n");
+				lc640_write_int(EE_FZ_T2,modbus_rx_arg1);
+	     		}
+
+			if(modbus_rx_arg0==940)		// Счетчик процесса проверки наличия батареи
+				{
+				main_kb_cnt=modbus_rx_arg1;
+				
+				}				
+
+			if(modbus_rx_arg0==969)		// Управление реле1 в тесте
+				{
+				log_cmd_mb=modbus_rx_arg1;
+				log_hndl();
+				}				
+															
 			if(modbus_rx_arg0==970)		// Управление реле1 в тесте
 				{
 				test_hndl_rele1_cntrl=modbus_rx_arg1;
@@ -831,6 +988,17 @@ if(crc16_calculated==crc16_incapsulated)
 				test_hndl_bps_cnt=600;
 				test_hndl_bps_state=modbus_rx_arg1;
 				}
+			if(modbus_rx_arg0==976)		// Тест бипера, 0 - выключаем, 1 - включаем)
+				{
+				if(modbus_rx_arg1) zv_test_cnt=20;
+				else zv_test_cnt=0;
+				}
+			if(modbus_rx_arg0==977)		// Тест светодиодов 0 - выключен, 1 - зеленый(Uвыхнорм), 2 - желтый(тревога), 3 - красный(авария), 4 - зеленый(КАН), 5 - все выключить 
+				{
+				if(modbus_rx_arg1) test_led_cnt=50;
+				test_led_stat=modbus_rx_arg1;
+				}
+
 			if(modbus_rx_arg0==982)		// Включение-выключение ускоренного заряда
 				{
 				speedChargeStartStop();
@@ -1737,20 +1905,68 @@ modbus_registers[142]=(char)(speedChrgAvtEn>>8);		//Рег72	 Автоматический ускоре
 modbus_registers[143]=(char)(speedChrgAvtEn);
 modbus_registers[144]=(char)(speedChrgDU>>8);			//Рег73	 Автоматический ускоренный заряд дельта (напряжение просадки включения), 1В
 modbus_registers[145]=(char)(speedChrgDU);
-modbus_registers[146]=(char)(speedChrgBlckSrc>>8);		//Рег74	 Источник блокировки ускоренного заряда, выкл(0) СК1(1) СК2(2)
-modbus_registers[147]=(char)(speedChrgBlckSrc);
-modbus_registers[148]=(char)(speedChrgBlckLog>>8);		//Рег75	 Сигнал блокировки ускоренного заряда, разомкнуто(0) замкнуто(1) 
-modbus_registers[149]=(char)(speedChrgBlckLog);
+//modbus_registers[146]=(char)(speedChrgBlckSrc>>8);		//Рег74	 Источник блокировки ускоренного заряда, выкл(0) СК1(1) СК2(2)
+//modbus_registers[147]=(char)(speedChrgBlckSrc);
+//modbus_registers[148]=(char)(speedChrgBlckLog>>8);		//Рег75	 Сигнал блокировки ускоренного заряда, разомкнуто(0) замкнуто(1) 
+//modbus_registers[149]=(char)(speedChrgBlckLog);
 modbus_registers[150]=(char)(SP_CH_VENT_BLOK>>8);		//Рег76	 Блокирование ускоренного заряда вентиляцией, вкл(1) выкл(0) 
 modbus_registers[151]=(char)(SP_CH_VENT_BLOK);
-modbus_registers[152]=(char)(NUMPHASE>>8);				//Рег77	 Количество фаз питающей сети, 1 - (1)  3 - (3) 
-modbus_registers[153]=(char)(NUMPHASE);
+tempSS=0;
+if(NUMPHASE==1)tempSS=1;
+modbus_registers[152]=(char)(tempSS>>8);				//Рег77	 Количество фаз питающей сети, 0 - (3)  1 - (1) 
+modbus_registers[153]=(char)(tempSS);
 modbus_registers[154]=(char)(RELE1SET>>8);				//Рег78	 Настройка срабатываний реле1  
 modbus_registers[155]=(char)(RELE1SET);					
 modbus_registers[156]=(char)(RELE2SET>>8);				//Рег79	 Настройка срабатываний реле2  
 modbus_registers[157]=(char)(RELE2SET);					//значение битов как и в Рег78
 modbus_registers[158]=(char)(RELE3SET>>8);				//Рег80	 Настройка срабатываний реле3  
 modbus_registers[159]=(char)(RELE3SET);					//значение битов как и в Рег78
+modbus_registers[160]=(char)(BAT_C_POINT_20>>8);		//Рег81	 Емкость батареи при 20-ти часовом разряде  
+modbus_registers[161]=(char)(BAT_C_POINT_20);			
+modbus_registers[162]=(char)(BAT_C_POINT_10>>8);		//Рег82	 Емкость батареи при 10-ти часовом разряде  
+modbus_registers[163]=(char)(BAT_C_POINT_10);
+modbus_registers[164]=(char)(BAT_C_POINT_5>>8);			//Рег83	 Емкость батареи при 5-ти часовом разряде  
+modbus_registers[165]=(char)(BAT_C_POINT_5);
+modbus_registers[166]=(char)(BAT_C_POINT_3>>8);			//Рег84	 Емкость батареи при 3-х часовом разряде  
+modbus_registers[167]=(char)(BAT_C_POINT_3);
+modbus_registers[168]=(char)(BAT_C_POINT_1>>8);			//Рег85	 Емкость батареи при 1-0 часовом разряде  
+modbus_registers[169]=(char)(BAT_C_POINT_1);
+modbus_registers[170]=(char)(BAT_C_POINT_1_2>>8);		//Рег86	 Емкость батареи при 1/2 часовом разряде  
+modbus_registers[171]=(char)(BAT_C_POINT_1_2);
+modbus_registers[172]=(char)(BAT_C_POINT_1_6>>8);		//Рег87	 Емкость батареи при 1/6 часовом разряде  
+modbus_registers[173]=(char)(BAT_C_POINT_1_6);
+modbus_registers[174]=(char)(BAT_U_END_20>>8);		//Рег88	 Напряжение разряженного состояния при 20-ти часовом разряде  
+modbus_registers[175]=(char)(BAT_U_END_20);			
+modbus_registers[176]=(char)(BAT_U_END_10>>8);		//Рег89	 Напряжение разряженного состояния при 10-ти часовом разряде  
+modbus_registers[177]=(char)(BAT_U_END_10);
+modbus_registers[178]=(char)(BAT_U_END_5>>8);			//Рег90	 Напряжение разряженного состояния при 5-ти часовом разряде  
+modbus_registers[179]=(char)(BAT_U_END_5);
+modbus_registers[180]=(char)(BAT_U_END_3>>8);			//Рег91	 Напряжение разряженного состояния при 3-х часовом разряде  
+modbus_registers[181]=(char)(BAT_U_END_3);
+modbus_registers[182]=(char)(BAT_U_END_1>>8);			//Рег92	 Напряжение разряженного состояния при 1-0 часовом разряде  
+modbus_registers[183]=(char)(BAT_U_END_1);
+modbus_registers[184]=(char)(BAT_U_END_1_2>>8);		//Рег93	 Напряжение разряженного состояния при 1/2 часовом разряде  
+modbus_registers[185]=(char)(BAT_U_END_1_2);
+modbus_registers[186]=(char)(BAT_U_END_1_6>>8);		//Рег94	 Напряжение разряженного состояния при 1/6 часовом разряде  
+modbus_registers[187]=(char)(BAT_U_END_1_6);
+modbus_registers[188]=(char)(BAT_C_POINT_NUM_ELEM>>8);		//Рег95	 Количество 2вольтовых элементов в батарее  
+modbus_registers[189]=(char)(BAT_C_POINT_NUM_ELEM);
+modbus_registers[190]=(char)(BAT_K_OLD>>8);					//Рег96	 Коэффициент старения батареи  
+modbus_registers[191]=(char)(BAT_K_OLD);
+modbus_registers[192]=(char)(FZ_U1>>8);						//Рег97	 Формовочный заряд, напряжение фазы 1, 0.1В  
+modbus_registers[193]=(char)(FZ_U1);
+modbus_registers[194]=(char)(FZ_IMAX1>>8);					//Рег98	 Формовочный заряд, максимальный ток фазы 1, 0.1А  
+modbus_registers[195]=(char)(FZ_IMAX1);
+modbus_registers[196]=(char)(FZ_T1>>8);						//Рег99	 Формовочный заряд, длительность фазы 1, 1ч  
+modbus_registers[197]=(char)(FZ_T1);
+modbus_registers[198]=(char)(FZ_ISW12>>8);					//Рег100  Формовочный заряд, ток переключения с фазы 1 на фазу 2, 0.1В  
+modbus_registers[199]=(char)(FZ_ISW12);
+modbus_registers[200]=(char)(FZ_U2>>8);						//Рег101  Формовочный заряд, напряжение фазы 2, 0.1В  
+modbus_registers[201]=(char)(FZ_U2);
+modbus_registers[202]=(char)(FZ_IMAX2>>8);					//Рег102  Формовочный заряд, максимальный ток фазы 2, 0.1А  
+modbus_registers[203]=(char)(FZ_IMAX2);
+modbus_registers[204]=(char)(FZ_T2>>8);						//Рег103  Формовочный заряд, длительность фазы 2, 1ч  
+modbus_registers[205]=(char)(FZ_T2);
 
 
 /*
@@ -1799,6 +2015,52 @@ modbus_registers[159]=(char)(RELE3SET);					//значение битов как и в Рег78
 //modbus_register_1000 = 2;
 //modbus_register_1001 = 7890;
 //modbus_register_1002 = 8765;hv_vz_up_cnt
+modbus_registers[1878]=(signed char)(main_kb_cnt>>8);							//Рег940	Счетчик процесса проверки наличия батареи
+modbus_registers[1879]=(signed char)(main_kb_cnt);
+modbus_registers[1898]=(char)(log_buff_mb[0]>>8);								//Рег950	 Регистр 0 буфера чтения журнала
+modbus_registers[1899]=(char)(log_buff_mb[0]);
+modbus_registers[1900]=(char)(log_buff_mb[1]>>8);								//Рег951	 Регистр 0 буфера чтения журнала
+modbus_registers[1901]=(char)(log_buff_mb[1]);
+modbus_registers[1902]=(char)(log_buff_mb[2]>>8);								//Рег952	 Регистр 0 буфера чтения журнала
+modbus_registers[1903]=(char)(log_buff_mb[2]);
+modbus_registers[1904]=(char)(log_buff_mb[3]>>8);								//Рег953	 Регистр 0 буфера чтения журнала
+modbus_registers[1905]=(char)(log_buff_mb[3]);
+modbus_registers[1906]=(char)(log_buff_mb[4]>>8);								//Рег954	 Регистр 0 буфера чтения журнала
+modbus_registers[1907]=(char)(log_buff_mb[4]);
+modbus_registers[1908]=(char)(log_buff_mb[5]>>8);								//Рег955	 Регистр 0 буфера чтения журнала
+modbus_registers[1909]=(char)(log_buff_mb[5]);
+modbus_registers[1910]=(char)(log_buff_mb[6]>>8);								//Рег956	 Регистр 0 буфера чтения журнала
+modbus_registers[1911]=(char)(log_buff_mb[6]);
+modbus_registers[1912]=(char)(log_buff_mb[7]>>8);								//Рег957	 Регистр 0 буфера чтения журнала
+modbus_registers[1913]=(char)(log_buff_mb[7]);
+modbus_registers[1914]=(char)(log_buff_mb[8]>>8);								//Рег958	 Регистр 0 буфера чтения журнала
+modbus_registers[1915]=(char)(log_buff_mb[8]);
+modbus_registers[1916]=(char)(log_buff_mb[9]>>8);								//Рег959	 Регистр 0 буфера чтения журнала
+modbus_registers[1917]=(char)(log_buff_mb[9]);
+modbus_registers[1918]=(char)(log_buff_mb[10]>>8);								//Рег960	 Регистр 0 буфера чтения журнала
+modbus_registers[1919]=(char)(log_buff_mb[10]);
+modbus_registers[1920]=(char)(log_buff_mb[11]>>8);								//Рег961	 Регистр 0 буфера чтения журнала
+modbus_registers[1921]=(char)(log_buff_mb[11]);
+modbus_registers[1922]=(char)(log_buff_mb[12]>>8);								//Рег962	 Регистр 0 буфера чтения журнала
+modbus_registers[1923]=(char)(log_buff_mb[12]);
+modbus_registers[1924]=(char)(log_buff_mb[13]>>8);								//Рег963	 Регистр 0 буфера чтения журнала
+modbus_registers[1925]=(char)(log_buff_mb[13]);
+modbus_registers[1926]=(char)(log_buff_mb[14]>>8);								//Рег964	 Регистр 0 буфера чтения журнала
+modbus_registers[1927]=(char)(log_buff_mb[14]);
+modbus_registers[1928]=(char)(log_buff_mb[15]>>8);								//Рег965	 Регистр 0 буфера чтения журнала
+modbus_registers[1929]=(char)(log_buff_mb[15]);
+modbus_registers[1930]=(char)(log_debug0_mb>>8);								//Рег966	 Отладочный регистр0 журнала событий
+modbus_registers[1931]=(char)(log_debug0_mb);
+modbus_registers[1932]=(char)(log_debug1_mb>>8);								//Рег967	 Отладочный регистр1 журнала событий
+modbus_registers[1933]=(char)(log_debug1_mb);
+modbus_registers[1934]=(char)(log_deep_mb>>8);									//Рег968	 Глубина журнала событий
+modbus_registers[1935]=(char)(log_deep_mb);
+modbus_registers[1936]=(char)(log_cmd_mb>>8);									//Рег969	 Командный регистр журнала событий
+modbus_registers[1937]=(char)(log_cmd_mb);										// <0...63> - подготовить для чтения  ячейку журнала с соответствующим номером
+																				// 1000	- стереть журнал событий
+																				// 2000 - обновить данные о глубине журнала
+																				// 10001 - записать аварию сети по заниженному
+																			   	// 10002 - записать аварию сети по завышенному
 
 modbus_registers[1938]=(char)(test_hndl_rele1_cntrl>>8);						//Рег970	 Управление реле №1 в тесте (0 - не трогаем, 1 - принудительно вкл., 2 - принудительно выкл)
 modbus_registers[1939]=(char)(test_hndl_rele1_cntrl);
@@ -1812,6 +2074,10 @@ modbus_registers[1946]=(char)(test_hndl_bps_number>>8);							//Рег974	 Управлен
 modbus_registers[1947]=(char)(test_hndl_bps_number);
 modbus_registers[1948]=(char)(test_hndl_bps_state>>8);							//Рег975	 Управление БПСами в тесте, (0 - выключаем, 1 - включаем максимальный шим, 2 - включаем минимальный шим, 3 - включаем термокопенсацию, 4 - включаем автономно)
 modbus_registers[1949]=(char)(test_hndl_bps_state);
+modbus_registers[1950]=(char)(zv_test_sign>>8);									//Рег976	 Управление БПСами в тесте, (0 - выключаем, 1 - включаем максимальный шим, 2 - включаем минимальный шим, 3 - включаем термокопенсацию, 4 - включаем автономно)
+modbus_registers[1951]=(char)(zv_test_sign);
+modbus_registers[1952]=(char)(test_led_stat>>8);								//Рег977	 Тест светодиодов 0 - выключен, 1 - зеленый(Uвыхнорм), 2 - желтый(тревога), 3 - красный(авария), 4 - зеленый(КАН), 5 - все выключить 
+modbus_registers[1953]=(char)(test_led_stat);
 
 
 tempSS=0;
@@ -1896,7 +2162,7 @@ bps[0]._Ii=123;
 
 bps_I=5678;
 */
-//out_U=1234;
+//bps_U=modbus_plazma;
 //bps_U=3456;
 
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
@@ -2083,15 +2349,6 @@ cntrl_stat=641;
 u_necc=2345;
 IZMAX_=1234;
 bps_I=986;	*/
-																//Специнформация
-modbus_registers[158]=(signed char)(cntrl_stat>>8);				//Рег80	Шим
-modbus_registers[159]=(signed char)(cntrl_stat);
-modbus_registers[160]=(signed char)(u_necc>>8);					//Рег81	напряжение поддержания
-modbus_registers[161]=(signed char)(u_necc);
-modbus_registers[162]=(signed char)(IZMAX_>>8);					//Рег82	ток заряда батареи максимальный
-modbus_registers[163]=(signed char)(IZMAX_);
-modbus_registers[164]=(signed char)(bps_I>>8);					//Рег83	суммарный ток БПС
-modbus_registers[165]=(signed char)(bps_I);
 
 
 modbus_registers[166]=(signed char)(bps[0]._x_>>8);				//Рег84	Регулятор выравнивания токов БПС1 
@@ -2110,6 +2367,48 @@ modbus_registers[178]=(signed char)(bps[6]._x_>>8);				//Рег90	Регулятор выравни
 modbus_registers[179]=(signed char)(bps[6]._x_);
 modbus_registers[180]=(signed char)(bps[7]._x_>>8);				//Рег91	Регулятор выравнивания токов БПС8 
 modbus_registers[181]=(signed char)(bps[7]._x_);
+
+hmi_plazma[0]=bps[0]._flags_tm;
+hmi_plazma[1]=main_kb_cnt;
+hmi_plazma[2]=cntrl_stat;
+hmi_plazma[3]=kb_cnt_1lev;
+hmi_plazma[4]=kb_cnt_2lev;
+hmi_plazma[5]=kb_full_ver;
+hmi_plazma[6]=ibat_ips;
+hmi_plazma[7]=ibat_ips_;
+hmi_plazma[8]=IKB;
+
+modbus_registers[182]=(signed char)(hmi_plazma[0]>>8);			//Рег92	Отладочная информация для панели 
+modbus_registers[183]=(signed char)(hmi_plazma[0]);
+modbus_registers[184]=(signed char)(hmi_plazma[1]>>8);			//Рег93	Отладочная информация для панели 
+modbus_registers[185]=(signed char)(hmi_plazma[1]);
+modbus_registers[186]=(signed char)(hmi_plazma[2]>>8);			//Рег94	Отладочная информация для панели 
+modbus_registers[187]=(signed char)(hmi_plazma[2]);
+modbus_registers[188]=(signed char)(hmi_plazma[3]>>8);			//Рег95	Отладочная информация для панели 
+modbus_registers[189]=(signed char)(hmi_plazma[3]);
+modbus_registers[190]=(signed char)(hmi_plazma[4]>>8);			//Рег96	Отладочная информация для панели 
+modbus_registers[191]=(signed char)(hmi_plazma[4]);
+modbus_registers[192]=(signed char)(hmi_plazma[5]>>8);			//Рег97	Отладочная информация для панели 
+modbus_registers[193]=(signed char)(hmi_plazma[5]);
+modbus_registers[194]=(signed char)(hmi_plazma[6]>>8);			//Рег98	Отладочная информация для панели 
+modbus_registers[195]=(signed char)(hmi_plazma[6]);
+modbus_registers[196]=(signed char)(hmi_plazma[7]>>8);			//Рег99	Отладочная информация для панели 
+modbus_registers[197]=(signed char)(hmi_plazma[7]);
+modbus_registers[198]=(signed char)(hmi_plazma[8]>>8);			//Рег100	Отладочная информация для панели 
+modbus_registers[199]=(signed char)(hmi_plazma[8]);
+
+																//Специнформация
+modbus_registers[200]=(signed char)(cntrl_stat>>8);				//Рег101	Шим
+modbus_registers[201]=(signed char)(cntrl_stat);
+modbus_registers[202]=(signed char)(u_necc>>8);					//Рег102	напряжение поддержания
+modbus_registers[203]=(signed char)(u_necc);
+modbus_registers[204]=(signed char)(IZMAX_>>8);					//Рег103	ток заряда батареи максимальный
+modbus_registers[205]=(signed char)(IZMAX_);
+modbus_registers[206]=(signed char)(bps_I>>8);					//Рег104	суммарный ток БПС
+modbus_registers[207]=(signed char)(bps_I);
+
+
+
 ///*/
 /*
 tempS=cntrl_stat_old;
