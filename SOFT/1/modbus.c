@@ -938,7 +938,7 @@ if(crc16_calculated==crc16_incapsulated)
 				
 				}				
 
-			if(modbus_rx_arg0==969)		// Управление реле1 в тесте
+			if(modbus_rx_arg0==969)		// Управление журналом
 				{
 				log_cmd_mb=modbus_rx_arg1;
 				log_hndl();
@@ -2019,35 +2019,35 @@ modbus_registers[1878]=(signed char)(main_kb_cnt>>8);							//Рег940	Счетчик про
 modbus_registers[1879]=(signed char)(main_kb_cnt);
 modbus_registers[1898]=(char)(log_buff_mb[0]>>8);								//Рег950	 Регистр 0 буфера чтения журнала
 modbus_registers[1899]=(char)(log_buff_mb[0]);
-modbus_registers[1900]=(char)(log_buff_mb[1]>>8);								//Рег951	 Регистр 0 буфера чтения журнала
+modbus_registers[1900]=(char)(log_buff_mb[1]>>8);								//Рег951	 Регистр 1 буфера чтения журнала
 modbus_registers[1901]=(char)(log_buff_mb[1]);
-modbus_registers[1902]=(char)(log_buff_mb[2]>>8);								//Рег952	 Регистр 0 буфера чтения журнала
+modbus_registers[1902]=(char)(log_buff_mb[2]>>8);								//Рег952	 Регистр 2 буфера чтения журнала
 modbus_registers[1903]=(char)(log_buff_mb[2]);
-modbus_registers[1904]=(char)(log_buff_mb[3]>>8);								//Рег953	 Регистр 0 буфера чтения журнала
+modbus_registers[1904]=(char)(log_buff_mb[3]>>8);								//Рег953	 Регистр 3 буфера чтения журнала
 modbus_registers[1905]=(char)(log_buff_mb[3]);
-modbus_registers[1906]=(char)(log_buff_mb[4]>>8);								//Рег954	 Регистр 0 буфера чтения журнала
+modbus_registers[1906]=(char)(log_buff_mb[4]>>8);								//Рег954	 Регистр 4 буфера чтения журнала
 modbus_registers[1907]=(char)(log_buff_mb[4]);
-modbus_registers[1908]=(char)(log_buff_mb[5]>>8);								//Рег955	 Регистр 0 буфера чтения журнала
+modbus_registers[1908]=(char)(log_buff_mb[5]>>8);								//Рег955	 Регистр 5 буфера чтения журнала
 modbus_registers[1909]=(char)(log_buff_mb[5]);
-modbus_registers[1910]=(char)(log_buff_mb[6]>>8);								//Рег956	 Регистр 0 буфера чтения журнала
+modbus_registers[1910]=(char)(log_buff_mb[6]>>8);								//Рег956	 Регистр 6 буфера чтения журнала
 modbus_registers[1911]=(char)(log_buff_mb[6]);
-modbus_registers[1912]=(char)(log_buff_mb[7]>>8);								//Рег957	 Регистр 0 буфера чтения журнала
+modbus_registers[1912]=(char)(log_buff_mb[7]>>8);								//Рег957	 Регистр 7 буфера чтения журнала
 modbus_registers[1913]=(char)(log_buff_mb[7]);
-modbus_registers[1914]=(char)(log_buff_mb[8]>>8);								//Рег958	 Регистр 0 буфера чтения журнала
+modbus_registers[1914]=(char)(log_buff_mb[8]>>8);								//Рег958	 Регистр 8 буфера чтения журнала
 modbus_registers[1915]=(char)(log_buff_mb[8]);
-modbus_registers[1916]=(char)(log_buff_mb[9]>>8);								//Рег959	 Регистр 0 буфера чтения журнала
+modbus_registers[1916]=(char)(log_buff_mb[9]>>8);								//Рег959	 Регистр 9 буфера чтения журнала
 modbus_registers[1917]=(char)(log_buff_mb[9]);
-modbus_registers[1918]=(char)(log_buff_mb[10]>>8);								//Рег960	 Регистр 0 буфера чтения журнала
+modbus_registers[1918]=(char)(log_buff_mb[10]>>8);								//Рег960	 Регистр 10 буфера чтения журнала
 modbus_registers[1919]=(char)(log_buff_mb[10]);
-modbus_registers[1920]=(char)(log_buff_mb[11]>>8);								//Рег961	 Регистр 0 буфера чтения журнала
+modbus_registers[1920]=(char)(log_buff_mb[11]>>8);								//Рег961	 Регистр 11 буфера чтения журнала
 modbus_registers[1921]=(char)(log_buff_mb[11]);
-modbus_registers[1922]=(char)(log_buff_mb[12]>>8);								//Рег962	 Регистр 0 буфера чтения журнала
+modbus_registers[1922]=(char)(log_buff_mb[12]>>8);								//Рег962	 Регистр 12 буфера чтения журнала
 modbus_registers[1923]=(char)(log_buff_mb[12]);
-modbus_registers[1924]=(char)(log_buff_mb[13]>>8);								//Рег963	 Регистр 0 буфера чтения журнала
+modbus_registers[1924]=(char)(log_buff_mb[13]>>8);								//Рег963	 Регистр 13 буфера чтения журнала
 modbus_registers[1925]=(char)(log_buff_mb[13]);
-modbus_registers[1926]=(char)(log_buff_mb[14]>>8);								//Рег964	 Регистр 0 буфера чтения журнала
+modbus_registers[1926]=(char)(log_buff_mb[14]>>8);								//Рег964	 Регистр 14 буфера чтения журнала
 modbus_registers[1927]=(char)(log_buff_mb[14]);
-modbus_registers[1928]=(char)(log_buff_mb[15]>>8);								//Рег965	 Регистр 0 буфера чтения журнала
+modbus_registers[1928]=(char)(log_buff_mb[15]>>8);								//Рег965	 Регистр 15 буфера чтения журнала
 modbus_registers[1929]=(char)(log_buff_mb[15]);
 modbus_registers[1930]=(char)(log_debug0_mb>>8);								//Рег966	 Отладочный регистр0 журнала событий
 modbus_registers[1931]=(char)(log_debug0_mb);

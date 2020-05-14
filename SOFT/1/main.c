@@ -539,9 +539,36 @@ if(factory_settings_hndl_main_iHz_cnt==100)
 //-----------------------------------------------
 void log_hndl(void)
 {
+char log_hndl_buff[32];
+signed short event_ptr,read_event_ptr,lc640_adr;
+
 log_debug0_mb++;
 
-if(log_cmd_mb==2000)
+if((log_cmd_mb>=0)&&(log_cmd_mb<=63))
+	{
+	event_ptr=lc640_read_int(PTR_EVENT_LOG);
+	read_event_ptr=event_ptr-log_cmd_mb;
+	if(read_event_ptr<0)read_event_ptr+=63;
+	lc640_adr=EVENT_LOG+(read_event_ptr*32);
+
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[0]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[4]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[8]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[12]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[16]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[20]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[24]);
+	lc640_adr+=4;
+	lc640_read_long_ptr(lc640_adr,&log_hndl_buff[28]);
+	}
+
+else if(log_cmd_mb==2000)
 	{
 	log_deep_mb = lc640_read_int(CNT_EVENT_LOG);
 	log_cmd_mb=0;

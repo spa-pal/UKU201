@@ -118,6 +118,13 @@ void reload_hndl(void)
 
 char data[4];
 unsigned int event_ptr,lc640_adr/*,event_ptr_find*/,event_cnt;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 event_ptr=lc640_read_int(PTR_EVENT_LOG);
 event_ptr++;	
@@ -387,15 +394,15 @@ avar_unet_hndl_lbl1:
 
      	}	
 	
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
-//*/	data[3]=0;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
+	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+20,data); 
 	
@@ -580,6 +587,7 @@ void avar_bps_hndl(char dev, char v, char in)
 char data[4];
 unsigned short event_ptr,lc640_adr,event_ptr_find,event_cnt;
 char avar_simbol;
+long temp_time;
 char time_H,time_M,time_S;
 
 temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
@@ -791,6 +799,13 @@ char data[4];
 unsigned short event_ptr,lc640_adr/*,event_ptr_find*/,event_cnt;
 
 signed short temp_temp;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(bat[b]._Iintegr_<5) goto wrk_mem_hndl_end;
 
@@ -825,15 +840,15 @@ lc640_write_long_ptr(lc640_adr+8,(char*)&bat[b]._wrk_date[0]);
 	
 lc640_write_long_ptr(lc640_adr+12,(char*)&bat[b]._wrk_date[1]);
 
-//*/data[0]=LPC_RTC->YEAR;
-//*/data[1]=LPC_RTC->MONTH;
-//*/data[2]=LPC_RTC->DOM;
+data[0]=(char)(BKP->DR1);
+data[1]=(char)(BKP->DR2);
+data[2]=(char)(BKP->DR3);
 data[3]=0;
 lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/data[0]=LPC_RTC->HOUR;
-//*/data[1]=LPC_RTC->MIN;
-//*/data[2]=LPC_RTC->SEC;
+	
+data[0]=time_H;
+data[1]=time_M;
+data[2]=time_S;
 data[3]=0;
 lc640_write_long_ptr(lc640_adr+20,data);
 	
@@ -999,6 +1014,13 @@ void avar_bat_hndl_(char b, char in)
 {
 char data[4];
 unsigned short event_ptr,lc640_adr,event_ptr_find,event_cnt;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(in==1)
 	{
@@ -1027,15 +1049,15 @@ if(in==1)
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -1150,6 +1172,13 @@ unsigned int event_ptr=0,lc640_adr/*,event_ptr_find*/,event_cnt;
 //unsigned int tempUI;
 //unsigned long tempUL; 
 signed temp_temp;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 temp_temp=bat[b]._u_old[bat_u_old_cnt+1]; 
 
@@ -1182,17 +1211,17 @@ lc640_write_long_ptr(lc640_adr+8,(char*)&ke_date[0]);
 ke_date[1]=lc640_read_long(EE_SPC_KE_DATE1);	
 lc640_write_long_ptr(lc640_adr+12,(char*)&ke_date[1]);
 
-//*/data[0]=LPC_RTC->YEAR;
-//*/data[1]=LPC_RTC->MONTH;
-//*/data[2]=LPC_RTC->DOM;
-data[3]=*((char*)&in1);
-lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/data[0]=LPC_RTC->HOUR;
-//*/data[1]=LPC_RTC->MIN;
-//*/data[2]=LPC_RTC->SEC;
-data[3]=*(((char*)(&in1))+1);
-lc640_write_long_ptr(lc640_adr+20,data);
+data[0]=(char)(BKP->DR1);
+data[1]=(char)(BKP->DR2);
+data[2]=(char)(BKP->DR3);
+data[3]=0;
+lc640_write_long_ptr(lc640_adr+8,data);
+	
+data[0]=time_H;
+data[1]=time_M;
+data[2]=time_S;
+data[3]=0;
+lc640_write_long_ptr(lc640_adr+12,data);
  
 }
 
@@ -1205,6 +1234,13 @@ unsigned int event_ptr=0,lc640_adr/*,event_ptr_find*/,event_cnt;
 //unsigned int tempUI;
 //unsigned long tempUL; 
 signed temp_temp;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 temp_temp=bat[b]._u_old[bat_u_old_cnt+1]; 
 
@@ -1237,17 +1273,17 @@ lc640_write_long_ptr(lc640_adr+8,(char*)&ke_date[0]);
 ke_date[1]=lc640_read_long(EE_SPC_KE_DATE1);	
 lc640_write_long_ptr(lc640_adr+12,(char*)&ke_date[1]);
 
-//*/data[0]=LPC_RTC->YEAR;
-//*/data[1]=LPC_RTC->MONTH;
-//*/data[2]=LPC_RTC->DOM;
+data[0]=(char)(BKP->DR1);
+data[1]=(char)(BKP->DR2);
+data[2]=(char)(BKP->DR3);
 data[3]=0;
-lc640_write_long_ptr(lc640_adr+16,data);
-
-//*/data[0]=LPC_RTC->HOUR;
-//*/data[1]=LPC_RTC->MIN;
-//*/data[2]=LPC_RTC->SEC;
+lc640_write_long_ptr(lc640_adr+8,data);
+	
+data[0]=time_H;
+data[1]=time_M;
+data[2]=time_S;
 data[3]=0;
-lc640_write_long_ptr(lc640_adr+20,data);
+lc640_write_long_ptr(lc640_adr+12,data);
  
 }
 
@@ -1257,7 +1293,13 @@ void vz_mem_hndl(unsigned short in)
 {
 char data[4];
 unsigned int event_ptr=0,lc640_adr,event_ptr_find=0,event_cnt;
-//char avar_simbol;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(in==1)
 	{
@@ -1284,15 +1326,15 @@ if(in==1)
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -1389,7 +1431,13 @@ void speedz_mem_hndl(unsigned short in)	 //отметка об ускоренном заряде (1-старт
 {
 char data[4];
 unsigned int event_ptr=0,lc640_adr,event_ptr_find=0,event_cnt;
-//char avar_simbol;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if((in==1)||(in==5)) //старт ускоренного заряда
 	{
@@ -1417,15 +1465,15 @@ if((in==1)||(in==5)) //старт ускоренного заряда
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -1592,7 +1640,13 @@ void uz_mem_hndl(unsigned short in)	 //отметка об уравнительном заряде
 {
 char data[4];
 unsigned int event_ptr=0,lc640_adr,event_ptr_find=0,event_cnt;
-//char avar_simbol;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(in==1) //старт уравнительного заряда
 	{
@@ -1619,15 +1673,15 @@ if(in==1) //старт уравнительного заряда
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
@@ -1793,7 +1847,13 @@ void fz_mem_hndl(unsigned short in)	 //отметка об формовочном заряде
 {
 char data[4];
 unsigned int event_ptr=0,lc640_adr,event_ptr_find=0,event_cnt;
-//char avar_simbol;
+long temp_time;
+char time_H,time_M,time_S;
+
+temp_time=(((long)(RTC->CNTH))<<16)+((long)(RTC->CNTL));
+time_H=(char)((temp_time)/3600);
+time_M=(char)(((temp_time)%3600)/60);
+time_S=(char)(((temp_time)%3600)%60);
 
 if(in==1) //старт формовочного заряда
 	{
@@ -1820,15 +1880,15 @@ if(in==1) //старт формовочного заряда
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+4,data);
 
-//*/	data[0]=LPC_RTC->YEAR;
-//*/	data[1]=LPC_RTC->MONTH;
-//*/	data[2]=LPC_RTC->DOM;
+	data[0]=(char)(BKP->DR1);
+	data[1]=(char)(BKP->DR2);
+	data[2]=(char)(BKP->DR3);
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+8,data);
-
-//*/	data[0]=LPC_RTC->HOUR;
-//*/	data[1]=LPC_RTC->MIN;
-//*/	data[2]=LPC_RTC->SEC;
+	
+	data[0]=time_H;
+	data[1]=time_M;
+	data[2]=time_S;
 	data[3]=0;
 	lc640_write_long_ptr(lc640_adr+12,data);
 	
