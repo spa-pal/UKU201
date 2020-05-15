@@ -1214,14 +1214,14 @@ lc640_write_long_ptr(lc640_adr+12,(char*)&ke_date[1]);
 data[0]=(char)(BKP->DR1);
 data[1]=(char)(BKP->DR2);
 data[2]=(char)(BKP->DR3);
-data[3]=0;
-lc640_write_long_ptr(lc640_adr+8,data);
+data[3]=*((char*)&in1);
+lc640_write_long_ptr(lc640_adr+16,data);
 	
 data[0]=time_H;
 data[1]=time_M;
 data[2]=time_S;
-data[3]=0;
-lc640_write_long_ptr(lc640_adr+12,data);
+data[3]=*(((char*)(&in1))+1);
+lc640_write_long_ptr(lc640_adr+20,data);
  
 }
 

@@ -229,10 +229,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>51</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>527</TopLine>
-      <CurrentLine>568</CurrentLine>
+      <TopLine>564</TopLine>
+      <CurrentLine>567</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -245,7 +245,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>166</TopLine>
+      <TopLine>169</TopLine>
       <CurrentLine>191</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\25lc640.c</PathWithFileName>
@@ -299,10 +299,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>15</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2869</TopLine>
-      <CurrentLine>2894</CurrentLine>
+      <TopLine>2913</TopLine>
+      <CurrentLine>2913</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\control.c</PathWithFileName>
       <FilenameWithoutPath>control.c</FilenameWithoutPath>
@@ -341,10 +341,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>37</ColumnNumber>
+      <ColumnNumber>34</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1217</TopLine>
-      <CurrentLine>1243</CurrentLine>
+      <TopLine>1187</TopLine>
+      <CurrentLine>1209</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\avar_hndl.c</PathWithFileName>
       <FilenameWithoutPath>avar_hndl.c</FilenameWithoutPath>
@@ -418,10 +418,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>69</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2020</TopLine>
-      <CurrentLine>2020</CurrentLine>
+      <TopLine>2029</TopLine>
+      <CurrentLine>2063</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\modbus.c</PathWithFileName>
       <FilenameWithoutPath>modbus.c</FilenameWithoutPath>
@@ -441,6 +441,58 @@
       <FilenameWithoutPath>full_can.c</FilenameWithoutPath>
     </File>
   </Group>
+
+  <AlienFiles>
+    <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\eeprom_map.h</PathWithFilename>
+    <TopLine>393</TopLine>
+    <CurrentLine>411</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\control.h</PathWithFilename>
+    <TopLine>120</TopLine>
+    <CurrentLine>142</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
 
   <AlienFiles>
     <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\STM32_Reg.h</PathWithFilename>
@@ -496,60 +548,8 @@
 
   <AlienFiles>
     <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\main.h</PathWithFilename>
-    <TopLine>50</TopLine>
+    <TopLine>56</TopLine>
     <CurrentLine>78</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\eeprom_map.h</PathWithFilename>
-    <TopLine>393</TopLine>
-    <CurrentLine>411</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\control.h</PathWithFilename>
-    <TopLine>120</TopLine>
-    <CurrentLine>142</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -577,37 +577,43 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>1</ActiveTab>
+      <ActiveTab>0</ActiveTab>
       <Documents>
+        <Doc>
+          <Name>.\STM32F10x.s</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>112</TopLine>
+          <CurrentLine>117</CurrentLine>
+        </Doc>
         <Doc>
           <Name>.\25lc640.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>166</TopLine>
+          <TopLine>169</TopLine>
           <CurrentLine>191</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\avar_hndl.c</Name>
-          <ColumnNumber>7</ColumnNumber>
-          <TopLine>770</TopLine>
-          <CurrentLine>770</CurrentLine>
+          <ColumnNumber>34</ColumnNumber>
+          <TopLine>1187</TopLine>
+          <CurrentLine>1209</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\main.c</Name>
-          <ColumnNumber>51</ColumnNumber>
-          <TopLine>539</TopLine>
-          <CurrentLine>568</CurrentLine>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>564</TopLine>
+          <CurrentLine>567</CurrentLine>
         </Doc>
         <Doc>
           <Name>main.h</Name>
           <ColumnNumber>10</ColumnNumber>
-          <TopLine>50</TopLine>
+          <TopLine>56</TopLine>
           <CurrentLine>78</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\control.c</Name>
-          <ColumnNumber>15</ColumnNumber>
-          <TopLine>2869</TopLine>
-          <CurrentLine>2894</CurrentLine>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>2913</TopLine>
+          <CurrentLine>2913</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\uart2.c</Name>
@@ -671,21 +677,15 @@
         </Doc>
         <Doc>
           <Name>.\modbus.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>2020</TopLine>
-          <CurrentLine>2020</CurrentLine>
+          <ColumnNumber>69</ColumnNumber>
+          <TopLine>2029</TopLine>
+          <CurrentLine>2063</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\full_can.c</Name>
           <ColumnNumber>0</ColumnNumber>
           <TopLine>242</TopLine>
           <CurrentLine>264</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\STM32F10x.s</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>112</TopLine>
-          <CurrentLine>117</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>
