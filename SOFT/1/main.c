@@ -1042,7 +1042,7 @@ while (1)
 //		printf("UZ_U=%4d UZ_I=%4d UZ_T=%4d UZ_AVT_EN=%4d UZ_DU=%4d UZ_VENT=%4d \r\n", speedChrgVolt, speedChrgCurr, speedChrgTimeInHour, speedChrgAvtEn, speedChrgDU, SP_CH_VENT_BLOK);
 	//TZAS=5;
 		//printf("NUMIST = %3d UMAX = %3d UMIN = %4d TZAS = %4d UNMIN = %4d UNMAX = %4d TSIGN = %4d TMAX = %4d ZV_ON = %4d\r\n" , NUMIST, UMAX, UB20-DU, TZAS, UMN, UMAXN, TSIGN, TMAX, ZV_ON);
-		printf("IUP = %3d IDN = %3d PAR = %4d U_OUT_MAX = %4d U_OUT_MIN = %4d U_OUT_DELAY = %4d TSIGN = %4d TMAX = %4d ZV_ON = %4d\r\n" , IMAX, IMIN, PAR, U_OUT_KONTR_MAX, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, TSIGN, TMAX, ZV_ON);
+		printf("IUP = %3d IDN = %3d PAR = %4d U_OUT_MAX = %4d U_OUT_MIN = %4d U_OUT_DELAY = %4d NUMPHASE = %4d TMAX = %4d ZV_ON = %4d\r\n" , IMAX, IMIN, PAR, U_OUT_KONTR_MAX, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, NUMPHASE, TMAX, ZV_ON);
 
 		//printf("IZMAX=%4d TBAT=%4d UB0=%4d UB20=%4d TBATSIGN=%4d TBATMAX=%4d  IKB=%4d USIGN=%4d \r\n", IZMAX, TBAT, UB0, UB20, TBATSIGN, TBATMAX, IKB, USIGN);
 

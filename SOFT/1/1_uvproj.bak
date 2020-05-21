@@ -344,7 +344,7 @@
             <uThumb>0</uThumb>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>UKU_220_IPS_TERMOKOMPENSAT</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
