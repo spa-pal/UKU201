@@ -102,6 +102,7 @@ UVENTOFF=lc640_read_int(EE_UVENTOFF);
 IZMAX=lc640_read_int(EE_IZMAX);
 U0B=lc640_read_int(EE_U0B);
 TZAS=lc640_read_int(EE_TZAS);
+//TZAS=7;
 NUMIST=lc640_read_int(EE_NUMIST);
 #ifdef UKU_ZVU
 NUMBAT=lc640_read_int(EE_NUMBAT);

@@ -673,7 +673,7 @@ if(crc16_calculated==crc16_incapsulated)
 	     		}
 			if(modbus_rx_arg0==43)		//
 				{
-				 if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=3))lc640_write_int(EE_TZAS,modbus_rx_arg1);
+				if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=3))lc640_write_int(EE_TZAS,modbus_rx_arg1);
 	     		}
 			if(modbus_rx_arg0==44)		//
 				{
@@ -1413,7 +1413,7 @@ if(crc16_calculated==crc16_incapsulated)
 				kalibrate_func(modbus_rx_arg1);
 				}
 
-			printf("Register %d writed   \r\n",modbus_rx_arg0);
+			printf("Register %d writed, parametr %d   \r\n",modbus_rx_arg0,modbus_rx_arg1);
 
 			memcpy(modbus_tx_buff,modbus_rx_buffer,8);
 	

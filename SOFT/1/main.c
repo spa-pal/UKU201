@@ -970,7 +970,7 @@ while (1)
 		//can1_out(cnt_net_drv,cnt_net_drv,GETTM,bps[cnt_net_drv]._flags_tu,*((char*)(&bps[cnt_net_drv]._vol_u)),*((char*)((&bps[cnt_net_drv]._vol_u))+1),*((char*)(&bps[cnt_net_drv]._vol_i)),*((char*)((&bps[cnt_net_drv]._vol_i))+1));
      
 		memo_read();
-		TZAS=3;
+		//TZAS=3;
 		
 
 		matemat();	//Вычисление всех величин
@@ -1039,7 +1039,10 @@ while (1)
 
 		//printf("FZ_U1=%4d FZ_IMAX1=%4d FZ_T1=%4d FZ_ISW12=%4d FZ_U2=%4d FZ_IMAX2=%4d FZ_T2=%4d\r\n", FZ_U1, FZ_IMAX1, FZ_T1, FZ_ISW12, FZ_U2, FZ_IMAX2, FZ_T2);
 		printf("%5d \r\n",MODBUS_ADRESS);  
-		printf("UZ_U=%4d UZ_I=%4d UZ_T=%4d UZ_AVT_EN=%4d UZ_DU=%4d UZ_VENT=%4d \r\n", speedChrgVolt, speedChrgCurr, speedChrgTimeInHour, speedChrgAvtEn, speedChrgDU, SP_CH_VENT_BLOK);
+//		printf("UZ_U=%4d UZ_I=%4d UZ_T=%4d UZ_AVT_EN=%4d UZ_DU=%4d UZ_VENT=%4d \r\n", speedChrgVolt, speedChrgCurr, speedChrgTimeInHour, speedChrgAvtEn, speedChrgDU, SP_CH_VENT_BLOK);
+	//TZAS=5;
+		//printf("NUMIST = %3d UMAX = %3d UMIN = %4d TZAS = %4d UNMIN = %4d UNMAX = %4d TSIGN = %4d TMAX = %4d ZV_ON = %4d\r\n" , NUMIST, UMAX, UB20-DU, TZAS, UMN, UMAXN, TSIGN, TMAX, ZV_ON);
+		printf("IUP = %3d IDN = %3d PAR = %4d U_OUT_MAX = %4d U_OUT_MIN = %4d U_OUT_DELAY = %4d TSIGN = %4d TMAX = %4d ZV_ON = %4d\r\n" , IMAX, IMIN, PAR, U_OUT_KONTR_MAX, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, TSIGN, TMAX, ZV_ON);
 
 		//printf("IZMAX=%4d TBAT=%4d UB0=%4d UB20=%4d TBATSIGN=%4d TBATMAX=%4d  IKB=%4d USIGN=%4d \r\n", IZMAX, TBAT, UB0, UB20, TBATSIGN, TBATMAX, IKB, USIGN);
 
