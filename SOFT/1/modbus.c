@@ -2150,6 +2150,9 @@ unsigned short crc_temp;
 char i;
 short tempS;
 
+static short out_U_pl;
+
+t_ext[0]=bat[0]._Tb;
 plazma_uart1[2]++;
 /*
 out_U=plazma_short;
@@ -2163,7 +2166,16 @@ bps[0]._Ii=123;
 bps_I=5678;
 */
 //bps_U=modbus_plazma;
-//bps_U=3456;
+out_U_pl++;
+if (out_U_pl>1000) out_U_pl=100;
+if (out_U_pl<100) out_U_pl=1000;
+out_U=out_U_pl;
+//out_U=4567;
+bps_I=out_U+50;
+t_ext[0]=out_U-50;
+cntrl_stat=t_ext[0]*2;
+u_necc=t_ext[0]*3; 
+Ib_ips_termokompensat=out_U_pl-500;
 
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
 modbus_registers[1]=(signed char)(out_U);
@@ -2187,7 +2199,7 @@ modbus_registers[15]=(signed char)(bat[0]._Ub);
 modbus_registers[16]=(signed char)(Ib_ips_termokompensat/*bat[0]._Ib*/>>8);				//Рег9   	ток батареи №1, 0.01А
 modbus_registers[17]=(signed char)(Ib_ips_termokompensat/*bat[0]._Ib*/);
 
-t_ext[0]=bat[0]._Tb;
+
 modbus_registers[18]=(signed char)(t_ext[0]>>8);				//Рег10	температура батареи №1, 1Гц
 modbus_registers[19]=(signed char)(t_ext[0]);
 /*
