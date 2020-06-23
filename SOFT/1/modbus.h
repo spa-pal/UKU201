@@ -1,4 +1,6 @@
 
+extern short modbus_error_cntr;
+
 extern unsigned char modbus_buf[20];
 extern short modbus_crc16;
 extern char modbus_timeout_cnt;

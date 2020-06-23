@@ -267,12 +267,16 @@ void led_hndl(void)
 ledERROR=0;
 ledWARNING=0;
 ledUOUTGOOD=0;
-ledCAN=1;
+//ledCAN=1;
 
 if((net_av)||(net_av))ledERROR=1;
 
 if(!uout_av)ledUOUTGOOD=1;
 
+if((can_error_cntr<500)&&(modbus_error_cntr<500))ledCAN=1;
+else if((can_error_cntr>500)&&(modbus_error_cntr>500))ledCAN=0;
+else if((can_error_cntr<500)&&(modbus_error_cntr>500))ledCAN=20;
+else if((can_error_cntr>500)&&(modbus_error_cntr<500))ledCAN=10;
 
 if(test_led_stat==1)
 	{
@@ -348,6 +352,7 @@ if((factory_settings_led_reg1==5)||(factory_settings_led_reg1==3)||(factory_sett
 	ledCAN=1;
 	}
 
+
 }
 
 //-----------------------------------------------
@@ -397,11 +402,20 @@ if(ledCAN==1)
 	{ 
 	GPIOB->ODR&=~(1<<10);
 	}
-else 
+else if(ledCAN==0)
 	{
 	GPIOB->ODR|=(1<<10);
 	}
-
+else if(ledCAN==10)
+	{
+	if(led_drv_main_cnt<=2)	GPIOB->ODR&=~(1<<10);
+	else 					GPIOB->ODR|=(1<<10);
+	}
+else if(ledCAN==20)
+	{
+	if(led_drv_main_cnt<=13)GPIOB->ODR&=~(1<<10);
+	else 					GPIOB->ODR|=(1<<10);
+	}
 }
 
 //-----------------------------------------------
@@ -1458,7 +1472,7 @@ if(modbus_register_998)
 		}
 	}
 
-if(modbus_register_995)
+if(modbus_register_995)		//Блокировка одного источника панелью при всех включенных
 	{
 	for(i=0;i<=NUMIST;i++)
 		{
@@ -1466,6 +1480,14 @@ if(modbus_register_995)
 	   	}
 	bps[modbus_register_995-1]._flags_tu=1;
 	}
+if(hmi_cntrl_fb_reg&0x0001)
+	{
+	for(i=0;i<=NUMIST;i++)
+		{
+	   	bps[i]._flags_tu=1;
+	   	}
+	}
+
 }
 
 //биты аварий в приходящих сообщениях от источников и инверторов
@@ -1720,7 +1742,7 @@ else
 		{
 		temp_SL=UVZ;
 		}*/
-	u_necc=(unsigned int)temp_SL;
+	u_necc=(unsigned short)(temp_SL+hmi_avg_reg);
 	//u_necc=3456;
 	}  
 
@@ -1773,6 +1795,10 @@ u_necc_up=(signed short)temp_L;
 #ifdef IPS_SGEP_GAZPROM
 u_necc=248;
 #endif */
+if(hmi_cntrl_fb_reg&0x0010)
+	{
+	u_necc=hmi_unecc_reg;
+	}
 }
 
 //-----------------------------------------------
@@ -1977,6 +2003,86 @@ for(i=0;i<1;i++)
 		}
 	}
 }
+
+#define HMINOTCONNECTMAX	300
+//-----------------------------------------------
+void hmi_cntrl_hndl(void) 	//Управление от HMI, 10Гц
+{
+if(hmi_notconnect_cnt<HMINOTCONNECTMAX)	
+	{
+	hmi_notconnect_cnt++;
+	if(hmi_notconnect_cnt==HMINOTCONNECTMAX)
+		{
+		//реакция на пропадание связи с панелью
+		hmi_avg_reg=0;
+		}
+	}
+else hmi_notconnect_cnt=HMINOTCONNECTMAX;
+
+if(hmi_cntrl_reg!=hmi_cntrl_reg_old)
+	{
+	hmi_cntrl_reg_new=hmi_cntrl_reg^hmi_cntrl_reg_old;
+
+	if(hmi_cntrl_reg_new&0x0001)
+		{
+		if(hmi_cntrl_reg&0x0001) 			//Заблокировать все БПСы
+			{
+			hmi_cntrl_fb_reg|=0x0001;
+			}
+		else if(!(hmi_cntrl_reg&0x0001))   	//Разблокировать все БПСы
+			{
+			hmi_cntrl_fb_reg&=~0x0001;
+			}
+		}
+	else if(hmi_cntrl_reg_new&0x0002)
+		{
+		if(hmi_cntrl_reg&0x0002) 			//Установить минимальный шим
+			{
+			hmi_cntrl_fb_reg|=0x0002;
+			}
+		else if(!(hmi_cntrl_reg&0x0002))   	//Разблокировать шим 
+			{
+			hmi_cntrl_fb_reg&=~0x0002;
+			}
+		}
+	else if(hmi_cntrl_reg_new&0x0004)
+		{
+		if(hmi_cntrl_reg&0x0004) 			//Установить максимальный шим
+			{
+			//hmi_cntrl_fb_reg|=0x0004;
+			}
+		else if(!(hmi_cntrl_reg&0x0004))   	//Разблокировать шим 
+			{
+			//hmi_cntrl_fb_reg&=~0x0004;
+			}
+		}
+	else if(hmi_cntrl_reg_new&0x0008)
+		{
+		if(hmi_cntrl_reg&0x0008) 			//Включить ВВРеле
+			{
+			//hmi_cntrl_fb_reg|=0x0008;
+			}
+		else if(!(hmi_cntrl_reg&0x0008))   	//Выключить ВВРеле
+			{
+			//hmi_cntrl_fb_reg&=~0x0008;
+			}
+		}
+	else if(hmi_cntrl_reg_new&0x0010)
+		{
+		if(hmi_cntrl_reg&0x0010) 			//Установить u_necc и izmax из HMI
+			{
+			hmi_cntrl_fb_reg|=0x0010;
+			}
+		else if(!(hmi_cntrl_reg&0x0010))   	//Выключить управлекение u_necc и izmax из HMI
+			{
+			hmi_cntrl_fb_reg&=~0x0010;
+			}
+		}
+	}
+
+hmi_cntrl_reg_old=hmi_cntrl_reg;
+}
+
 
 //-----------------------------------------------
 void speedChargeStartStop(void)
@@ -2520,17 +2626,22 @@ void cntrl_hndl(void)
 IZMAX_=IZMAX;
 
 //cntrl_hndl_plazma=10;
-
+//IZMAX_=70;
 if((speedChIsOn)||(sp_ch_stat==scsWRK))IZMAX_=speedChrgCurr;
 if(vz1_stat==vz1sWRK) IZMAX_=UZ_IMAX;
 if(vz2_stat==vz2sWRK1) IZMAX_=FZ_IMAX1;
 if(vz2_stat==vz2sWRK2) IZMAX_=FZ_IMAX2;
 //if(spc_stat==spcVZ) IZMAX_=IMAX_VZ;
+if(hmi_cntrl_fb_reg&0x0010)
+	{
+	IZMAX_=hmi_izmax_reg;
+	}
 
 if(cntrl_stat_blok_cnt)cntrl_stat_blok_cnt--;
 if(cntrl_stat_blok_cnt_)cntrl_stat_blok_cnt_--;
 
 if((bat[0]._temper_stat&0x03)||(bat[1]._temper_stat&0x03))IZMAX_=IZMAX_/10;
+
 
 
 if((REG_SPEED<1)||(REG_SPEED>5)) REG_SPEED=1;

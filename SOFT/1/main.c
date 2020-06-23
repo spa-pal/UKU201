@@ -31,6 +31,7 @@ bool b1000Hz, b100Hz, b50Hz, b1Hz, b10Hz, b5Hz, b2Hz;
 bool bFL, bFL2, bFL5;
 signed short main_10Hz_cnt;
 signed short main_1Hz_cnt;
+short main_1HZ_cnt;
 
 
 //***********************************************
@@ -399,7 +400,15 @@ unsigned short log_cmd_mb;
 unsigned short log_debug0_mb;
 unsigned short log_debug1_mb;
 
-
+//***********************************************
+//Управление ЗВУ панелью
+unsigned short hmi_cntrl_reg, hmi_cntrl_reg_old; 	//Регистр комманд/управляющих состояний от панели
+unsigned short hmi_cntrl_reg_new;					//Различия между новым и старым командными регистрами
+unsigned short hmi_cntrl_fb_reg; 					//Регистр обратной связи комманд/управляющих состояний от панели
+unsigned short hmi_notconnect_cnt;					//Счетчик потери связи с HMI, плюсуется каждые 0,1с до HMINOTCONNECTMAX, обнуляется по записи в 1 регистр 3 командой
+unsigned short hmi_avg_reg;							//Регистр выравнивания токов от панели
+unsigned short hmi_unecc_reg;						//Регистр напряжения поддержания от панели
+unsigned short hmi_izmax_reg;						//Регистр максимального тока заряда от панели
 //***********************************************
 //***********************************************
 //***********************************************
@@ -674,7 +683,11 @@ if(parametr==1)		//Температура датчика батареи
 
 //-----------------------------------------------
 void net_drv(void)
-{ 
+{
+if(can_error_cntr<1000)
+	{
+	can_error_cntr++;
+	} 
 
 
 
@@ -941,6 +954,11 @@ while (1)
 		bps[1]._flags_tu=1;	*/
 		//NUMIST=3;
 		net_drv();
+		if(modbus_error_cntr<1000)
+			{
+			modbus_error_cntr++;
+			} 
+
 		//log_hndl();		//Обработка запросов на чтение журнала
 		}
 	if(bMODBUS_TIMEOUT)modbus_in();
@@ -963,6 +981,7 @@ while (1)
 		tst_hndl();		//обслуживание тестовых операций
 		mess_hndl();
 		unet_drv();
+		hmi_cntrl_hndl(); 	//Управление от HMI
 		}   
 	if (b5Hz) 
 		{
@@ -989,7 +1008,9 @@ while (1)
 	if (b1Hz) 
 		{
 		b1Hz=(bool)0;
-
+	   	
+		main_1HZ_cnt++;
+		if(main_1HZ_cnt>1000)main_1HZ_cnt=0;
 		num_necc_hndl();
 		kb_hndl();
 
@@ -1024,7 +1045,7 @@ while (1)
 	   	//printf("%d  %d  %d  %d \r\n", bps[0]._x_, bps[1]._x_, bps[2]._x_, bps[3]._x_);
 		//printf("%2d; %4d; %2d; %2d;\r\n", avt_klbr_phase_ui, modbus_register_1022, bps[2]._cnt, bps[3]._cnt);
 		//printf("%3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d\r\n", cntrl_hndl_plazma, bps[0]._cnt, bps[1]._cnt, bps[2]._cnt,UMAXN,MODBUS_BAUDRATE,/*MODBUS_ADRESS*/test_hndl_rele2_cntrl,/*plazma_uart1[2]*/test_hndl_rele2_cnt,/* NUMIST*/rele_output_stat_test_byte, /*NUMPHASE*/ rele_output_stat_test_mask);
-		///printf("net_U= %3d  %3d  %3d  %3d  net_av= %2d u_necc = %2d  releset[0] = %2d \r\n", net_U, net_Ua, net_Ub, net_Uc, net_av, rele_output_stat, RELE1SET);
+		printf("net_U= %3d  %3d  %3d  %3d  u_necc = %4d  hmi_unecc_reg = %4d hmi_izmax_reg = %4d UMAXN = %4d\r\n", net_U, net_Ua, net_Ub, net_Uc, u_necc, hmi_unecc_reg, hmi_izmax_reg, RELE1SET, UMN, UMAXN);
 		///printf("%3d; %3d; %3d; %3d;\r\n", net_Umax, UMAXN, unet_max_drv_cnt);
 		///printf("log_cmd = %3d log_deep = %3d log_debug0 = %4d log_debug1 = %4d  %3d;\r\n", log_cmd_mb, log_deep_mb, log_debug0_mb, log_debug1_mb, unet_max_drv_cnt);
 		
@@ -1043,7 +1064,7 @@ while (1)
 	//TZAS=5;
 		//printf("NUMIST = %3d UMAX = %3d UMIN = %4d TZAS = %4d UNMIN = %4d UNMAX = %4d TSIGN = %4d TMAX = %4d ZV_ON = %4d\r\n" , NUMIST, UMAX, UB20-DU, TZAS, UMN, UMAXN, TSIGN, TMAX, ZV_ON);
 		//printf("IUP = %3d IDN = %3d PAR = %4d U_OUT_MAX = %4d U_OUT_MIN = %4d U_OUT_DELAY = %4d NUMPHASE = %4d RELE1SET = %4x RELE2SET = %4x RELE3SET = %4x \r\n" , IMAX, IMIN, PAR, U_OUT_KONTR_MAX, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, NUMPHASE, RELE1SET, RELE2SET, RELE3SET);
-		printf("RELE1 = %3d RELE2 = %3d RELE3 = %4d RELEHV = %4d U_OUT_MIN = %4d U_OUT_DELAY = %4d NUMPHASE = %4d RELE1SET = %4x RELE2SET = %4x RELE3SET = %4x \r\n" , test_hndl_rele1_cntrl, test_hndl_rele2_cntrl, test_hndl_rele3_cntrl, test_hndl_releHV_cntrl, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, NUMPHASE, RELE1SET, RELE2SET, RELE3SET);
+		//printf("RELE1 = %3d RELE2 = %3d RELE3 = %4d RELEHV = %4d U_OUT_MIN = %4d U_OUT_DELAY = %4d NUMPHASE = %4d RELE1SET = %4x RELE2SET = %4x RELE3SET = %4x \r\n" , test_hndl_rele1_cntrl, test_hndl_rele2_cntrl, test_hndl_rele3_cntrl, test_hndl_releHV_cntrl, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, NUMPHASE, RELE1SET, RELE2SET, RELE3SET);
 
 		//printf("IZMAX=%4d TBAT=%4d UB0=%4d UB20=%4d TBATSIGN=%4d TBATMAX=%4d  IKB=%4d USIGN=%4d \r\n", IZMAX, TBAT, UB0, UB20, TBATSIGN, TBATMAX, IKB, USIGN);
 

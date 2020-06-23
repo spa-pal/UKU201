@@ -29,6 +29,7 @@ USER DEFINABLE PARAMETERS
 // Maximum number of total FullCAN Filters for ALL CAN interfaces
 #define MAX_FILTERS 2
 
+extern short can_error_cntr;
 // Type definition to hold a FullCAN message
 // Compatible to FullCAN Mode Stored Messages in LPC User Manual
 

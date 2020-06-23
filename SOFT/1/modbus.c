@@ -25,6 +25,8 @@
 
 //extern int  mem_copy (void *dp, void *sp, int len);
 
+short modbus_error_cntr;
+
 unsigned char modbus_buf[20];
 short modbus_crc16;
 char modbus_timeout_cnt;
@@ -472,6 +474,7 @@ if(crc16_calculated==crc16_incapsulated)
 	
  	if(modbus_an_buffer[0]==MODBUS_ADRESS)
 		{
+		modbus_error_cntr=0;
 		modbus_plazma++;
 		//modbus_modbus_adress_eq++;
 		if(modbus_func==3)		//чтение произвольного кол-ва регистров хранения
@@ -493,6 +496,26 @@ if(crc16_calculated==crc16_incapsulated)
 
 		else if(modbus_func==6) 	//запись регистров хранения
 			{
+			if(modbus_rx_arg0==1)		//Управление от HMI
+				{
+				hmi_cntrl_reg=modbus_rx_arg1;
+				hmi_notconnect_cnt=0;
+				}
+			if(modbus_rx_arg0==2)		//Выравнивание токов от HMI
+				{
+				hmi_avg_reg=modbus_rx_arg1;
+				hmi_notconnect_cnt=0;
+				}
+			if(modbus_rx_arg0==3)		//Управление напряжением поддержания от HMI
+				{
+				hmi_unecc_reg=modbus_rx_arg1;
+				hmi_notconnect_cnt=0;
+				}
+			if(modbus_rx_arg0==4)		//Управление максимальным током заряда от HMI
+				{
+				hmi_izmax_reg=modbus_rx_arg1;
+				hmi_notconnect_cnt=0;
+				}
 			if(modbus_rx_arg0==11)		//Установка времени, год
 				{
 				PWR->CR      |= PWR_CR_DBP;
@@ -1820,6 +1843,13 @@ unsigned short crc_temp;
 char i;
 long temp_time;
 
+modbus_registers[0]=(char)((hmi_cntrl_reg)>>8);				//Рег1  Регистр управления ЗВУ панелью
+modbus_registers[1]=(char)((hmi_cntrl_reg));
+modbus_registers[2]=(char)((hmi_avg_reg)>>8);				//Рег2  Регистр управления выравниванием токов ЗВУ панелью
+modbus_registers[3]=(char)((hmi_avg_reg));
+modbus_registers[4]=(char)((hmi_cntrl_fb_reg)>>8);			//Рег3  Регистр обратной связи управления ЗВУ панелью
+modbus_registers[5]=(char)((hmi_cntrl_fb_reg));
+
 modbus_registers[20]=(char)((BKP->DR1)>>8);					//Рег11  Время, год
 modbus_registers[21]=(char)((BKP->DR1));
 modbus_registers[22]=(char)((BKP->DR2)>>8);					//Рег12  Время, месяц
@@ -2166,7 +2196,7 @@ bps[0]._Ii=123;
 bps_I=5678;
 */
 //bps_U=modbus_plazma;
-out_U_pl++;
+/*out_U_pl++;
 if (out_U_pl>1000) out_U_pl=100;
 if (out_U_pl<100) out_U_pl=1000;
 out_U=out_U_pl;
@@ -2175,7 +2205,9 @@ bps_I=out_U+50;
 t_ext[0]=out_U-50;
 cntrl_stat=t_ext[0]*2;
 u_necc=t_ext[0]*3; 
-Ib_ips_termokompensat=out_U_pl-500;
+Ib_ips_termokompensat=out_U_pl-500;*/
+
+bps_I=100*MODBUS_ADRESS + main_1HZ_cnt;
 
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
 modbus_registers[1]=(signed char)(out_U);
@@ -2346,14 +2378,16 @@ modbus_registers[145]=(signed char)(uout_av);
 
 tempS=0;													 	//Рег74	Регистр флагов состояния системы
 if(bat_ips._av)			tempS|=(1<<0);						 	// Бит 0	Авария батареи
-if(avar_stat&0x0001)   	tempS|=(1<<1);						 	//	Бит 1	Авария питающей сети 
+if(net_av)   			tempS|=(1<<1);						 	//	Бит 1	Авария питающей сети 
 if(avar_stat&(1<<(3+0)))tempS|=(1<<2);						 	//	Бит 2	Авария выпрямителя №1
 if(avar_stat&(1<<(3+1)))tempS|=(1<<3);						 	//	Бит 3	Авария выпрямителя №2
 if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 	//	Бит 4	Авария выпрямителя №3
-if(avar_stat&(1<<(3+3)))tempS|=(1<<5);						 	//	Бит 4	Авария выпрямителя №4
-if(avar_stat&(1<<(3+4)))tempS|=(1<<6);						 	//	Бит 4	Авария выпрямителя №5
-if(avar_stat&(1<<(3+5)))tempS|=(1<<7);						 	//	Бит 4	Авария выпрямителя №6
-if(avar_stat&(1<<(3+6)))tempS|=(1<<48);						 	//	Бит 4	Авария выпрямителя №7
+if(avar_stat&(1<<(3+3)))tempS|=(1<<5);						 	//	Бит 5	Авария выпрямителя №4
+if(avar_stat&(1<<(3+4)))tempS|=(1<<6);						 	//	Бит 6	Авария выпрямителя №5
+if(avar_stat&(1<<(3+5)))tempS|=(1<<7);						 	//	Бит 7	Авария выпрямителя №6
+if(avar_stat&(1<<(3+6)))tempS|=(1<<8);						 	//	Бит 8	Авария выпрямителя №7
+if(avar_stat&(1<<(3+6)))tempS|=(1<<9);						 	//	Бит 9	Авария выпрямителя №8
+if(sk_stat[0]==ssON)	tempS|=(1<<15);						 	//	Бит 15	Замкнут сухой контакт
 modbus_registers[146]=(signed char)(tempS>>8);
 modbus_registers[147]=(signed char)(tempS);
 /*
@@ -2380,15 +2414,15 @@ modbus_registers[179]=(signed char)(bps[6]._x_);
 modbus_registers[180]=(signed char)(bps[7]._x_>>8);				//Рег91	Регулятор выравнивания токов БПС8 
 modbus_registers[181]=(signed char)(bps[7]._x_);
 
-hmi_plazma[0]=bps[0]._flags_tm;
+hmi_plazma[0]=net_av;
 hmi_plazma[1]=main_kb_cnt;
-hmi_plazma[2]=cntrl_stat;
-hmi_plazma[3]=kb_cnt_1lev;
-hmi_plazma[4]=kb_cnt_2lev;
+hmi_plazma[2]=net_U;
+hmi_plazma[3]=UMN;
+hmi_plazma[4]=UMAXN;
 hmi_plazma[5]=kb_full_ver;
 hmi_plazma[6]=ibat_ips;
 hmi_plazma[7]=ibat_ips_;
-hmi_plazma[8]=IKB;
+hmi_plazma[8]=hmi_avg_reg;										//Регистр выравнивания токов от панели;
 
 modbus_registers[182]=(signed char)(hmi_plazma[0]>>8);			//Рег92	Отладочная информация для панели 
 modbus_registers[183]=(signed char)(hmi_plazma[0]);
@@ -2409,7 +2443,7 @@ modbus_registers[197]=(signed char)(hmi_plazma[7]);
 modbus_registers[198]=(signed char)(hmi_plazma[8]>>8);			//Рег100	Отладочная информация для панели 
 modbus_registers[199]=(signed char)(hmi_plazma[8]);
 
-																//Специнформация
+															//Специнформация
 modbus_registers[200]=(signed char)(cntrl_stat>>8);				//Рег101	Шим
 modbus_registers[201]=(signed char)(cntrl_stat);
 modbus_registers[202]=(signed char)(u_necc>>8);					//Рег102	напряжение поддержания

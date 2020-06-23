@@ -9,6 +9,9 @@
 #include "control.h"
 #include "25lc640.h"
 
+
+short can_error_cntr;
+
 // Counts number of filters (CAN message objects) used so far
 short volatile gCANFilter = 0;
 
@@ -182,6 +185,7 @@ char slave_num;
 
 if((RXBUFF[1]==PUTTM1)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<17))
      {
+	 can_error_cntr=0;
 	 can_rotor[1]++;
 	//can_debug_plazma[1][2]++;
      slave_num=RXBUFF[0]&0x1f;
@@ -217,6 +221,7 @@ if((RXBUFF[1]==PUTTM1)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<17))
 
 if((RXBUFF[1]==PUTTM2)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<12))
  	{
+	can_error_cntr=0;
      slave_num=RXBUFF[0]&0x1f;  
 
     if((RXBUFF[0]&0xe0)==0)bps[slave_num]._device=dSRC;
@@ -249,6 +254,7 @@ if((RXBUFF[1]==PUTTM2)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<12))
 
 if((RXBUFF[1]==PUTTM_IBATMETER)&&(RXBUFF[0]==PUTTM_IBATMETER))
  	{
+	can_error_cntr=0;
 	ibat_metr_buff_[0]=((signed long)RXBUFF[2])+(((signed long)RXBUFF[3])<<8);
 	ibat_metr_buff_[1]=((signed long)RXBUFF[4])+(((signed long)RXBUFF[5])<<8);
 	bIBAT_SMKLBR=((signed short)RXBUFF[6])+(((signed short)RXBUFF[7])<<8);

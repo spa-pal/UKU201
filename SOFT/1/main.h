@@ -19,6 +19,7 @@ extern bool b1000Hz, b100Hz, b50Hz, b1Hz, b10Hz, b5Hz, b2Hz;
 extern bool bFL, bFL2, bFL5;
 extern signed short main_10Hz_cnt;
 extern signed short main_1Hz_cnt;
+extern short main_1HZ_cnt;
 
 //***********************************************
 //Данные из EEPROM
@@ -632,6 +633,15 @@ extern unsigned short log_cmd_mb;
 extern unsigned short log_debug0_mb;
 extern unsigned short log_debug1_mb;
 
+//***********************************************
+//Управление ЗВУ панелью
+extern unsigned short hmi_cntrl_reg, hmi_cntrl_reg_old; 	//Регистр комманд/управляющих состояний от панели
+extern unsigned short hmi_cntrl_reg_new;					//Различия между новым и старым командными регистрами
+extern unsigned short hmi_cntrl_fb_reg; 	  				//Регистр обратной связи комманд/управляющих состояний от панели
+extern unsigned short hmi_notconnect_cnt;					//Счетчик потери связи с HMI, плюсуется каждые 0,1с до HMINOTCONNECTMAX, обнуляется по записи в 1 регистр 3 командой
+extern unsigned short hmi_avg_reg;							//Регистр выравнивания токов от панели
+extern unsigned short hmi_unecc_reg;						//Регистр напряжения поддержания от панели
+extern unsigned short hmi_izmax_reg;						//Регистр максимального тока заряда от панели
 //***********************************************
 //***********************************************
 //***********************************************
