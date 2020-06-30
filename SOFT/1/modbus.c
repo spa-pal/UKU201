@@ -2177,7 +2177,7 @@ void modbus_input_registers_transmit(unsigned char adr,unsigned char func,unsign
 signed char modbus_registers[2200];
 //char modbus_tx_buff[200];
 unsigned short crc_temp;
-char i;
+char i,tempC;
 short tempS;
 
 static short out_U_pl;
@@ -2207,7 +2207,7 @@ cntrl_stat=t_ext[0]*2;
 u_necc=t_ext[0]*3; 
 Ib_ips_termokompensat=out_U_pl-500;*/
 
-bps_I=100*MODBUS_ADRESS + main_1HZ_cnt;
+//bps_I=100*MODBUS_ADRESS + main_1HZ_cnt;
 
 modbus_registers[0]=(signed char)(out_U>>8);					//Рег1   	напряжение выходной шины, 0.1В
 modbus_registers[1]=(signed char)(out_U);
@@ -2366,15 +2366,49 @@ modbus_registers[137]=(signed char)(bps[7]._cnt);
 modbus_registers[138]=(signed char)(bps_U>>8);					//Рег70   	напряжение выпрямителей, 0.1В
 modbus_registers[139]=(signed char)(bps_U);
 tempS=0;
-if((speedChIsOn)||(sp_ch_stat==scsWRK)) tempS=1;
-modbus_registers[140]=(signed char)(tempS>>8);					//Рег71   	Ускоренный заряд включенность, (1 - вкл, 0 - Выкл)
+tempS=u_necc-bps_U;
+modbus_registers[140]=(signed char)(tempS>>8);					//Рег71   	Разница между напряжением поддержания и напряжением выпрямителей, 0.1В
 modbus_registers[141]=(signed char)(tempS);
 tempS=0;
-if(spc_stat==spcVZ) tempS=1;
-modbus_registers[142]=(signed char)(tempS>>8);					//Рег72   	Выравнивающий заряд включенность, (1 - вкл, 0 - Выкл)
+tempS=IZMAX_-Ib_ips_termokompensat/10;
+modbus_registers[142]=(signed char)(tempS>>8);					//Рег72   	Разница между максимальным током заряда батареи(действующим) и током батареи, 0.1А
 modbus_registers[143]=(signed char)(tempS);
-modbus_registers[144]=(signed char)(uout_av>>8);				//Рег73   Контроль выходного напряжения, (0 - норма, 1 - завышено, 2 - занижено)
-modbus_registers[145]=(signed char)(uout_av);
+
+
+if(sk_stat[i]==ssON)
+	{
+	bps[0]._av=0x01;
+	avar_stat|=(1<<(3+0));
+	}
+else
+	{
+	bps[0]._av=0x00;
+	avar_stat=0;
+	}
+
+
+tempS=0;
+tempC=0;														//Рег73	Регистр кодов ошибок системы
+tempS=uout_av;													//Контроль выходного напряжения, (0 - норма, 1 - завышено, 2 - занижено)	
+for (i=0;i<NUMIST;i++)
+	{
+	tempC=bps[i]._av;
+	}
+tempC<<=2;
+tempC&=0x7c;
+
+tempS|=(short)tempC;
+
+tempC=0;
+for (i=0;i<NUMIST;i++)
+	{
+	tempC|=bps[i]._flags_tm&0x01;
+	}
+tempC<<=7;
+tempC&=0x80;
+tempS|=(short)tempC;
+modbus_registers[144]=(signed char)(tempS>>8);				
+modbus_registers[145]=(signed char)(tempS);
 
 tempS=0;													 	//Рег74	Регистр флагов состояния системы
 if(bat_ips._av)			tempS|=(1<<0);						 	// Бит 0	Авария батареи
@@ -2388,6 +2422,7 @@ if(avar_stat&(1<<(3+5)))tempS|=(1<<7);						 	//	Бит 7	Авария выпрямителя №6
 if(avar_stat&(1<<(3+6)))tempS|=(1<<8);						 	//	Бит 8	Авария выпрямителя №7
 if(avar_stat&(1<<(3+6)))tempS|=(1<<9);						 	//	Бит 9	Авария выпрямителя №8
 if(sk_stat[0]==ssON)	tempS|=(1<<15);						 	//	Бит 15	Замкнут сухой контакт
+//tempS=23456;
 modbus_registers[146]=(signed char)(tempS>>8);
 modbus_registers[147]=(signed char)(tempS);
 /*
