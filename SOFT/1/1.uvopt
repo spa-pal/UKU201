@@ -420,7 +420,7 @@
       <Focus>0</Focus>
       <ColumnNumber>2</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2394</TopLine>
+      <TopLine>2388</TopLine>
       <CurrentLine>2425</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\modbus.c</PathWithFileName>
@@ -633,9 +633,9 @@
       <Documents>
         <Doc>
           <Name>.\modbus.c</Name>
-          <ColumnNumber>2</ColumnNumber>
-          <TopLine>2388</TopLine>
-          <CurrentLine>2425</CurrentLine>
+          <ColumnNumber>19</ColumnNumber>
+          <TopLine>2430</TopLine>
+          <CurrentLine>2430</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\eeprom_map.c</Name>

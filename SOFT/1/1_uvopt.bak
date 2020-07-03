@@ -231,8 +231,8 @@
       <Focus>0</Focus>
       <ColumnNumber>20</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>16</TopLine>
-      <CurrentLine>33</CurrentLine>
+      <TopLine>73</TopLine>
+      <CurrentLine>73</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -341,10 +341,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>5</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>178</TopLine>
-      <CurrentLine>192</CurrentLine>
+      <TopLine>595</TopLine>
+      <CurrentLine>611</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\avar_hndl.c</PathWithFileName>
       <FilenameWithoutPath>avar_hndl.c</FilenameWithoutPath>
@@ -418,10 +418,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>26</ColumnNumber>
+      <ColumnNumber>2</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2195</TopLine>
-      <CurrentLine>2210</CurrentLine>
+      <TopLine>2394</TopLine>
+      <CurrentLine>2425</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\modbus.c</PathWithFileName>
       <FilenameWithoutPath>modbus.c</FilenameWithoutPath>
@@ -496,8 +496,8 @@
 
   <AlienFiles>
     <PathWithFilename>E:\Users\Pal\DEVICES\UKU201\SOFT\1\main.h</PathWithFilename>
-    <TopLine>3</TopLine>
-    <CurrentLine>22</CurrentLine>
+    <TopLine>69</TopLine>
+    <CurrentLine>85</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -632,10 +632,10 @@
       <ActiveTab>0</ActiveTab>
       <Documents>
         <Doc>
-          <Name>.\mess.c</Name>
-          <ColumnNumber>5</ColumnNumber>
-          <TopLine>43</TopLine>
-          <CurrentLine>43</CurrentLine>
+          <Name>.\modbus.c</Name>
+          <ColumnNumber>2</ColumnNumber>
+          <TopLine>2388</TopLine>
+          <CurrentLine>2425</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\eeprom_map.c</Name>
@@ -646,14 +646,8 @@
         <Doc>
           <Name>.\main.c</Name>
           <ColumnNumber>20</ColumnNumber>
-          <TopLine>16</TopLine>
-          <CurrentLine>33</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\STM32F10x.s</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>99</TopLine>
-          <CurrentLine>117</CurrentLine>
+          <TopLine>73</TopLine>
+          <CurrentLine>73</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\STM32_Init.c</Name>
@@ -680,28 +674,16 @@
           <CurrentLine>191</CurrentLine>
         </Doc>
         <Doc>
+          <Name>.\STM32F10x.s</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>99</TopLine>
+          <CurrentLine>117</CurrentLine>
+        </Doc>
+        <Doc>
           <Name>modbus.h</Name>
           <ColumnNumber>13</ColumnNumber>
           <TopLine>6</TopLine>
           <CurrentLine>6</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\avar_hndl.c</Name>
-          <ColumnNumber>5</ColumnNumber>
-          <TopLine>178</TopLine>
-          <CurrentLine>192</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>main.h</Name>
-          <ColumnNumber>26</ColumnNumber>
-          <TopLine>3</TopLine>
-          <CurrentLine>22</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\modbus.c</Name>
-          <ColumnNumber>26</ColumnNumber>
-          <TopLine>2195</TopLine>
-          <CurrentLine>2210</CurrentLine>
         </Doc>
         <Doc>
           <Name>full_can.h</Name>
@@ -720,6 +702,18 @@
           <ColumnNumber>10</ColumnNumber>
           <TopLine>754</TopLine>
           <CurrentLine>772</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\avar_hndl.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>595</TopLine>
+          <CurrentLine>611</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>main.h</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>69</TopLine>
+          <CurrentLine>85</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\memo.c</Name>
@@ -744,6 +738,12 @@
           <ColumnNumber>4</ColumnNumber>
           <TopLine>1929</TopLine>
           <CurrentLine>1947</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\mess.c</Name>
+          <ColumnNumber>5</ColumnNumber>
+          <TopLine>43</TopLine>
+          <CurrentLine>43</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>
