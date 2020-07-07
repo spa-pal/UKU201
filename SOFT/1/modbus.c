@@ -2178,7 +2178,7 @@ signed char modbus_registers[2200];
 //char modbus_tx_buff[200];
 unsigned short crc_temp;
 char i,tempC;
-short tempS;
+short tempS,tempS_;
 
 static short out_U_pl;
 
@@ -2398,6 +2398,11 @@ tempC<<=2;
 tempC&=0x7c;
 
 tempS|=(short)tempC;
+
+tempS_=(short)net_av;
+tempS_<<=7;
+tempS_&=0x0180;
+tempS|=tempS_;
 
 tempC=0;
 for (i=0;i<NUMIST;i++)
