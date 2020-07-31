@@ -214,7 +214,7 @@ if((RXBUFF[1]==PUTTM1)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<17))
 	bps[slave_num]._cnt=0;
 	bps[slave_num]._is_on_cnt=10;
 	
- 	///if((bps[slave_num]._cnt==0)&&(bps[slave_num]._av&(1<<3))) avar_bps_hndl(slave_num,3,0);
+ 	if((bps[slave_num]._cnt==0)&&(bps[slave_num]._av&(1<<3))) avar_bps_hndl(slave_num,3,0);
 
 	can_reset_cnt=0;
      }
@@ -247,7 +247,7 @@ if((RXBUFF[1]==PUTTM2)&&((RXBUFF[0]&0x1f)>=0)&&((RXBUFF[0]&0x1f)<12))
 	bps[slave_num]._cnt=0;
 	bps[slave_num]._is_on_cnt=10; 
 
-   	//if((src[slave_num]._cnt==0)&&(src[slave_num]._av_net)) avar_s_hndl(slave_num,3,0); 
+   	//if((bps[slave_num]._cnt==0)&&(src[slave_num]._av_net)) avar_s_hndl(slave_num,3,0); 
 	can_reset_cnt=0;
    	}
 

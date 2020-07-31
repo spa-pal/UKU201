@@ -264,12 +264,26 @@ __nop();
 //”правление светодиодами, логическое, 10√ц
 void led_hndl(void)
 {
+short temp_bps_err,i;
 ledERROR=0;
 ledWARNING=0;
 ledUOUTGOOD=0;
 //ledCAN=1;
 
-if((net_av)||(net_av))ledERROR=1;
+temp_bps_err=0;
+for(i=0;i<NUMIST;i++)
+	{
+	temp_bps_err|=bps[i]._av&0x0f;
+	}
+
+if((net_av)||(net_av)||(uout_av)||temp_bps_err)ledERROR=1;
+
+temp_bps_err=0;
+for(i=0;i<NUMIST;i++)
+	{
+	temp_bps_err|=bps[i]._av&0x30;
+	}
+if((net_av)||(net_av)||(uout_av)||temp_bps_err)ledWARNING=1;
 
 if(!uout_av)ledUOUTGOOD=1;
 
@@ -416,6 +430,7 @@ else if(ledCAN==20)
 	if(led_drv_main_cnt<=13)GPIOB->ODR&=~(1<<10);
 	else 					GPIOB->ODR|=(1<<10);
 	}
+
 }
 
 //-----------------------------------------------
@@ -1493,6 +1508,7 @@ if(hmi_cntrl_fb_reg&0x0001)
 //биты аварий в приход€щих сообщени€х от источников и инверторов
 #define AV_OVERLOAD	0
 #define AV_T	1
+#define WARN_T	2
 #define AVUMAX	3
 #define AVUMIN	4
 
@@ -1505,12 +1521,12 @@ if (bps[in]._device!=dSRC) return;
 temp=bps[in]._flags_tm;
 if(temp&(1<<AV_T))
 	{
-	if(bps[in]._temp_av_cnt<1200) 
+	if(bps[in]._temp_av_cnt<20) 
 		{
 		bps[in]._temp_av_cnt++;
-		if(bps[in]._temp_av_cnt>=1200)
+		if(bps[in]._temp_av_cnt>=20)
 			{
-			bps[in]._temp_av_cnt=1200;
+			bps[in]._temp_av_cnt=20;
 		   	if(!(bps[in]._av&(1<<0)))avar_bps_hndl(in,0,1);
 			}
 		}
@@ -1524,6 +1540,32 @@ else if(!(temp&(1<<AV_T)))
 		if(!bps[in]._temp_av_cnt)
 			{
 			if(bps[in]._av&(1<<0))avar_bps_hndl(in,0,0);
+			}
+		} 	
+
+	}
+
+if(temp&(1<<WARN_T))
+	{
+	if(bps[in]._temp_warn_cnt<20) 
+		{
+		bps[in]._temp_warn_cnt++;
+		if(bps[in]._temp_warn_cnt>=20)
+			{
+			bps[in]._temp_warn_cnt=20;
+		   	bps[in]._av|=(1<<5);
+			}
+		}
+	}
+
+else if(!(temp&(1<<WARN_T)))
+	{
+	if(bps[in]._temp_warn_cnt) 
+		{
+		bps[in]._temp_warn_cnt--;
+		if(!bps[in]._temp_warn_cnt)
+			{
+			bps[in]._av&=~(1<<5);
 			}
 		} 	
 
@@ -1611,12 +1653,12 @@ else if(!(temp&(1<<AVUMIN)))
 
 if((bps[in]._Uii<(UB20-DU))&&(bps[in]._state==bsWRK))
 	{
-	if(bps[in]._umin_av_cnt_uku<300) 
+	if(bps[in]._umin_av_cnt_uku<1200) 
 		{
 		bps[in]._umin_av_cnt_uku++;
-		if(bps[in]._umin_av_cnt_uku>=300)
+		if(bps[in]._umin_av_cnt_uku>=1200)
 			{ 
-			bps[in]._umin_av_cnt_uku=300;
+			bps[in]._umin_av_cnt_uku=1200;
 			if(!(bps[in]._av&(1<<2)))avar_bps_hndl(in,2,1);
 		  	/*	if((K[APV]!=ON)||((apv_cnt[in,0]==0)&&(apv_cnt[in,1]==0)&&(apv_cnt[in,2]==0)&&(apv_flags[in]==afOFF)))avar_s_hndl(in,2,1);
 			if((apv_cnt[in,0]==0)&&(apv_cnt[in,1]==0)&&(apv_cnt[in,2]==0)&&(apv_flags[in]==afON))
@@ -2078,6 +2120,7 @@ if(hmi_cntrl_reg!=hmi_cntrl_reg_old)
 			hmi_cntrl_fb_reg&=~0x0010;
 			}
 		}
+
 	}
 
 hmi_cntrl_reg_old=hmi_cntrl_reg;
@@ -2387,6 +2430,65 @@ if(speedChrgBlckStat==1)
 		}
 	} 
 else speedChrgShowCnt=0;  */
+}
+
+//-----------------------------------------------
+void vent_resurs_hndl(void)
+{
+char i;
+char crc_in,crc_eval;
+
+for(i=0;i<NUMIST;i++)
+	{
+	if((bps[i]._buff[7]&0xc0)==0x00)
+		{
+		bps[i]._vent_resurs_temp[0]=bps[i]._buff[7];
+		}
+	else if((bps[i]._buff[7]&0xc0)==0x40)
+		{
+		bps[i]._vent_resurs_temp[1]=bps[i]._buff[7];
+		}
+	else if((bps[i]._buff[7]&0xc0)==0x80)
+		{
+		bps[i]._vent_resurs_temp[2]=bps[i]._buff[7];
+		}
+	else if((bps[i]._buff[7]&0xc0)==0xc0)
+		{
+		bps[i]._vent_resurs_temp[3]=bps[i]._buff[7];
+		}
+	crc_in=0;
+	crc_in|=(bps[i]._vent_resurs_temp[0]&0x30)>>4;
+	crc_in|=(bps[i]._vent_resurs_temp[1]&0x30)>>2;
+	crc_in|=(bps[i]._vent_resurs_temp[2]&0x30);
+	crc_in|=(bps[i]._vent_resurs_temp[3]&0x30)<<2;
+
+	crc_eval =bps[i]._vent_resurs_temp[0]&0x0f;
+	crc_eval^=bps[i]._vent_resurs_temp[1]&0x0f;
+	crc_eval^=bps[i]._vent_resurs_temp[2]&0x0f;
+	crc_eval^=bps[i]._vent_resurs_temp[3]&0x0f;
+
+	if(crc_eval==crc_in)
+		{
+		unsigned short temp_US;
+		temp_US=0;
+
+		temp_US|=(bps[i]._vent_resurs_temp[3]&0x0f);
+		temp_US<<=4;
+		temp_US|=(bps[i]._vent_resurs_temp[2]&0x0f);
+		temp_US<<=4;
+		temp_US|=(bps[i]._vent_resurs_temp[1]&0x0f);
+		temp_US<<=4;
+		temp_US|=(bps[i]._vent_resurs_temp[0]&0x0f);
+
+		if(bps[i]._vent_resurs!=temp_US)bps[i]._vent_resurs=temp_US;
+		}
+
+	if((bps[i]._vent_resurs>TVENTMAX*10)&&(TVENTMAX>0))
+		{
+		bps[i]._av|=(1<<4);
+		}
+	else bps[i]._av&=~(1<<4);
+	}
 }
 
 //-----------------------------------------------

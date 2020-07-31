@@ -546,7 +546,8 @@ if(crc16_calculated==crc16_incapsulated)
 				//LPC_RTC->DOM=(uint16_t)modbus_rx_arg1;
 				printf("Reg 13 writed   \r\n");
 				}
-			if(modbus_rx_arg0==14)		//Установка времени, час
+//#define KOSYAK0
+#ifdef KOSYAK0			if(modbus_rx_arg0==1400)		//Установка времени, час
 				{
 				long temp_H, temp_M, temp_S, temp_L;
 				gran(&modbus_rx_arg1,0,23);
@@ -565,8 +566,9 @@ if(crc16_calculated==crc16_incapsulated)
 				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
 				PWR->CR   &= ~PWR_CR_DBP;
 				printf("Reg 14 writed   \r\n");
-				printf("%d",temp_L);
+				printf("%d",temp_L);  
 				}
+
 			if(modbus_rx_arg0==15)		//Установка времени, минуты 
 				{
 				long temp_H, temp_M, temp_S, temp_L;
@@ -584,9 +586,9 @@ if(crc16_calculated==crc16_incapsulated)
 				RTC->CNTL=(short)temp_L;
 				RTC->CRL  &= ~RTC_CRL_CNF;
 				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
-				PWR->CR   &= ~PWR_CR_DBP;
+				PWR->CR   &= ~PWR_CR_DBP;*/
 				printf("Reg 15 writed   \r\n");
-				printf("%d",temp_L);
+				printf("%d",temp_L);  
 				}
 			if(modbus_rx_arg0==16)		//Установка времени, секунды 
 				{
@@ -607,9 +609,10 @@ if(crc16_calculated==crc16_incapsulated)
 				while (!((RTC->CRL)&RTC_CRL_RTOFF)){};
 				PWR->CR   &= ~PWR_CR_DBP;
 				printf("Reg 16 writed   \r\n");
-				printf("%d",temp_L);
+				printf("%d",temp_L);  
 
-				}
+				}  
+	#endif
 			if(modbus_rx_arg0==20)		//ток стабилизации для режима стабилизации тока
 				{
 				if((modbus_rx_arg1>=0)&&(modbus_rx_arg1<=18))
@@ -959,7 +962,12 @@ if(crc16_calculated==crc16_incapsulated)
 				{
 				main_kb_cnt=modbus_rx_arg1;
 				
-				}				
+				}
+				
+			if(modbus_rx_arg0==968)		// Сброс аварий БПСа
+				{
+				can1_out(modbus_rx_arg1,modbus_rx_arg1,CMND,ALRM_RES,0,0,0,0);
+				}
 
 			if(modbus_rx_arg0==969)		// Управление журналом
 				{
@@ -2377,13 +2385,13 @@ modbus_registers[143]=(signed char)(tempS);
 
 if(sk_stat[i]==ssON)
 	{
-	bps[0]._av=0x01;
-	avar_stat|=(1<<(3+0));
+	//bps[0]._av=0x01;
+	//avar_stat|=(1<<(3+0));
 	}
 else
 	{
-	bps[0]._av=0x00;
-	avar_stat=0;
+	//bps[0]._av=0x00;
+	//avar_stat=0;
 	}
 
 
@@ -2418,14 +2426,15 @@ modbus_registers[145]=(signed char)(tempS);
 tempS=0;													 	//Рег74	Регистр флагов состояния системы
 if(bat_ips._av)			tempS|=(1<<0);						 	// Бит 0	Авария батареи
 if(net_av)   			tempS|=(1<<1);						 	//	Бит 1	Авария питающей сети 
-if(avar_stat&(1<<(3+0)))tempS|=(1<<2);						 	//	Бит 2	Авария выпрямителя №1
-if(avar_stat&(1<<(3+1)))tempS|=(1<<3);						 	//	Бит 3	Авария выпрямителя №2
-if(avar_stat&(1<<(3+2)))tempS|=(1<<4);						 	//	Бит 4	Авария выпрямителя №3
-if(avar_stat&(1<<(3+3)))tempS|=(1<<5);						 	//	Бит 5	Авария выпрямителя №4
-if(avar_stat&(1<<(3+4)))tempS|=(1<<6);						 	//	Бит 6	Авария выпрямителя №5
-if(avar_stat&(1<<(3+5)))tempS|=(1<<7);						 	//	Бит 7	Авария выпрямителя №6
-if(avar_stat&(1<<(3+6)))tempS|=(1<<8);						 	//	Бит 8	Авария выпрямителя №7
-if(avar_stat&(1<<(3+6)))tempS|=(1<<9);						 	//	Бит 9	Авария выпрямителя №8
+if(bps[0]._av&0x3f)		tempS|=(1<<2);						 	//	Бит 2	Авария или предупреждение выпрямителя №1
+if(bps[1]._av&0x3f)		tempS|=(1<<3);						 	//	Бит 3	Авария или предупреждение выпрямителя №2
+if(bps[2]._av&0x3f)		tempS|=(1<<4);						 	//	Бит 4	Авария или предупреждение выпрямителя №3
+if(bps[3]._av&0x3f)		tempS|=(1<<5);						 	//	Бит 5	Авария или предупреждение выпрямителя №4
+if(bps[4]._av&0x3f)		tempS|=(1<<6);						 	//	Бит 6	Авария или предупреждение выпрямителя №5
+if(bps[5]._av&0x3f)		tempS|=(1<<7);						 	//	Бит 7	Авария или предупреждение выпрямителя №6
+if(bps[6]._av&0x3f)		tempS|=(1<<8);						 	//	Бит 8	Авария или предупреждение выпрямителя №7
+if(bps[7]._av&0x3f)		tempS|=(1<<9);						 	//	Бит 9	Авария или предупреждение выпрямителя №8
+if(uout_av)				tempS|=(1<<14);							//	Бит 14	Авария или предупреждение выходного напряжения
 if(sk_stat[0]==ssON)	tempS|=(1<<15);						 	//	Бит 15	Замкнут сухой контакт
 //tempS=23456;
 modbus_registers[146]=(signed char)(tempS>>8);
@@ -2454,15 +2463,16 @@ modbus_registers[179]=(signed char)(bps[6]._x_);
 modbus_registers[180]=(signed char)(bps[7]._x_>>8);				//Рег91	Регулятор выравнивания токов БПС8 
 modbus_registers[181]=(signed char)(bps[7]._x_);
 
-hmi_plazma[0]=net_av;
-hmi_plazma[1]=main_kb_cnt;
-hmi_plazma[2]=net_U;
-hmi_plazma[3]=UMN;
-hmi_plazma[4]=UMAXN;
-hmi_plazma[5]=kb_full_ver;
-hmi_plazma[6]=ibat_ips;
-hmi_plazma[7]=ibat_ips_;
-hmi_plazma[8]=hmi_avg_reg;										//Регистр выравнивания токов от панели;
+//bps[0]._av=123;
+hmi_plazma[0]=bps[0]._rotor;
+hmi_plazma[1]=avar_stat;
+hmi_plazma[2]=bps[0]._av;
+hmi_plazma[3]=bps[1]._av;
+hmi_plazma[4]=bps[0]._flags_tm;
+hmi_plazma[5]=bps[1]._flags_tm;
+hmi_plazma[6]=bps[0]._temp_av_cnt;
+hmi_plazma[7]=bps[0]._umin_av_cnt;
+hmi_plazma[8]=bps[0]._umax_av_cnt;										//Регистр выравнивания токов от панели;
 
 modbus_registers[182]=(signed char)(hmi_plazma[0]>>8);			//Рег92	Отладочная информация для панели 
 modbus_registers[183]=(signed char)(hmi_plazma[0]);

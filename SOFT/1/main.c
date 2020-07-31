@@ -707,7 +707,7 @@ if(++cnt_net_drv>max_net_slot)
 
 
 
-if((cnt_net_drv>=0)&&(cnt_net_drv<=32)) // с 1 по 12 посылки адресные
+if((cnt_net_drv>=0)&&(cnt_net_drv<=4)) // с 1 по 12 посылки адресные
 	{
 	//cnt_net_drv=2; 
 	if(mess_find_unvol(MESS2NET_DRV))
@@ -729,10 +729,10 @@ if((cnt_net_drv>=0)&&(cnt_net_drv<=32)) // с 1 по 12 посылки адресные
 	     if(bps[cnt_net_drv]._cnt<CNT_SRC_MAX)
    	 		{    
    	 		bps[cnt_net_drv]._cnt++;
-   	 /*		if( (bps[cnt_net_drv]._cnt>=CNT_SRC_MAX) && (!net_av) && (!(bps[cnt_net_drv]._av&0x08)) && (cnt_net_drv<NUMIST) ) 
+   	 		if( (bps[cnt_net_drv]._cnt>=CNT_SRC_MAX) && (!net_av) && (!(bps[cnt_net_drv]._av&0x08)) && (cnt_net_drv<NUMIST) ) 
    	 			{
    	 			avar_bps_hndl(cnt_net_drv,3,1);
-   	 			} */
+   	 			} 
    	 		}
 		else bps[cnt_net_drv]._cnt=CNT_SRC_MAX;	
 						
@@ -743,7 +743,7 @@ if((cnt_net_drv>=0)&&(cnt_net_drv<=32)) // с 1 по 12 посылки адресные
 
 else if(cnt_net_drv==-4)
 	{
-//    if(!bCAN_OFF)can1_out(GETTM_IBATMETER,GETTM_IBATMETER,0,0,0,0,0,0);
+    if(!bCAN_OFF)can1_out(GETTM_IBATMETER,GETTM_IBATMETER,0,0,0,0,0,0);
 //    ibat_metr_cnt++;
 	}
 
@@ -753,8 +753,9 @@ else if(cnt_net_drv==-1)
 //    plazma_pavlik++;
 	}
 
-else if(cnt_net_drv==12)
+else if(cnt_net_drv==-3)
 	{
+	//UMAX=1000;
 	if(!bCAN_OFF)can1_out(0xff,0xff,MEM_KF,*((char*)(&UMAX)),*((char*)((&UMAX))+1),*((char*)(&DU)),*((char*)((&DU))+1),0);
 	} 
      
@@ -768,7 +769,7 @@ else if(cnt_net_drv==14)
 	
 
 	
-else if(cnt_net_drv==15)
+else if(cnt_net_drv==-2)
 	{
 	if(!bCAN_OFF)can1_out(0xff,0xff,MEM_KF1,*((char*)(&TMAX)),*((char*)((&TMAX))+1),*((char*)(&TSIGN)),*((char*)((&TSIGN))+1),(char)TZAS);
 	}
@@ -1015,7 +1016,7 @@ while (1)
 		kb_hndl();
 
 		outVoltContrHndl();		//контроль выходного напряжения
-
+		vent_resurs_hndl();		//ресурс вентиляторов
 
 		plazma_tx_cnt++;
 		
@@ -1045,10 +1046,10 @@ while (1)
 	   	//printf("%d  %d  %d  %d \r\n", bps[0]._x_, bps[1]._x_, bps[2]._x_, bps[3]._x_);
 		//printf("%2d; %4d; %2d; %2d;\r\n", avt_klbr_phase_ui, modbus_register_1022, bps[2]._cnt, bps[3]._cnt);
 		//printf("%3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d   %3d\r\n", cntrl_hndl_plazma, bps[0]._cnt, bps[1]._cnt, bps[2]._cnt,UMAXN,MODBUS_BAUDRATE,/*MODBUS_ADRESS*/test_hndl_rele2_cntrl,/*plazma_uart1[2]*/test_hndl_rele2_cnt,/* NUMIST*/rele_output_stat_test_byte, /*NUMPHASE*/ rele_output_stat_test_mask);
-		printf("net_U= %3d  %3d  %3d  %3d  u_necc = %4d  hmi_unecc_reg = %4d hmi_izmax_reg = %4d UMAXN = %4d\r\n", net_U, net_Ua, net_Ub, net_Uc, u_necc, hmi_unecc_reg, hmi_izmax_reg, RELE1SET, UMN, UMAXN);
+		//printf("net_U= %3d  %3d  %3d  %3d  u_necc = %4d  hmi_unecc_reg = %4d hmi_izmax_reg = %4d UMAXN = %4d\r\n", net_U, net_Ua, net_Ub, net_Uc, u_necc, hmi_unecc_reg, hmi_izmax_reg, RELE1SET, UMN, UMAXN);
 		///printf("%3d; %3d; %3d; %3d;\r\n", net_Umax, UMAXN, unet_max_drv_cnt);
 		///printf("log_cmd = %3d log_deep = %3d log_debug0 = %4d log_debug1 = %4d  %3d;\r\n", log_cmd_mb, log_deep_mb, log_debug0_mb, log_debug1_mb, unet_max_drv_cnt);
-		
+		 printf("%3d; %3d; %3d; %3d;\r\n", outVoltContrHndlCntUp, outVoltContrHndlCntDn, uout_av);
 		// контроль выходного напряжения printf("out_U = %4d out_U_max = %4d out_U_min = %4d delay = %4d max_cnt = %4d  min_cnt = %4d uout_av = %3d;\r\n", out_U, U_OUT_KONTR_MAX, U_OUT_KONTR_MIN, U_OUT_KONTR_DELAY, outVoltContrHndlCntUp, outVoltContrHndlCntDn, uout_av);
 		// бипер printf("beep_stat = %8x beep_stat_temp = %8x beep_stat_cnt = %4d\r\n", beep_stat, beep_stat_temp, beep_stat_cnt);
 		// управление регистрами в калибровке printf("modbus_register_998 = %4d  modbus_register_999 = %4d \r\n", modbus_register_998, modbus_register_999);
